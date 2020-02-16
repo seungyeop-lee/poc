@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - 80:80
+      - 433:433
+      - 8080:8080
+    command:
+      - --api.insecure=true # enable api & dashboard
+      - --providers.docker # enable docker auto discovery
+      - --accesslog=true # enable access log
+      # enable jaeger
+      - --tracing.jaeger=true
+      - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+      - --tracing.jaeger.localAgentHostPort=jaeger:6831
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # for docker auto discovery
+
+  ping-module:
+    build:
+      context: ./ping
+      dockerfile: Dockerfile
+    expose:
+      - 8080 # for auto discovery
+    environment:
+      JAEGER_AGENT_HOST: jaeger # set Jaeger Agent Host
+    labels:
+      - "traefik.http.routers.ping.rule=Path(`/ping`)" # route setting (/ping)
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 5778:5778 # agent
+      - 6831:6831/udp # agent
+      - 6832:6832/udp # agent
+      - 14268:14268 # collector
+      - 16686:16686 # query
