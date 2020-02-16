@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - 80:80
+      - 433:433
+      - 8080:8080
+    command:
+      - --api.insecure=true # enable api & dashboard
+      - --providers.docker # enable docker auto discovery
+      - --accesslog=true # enable access log
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # for docker auto discovery
+
+  ping-module:
+    build:
+      context: ./ping
+      dockerfile: Dockerfile
+    expose:
+      - 8080 # for auto discovery
+    labels:
+      - "traefik.http.routers.ping.rule=Path(`/ping`)" # route setting (/ping)
