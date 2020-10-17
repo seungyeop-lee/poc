@@ -12,9 +12,10 @@ CREATE TABLE products
 
 CREATE TABLE patrons
 (
-    `id`         INT         NOT NULL AUTO_INCREMENT,
-    `login_id`   VARCHAR(20) NOT NULL,
-    `email`      VARCHAR(50) NOT NULL,
+    `id`         INT          NOT NULL AUTO_INCREMENT,
+    `login_id`   VARCHAR(20)  NOT NULL,
+    `password`   VARCHAR(100) NOT NULL,
+    `email`      VARCHAR(50)  NOT NULL,
     `deleted_at` DATETIME,
     PRIMARY KEY (id)
 );

@@ -1,6 +1,7 @@
 package patron
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,8 @@ func NewPresenter() *presenter {
 	return &presenter{}
 }
 
-func (p *presenter) Error(c *gin.Context) {
+func (p *presenter) Error(c *gin.Context, err error) {
+	fmt.Println(err)
 	c.AbortWithStatus(http.StatusInternalServerError)
 }
 

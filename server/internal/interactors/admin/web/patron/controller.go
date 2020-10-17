@@ -22,12 +22,12 @@ func (ct *Controller) SignIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		info := message.SignInInfo{}
 		if err := c.ShouldBindJSON(&info); err != nil {
-			ct.presenter.Error(c)
+			ct.presenter.Error(c, err)
 			return
 		}
 
 		if err := ct.signIn.Do(c.Request.Context(), *info.Patron()); err != nil {
-			ct.presenter.Error(c)
+			ct.presenter.Error(c, err)
 			return
 		}
 
