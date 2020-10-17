@@ -8,25 +8,33 @@ import (
 type Patrons struct {
 	ID uint
 	LoginID string
+	Password string
 	Email string
 	DeletedAt time.Time
 }
 
+func (p Patrons) FindByIDValidate() error {
+	return p.idValidate()
+}
+
 func (p Patrons) SaveValidate() error {
 	return validation.ValidateStruct(&p,
-		validation.Field(p.LoginID, validation.Required),
-		validation.Field(p.Email, validation.Required),
+		validation.Field(&p.LoginID, validation.Required),
+		validation.Field(&p.Password, validation.Required),
+		validation.Field(&p.Email, validation.Required),
 	)
 }
 
 func (p Patrons) UpdateValidate() error {
-	return validation.ValidateStruct(&p,
-		validation.Field(p.ID, validation.Required),
-	)
+	return p.idValidate()
 }
 
 func (p Patrons) DeleteValidate() error {
+	return p.idValidate()
+}
+
+func (p Patrons) idValidate() error {
 	return validation.ValidateStruct(&p,
-		validation.Field(p.ID, validation.Required),
+		validation.Field(&p.ID, validation.Required),
 	)
 }

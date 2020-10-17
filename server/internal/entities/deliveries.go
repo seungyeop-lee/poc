@@ -11,6 +11,10 @@ type Deliveries struct {
 	IsDelivered bool
 }
 
+func (d Deliveries) FindByIDValidate() error {
+	return d.idValidate()
+}
+
 func (d Deliveries) SaveValidate() error {
 	return validation.ValidateStruct(&d,
 		validation.Field(&d.OrderID, validation.Required),
@@ -20,12 +24,14 @@ func (d Deliveries) SaveValidate() error {
 }
 
 func (d Deliveries) UpdateValidate() error {
-	return validation.ValidateStruct(&d,
-		validation.Field(&d.ID, validation.Required),
-	)
+	return d.idValidate()
 }
 
 func (d Deliveries) DeleteValidate() error {
+	return d.idValidate()
+}
+
+func (d Deliveries) idValidate() error {
 	return validation.ValidateStruct(&d,
 		validation.Field(&d.ID, validation.Required),
 	)
