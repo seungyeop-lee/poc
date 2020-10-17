@@ -1,10 +1,7 @@
 package database
 
-import (
-	"github.com/google/wire"
-	"github.com/seungyeop-lee/go-scaffold/server/containers/config/database"
-)
+import "gorm.io/gorm"
 
-var ConfigSet = wire.NewSet(
-	database.NewGormDB,
-)
+func NewGormDB() *gorm.DB {
+	return &gorm.DB{}
+}

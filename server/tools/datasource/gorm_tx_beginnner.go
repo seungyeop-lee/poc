@@ -18,15 +18,15 @@ func NewGormTxBeginner(db *gorm.DB) TxBeginner {
 }
 
 func (g *gormTxBeginner) BeginTx(ctx context.Context, options ...*sql.TxOptions) (TxCommitter, error) {
-	db := g.db.Begin(options...)
-	if db.Error != nil {
-		return nil, db.Error
+	tx := g.db.Begin(options...)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
-	db = g.db.WithContext(ctx)
-	if db.Error != nil {
-		return nil, db.Error
+	tx = tx.WithContext(ctx)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 
-	return NewGormTxCommitter(db), nil
+	return NewGormTxCommitter(tx), nil
 }
