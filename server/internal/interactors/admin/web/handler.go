@@ -2,7 +2,7 @@ package web
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/seungyeop-lee/go-scaffold/server/internal/handlers/admin/web/patron"
+	"github.com/seungyeop-lee/go-scaffold/server/internal/interactors/admin/web/patron"
 )
 
 type MainHandler struct {

@@ -2,7 +2,7 @@ package interactors
 
 import (
 	"github.com/google/wire"
-	"github.com/seungyeop-lee/go-scaffold/server/containers/interactors/admin"
+	"github.com/seungyeop-lee/go-scaffold/server/internal/interactors/admin"
 )
 
 var Set = wire.NewSet(

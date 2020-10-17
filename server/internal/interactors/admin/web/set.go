@@ -1,4 +1,4 @@
-package patron
+package web
 
 import (
 	"github.com/google/wire"
@@ -6,6 +6,6 @@ import (
 )
 
 var InteractorSet = wire.NewSet(
-	patron.NewController,
-	patron.NewPresenter,
+	NewHandler,
+	patron.InteractorSet,
 )
