@@ -2,9 +2,9 @@ package com.github.seungyeop_lee.spring_scaffold.version1.app.board.service;
 
 import com.github.seungyeop_lee.spring_scaffold.version1.app.board.domain.Board;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.board.domain.BoardCrudRepository;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudRepository;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlService;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.list.ListRepository;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.repository.CrudRepository;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.service.CrudlService;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.repository.ListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

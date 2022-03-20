@@ -2,10 +2,10 @@ package com.github.seungyeop_lee.spring_scaffold.version1.app.simple_board;
 
 
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlController;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlPath;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlService;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlViewPath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.controller.CrudlController;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.controller.CrudlPath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.service.CrudlService;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.controller.CrudlViewPath;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
