@@ -2,7 +2,7 @@ package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.d
 
 import org.springframework.transaction.annotation.Transactional;
 
-public interface DeleteService {
+public interface DeleteService extends BaseDeleteService {
     @Transactional
     default void delete(Long id) {
         getDeleteRepository().deleteById(id);

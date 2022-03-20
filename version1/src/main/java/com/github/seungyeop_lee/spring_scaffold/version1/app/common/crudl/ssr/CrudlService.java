@@ -12,6 +12,7 @@ import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.up
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.update.UpdateService;
 
 public interface CrudlService<DomainType extends Updatable<UpdateDataType>, UpdateDataType, SearchInfoType, ListResultType> extends
+        BaseCrudlService<DomainType, UpdateDataType, SearchInfoType, ListResultType>,
         CreateService<DomainType>,
         ReadService<DomainType>,
         UpdateService<DomainType, UpdateDataType>,
@@ -25,17 +26,17 @@ public interface CrudlService<DomainType extends Updatable<UpdateDataType>, Upda
     }
 
     @Override
-    default DeleteRepository getDeleteRepository(){
+    default DeleteRepository getDeleteRepository() {
         return getCrudRepository();
     }
 
     @Override
-    default ReadRepository<DomainType> getReadRepository(){
+    default ReadRepository<DomainType> getReadRepository() {
         return getCrudRepository();
     }
 
     @Override
-    default UpdateRepository<DomainType> getUpdateRepository(){
+    default UpdateRepository<DomainType> getUpdateRepository() {
         return getCrudRepository();
     }
 }

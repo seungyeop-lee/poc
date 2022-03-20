@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-public interface CreateController<DomainType extends IdGetter, InObjectType> {
+public interface CreateController<DomainType extends IdGetter, InObjectType> extends BaseCreateController<InObjectType> {
     @GetMapping(CreatePath.CREATE)
     default String createView(InObjectType param, Model model) {
         model.addAttribute(getCreateParamObjName(), param);
@@ -28,6 +28,8 @@ public interface CreateController<DomainType extends IdGetter, InObjectType> {
     }
 
     CreatePath getCreatePath();
-    CreateService<DomainType> getCreateService();
+
+    BaseCreateService<DomainType> getCreateService();
+
     BaseMapper<InObjectType, DomainType> getCreateDomainMapper();
 }

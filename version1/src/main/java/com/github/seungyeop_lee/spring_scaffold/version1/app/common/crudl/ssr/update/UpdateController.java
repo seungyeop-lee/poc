@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-public interface UpdateController<DomainType extends Updatable<UpdateDataType>, UpdateDataType, InObjectType, ViewDataType> {
+public interface UpdateController<DomainType extends Updatable<UpdateDataType>, UpdateDataType, InObjectType, ViewDataType> extends BaseUpdateController<InObjectType> {
     @GetMapping(UpdatePath.UPDATE)
     default String updateView(@PathVariable Long id, Model model) {
         DomainType found = getUpdateService().findById(id);
@@ -31,7 +31,10 @@ public interface UpdateController<DomainType extends Updatable<UpdateDataType>, 
     }
 
     UpdatePath getUpdatePath();
-    UpdateService<DomainType, UpdateDataType> getUpdateService();
+
+    BaseUpdateService<DomainType, UpdateDataType> getUpdateService();
+
     BaseMapper<DomainType, ViewDataType> getUpdateViewDataMapper();
+
     BaseMapper<InObjectType, UpdateDataType> getUpdateDomainMapper();
 }
