@@ -12,7 +12,7 @@ public interface ReadController<DomainType, ViewDataType> extends BaseReadContro
     default String readView(@PathVariable Long id, Model model) {
         DomainType found = getReadService().findById(id);
 
-        model.addAttribute(getReadResultObjName(), getReadViewDataMapper().build(found));
+        model.addAttribute(getReadResultObjName(), getReadViewDataMapper().mapFrom(found));
         model.addAttribute("id", id);
 
         return getReadPath().getReadView();

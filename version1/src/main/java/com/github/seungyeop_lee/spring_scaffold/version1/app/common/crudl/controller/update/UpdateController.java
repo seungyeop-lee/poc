@@ -14,14 +14,14 @@ public interface UpdateController<DomainType extends Updatable<UpdateDataType>, 
     default String updateView(@PathVariable Long id, Model model) {
         DomainType found = getUpdateService().findById(id);
 
-        model.addAttribute(getUpdateParamObjName(), getUpdateViewDataMapper().build(found));
+        model.addAttribute(getUpdateParamObjName(), getUpdateViewDataMapper().mapFrom(found));
 
         return getUpdatePath().getUpdateView();
     }
 
     @PostMapping(UpdatePath.UPDATE)
     default String update(@PathVariable Long id, InObjectType param) {
-        UpdateDataType updateData = getUpdateDomainMapper().build(param);
+        UpdateDataType updateData = getUpdateDomainMapper().mapFrom(param);
         getUpdateService().update(id, updateData);
 
         return getUpdatePath().getAfterUpdateView(id);

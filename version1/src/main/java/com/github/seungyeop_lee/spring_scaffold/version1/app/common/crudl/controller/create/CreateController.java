@@ -18,7 +18,7 @@ public interface CreateController<DomainType extends IdGetter, InObjectType> ext
 
     @PostMapping(CreatePath.CREATE)
     default String create(InObjectType param) {
-        DomainType domain = getCreateDomainMapper().build(param);
+        DomainType domain = getCreateDomainMapper().mapFrom(param);
         DomainType created = getCreateService().create(domain);
 
         return getCreatePath().getAfterCreateView(created.getId());

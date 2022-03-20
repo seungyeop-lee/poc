@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface CreateRestController<DomainType, InObjectType, OutObjectType> extends BaseCreateRestController<InObjectType, OutObjectType> {
     @PostMapping(CreateRestPath.CREATE)
     default OutObjectType create(InObjectType param) {
-        DomainType domain = getCreateDomainMapper().build(param);
+        DomainType domain = getCreateDomainMapper().mapFrom(param);
         DomainType created = getCreateService().create(domain);
 
-        return getCreateOutDataMapper().build(created);
+        return getCreateOutDataMapper().mapFrom(created);
     }
 
     BaseMapper<InObjectType, DomainType> getCreateDomainMapper();

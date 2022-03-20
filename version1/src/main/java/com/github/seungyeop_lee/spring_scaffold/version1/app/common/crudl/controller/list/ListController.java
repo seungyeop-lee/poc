@@ -14,11 +14,11 @@ public interface ListController<InObjectType, SearchInfo, ListResultType, ViewDa
             Pageable pageable,
             InObjectType param,
             Model model) {
-        SearchInfo searchInfo = getSearchInfoMapper().build(param);
+        SearchInfo searchInfo = getSearchInfoMapper().mapFrom(param);
 
         Page<ListResultType> listResult = getListService().list(searchInfo, pageable);
 
-        ViewDataType outObject = getListViewDataMapper().build(listResult);
+        ViewDataType outObject = getListViewDataMapper().mapFrom(listResult);
         model.addAttribute(getListObjName(), outObject);
 
         return getListPath().getListView();

@@ -10,7 +10,7 @@ public interface ReadRestController<DomainType, OutObjectType> extends BaseReadR
     default OutObjectType readView(@PathVariable Long id) {
         DomainType found = getReadService().findById(id);
 
-        return getReadOutDataMapper().build(found);
+        return getReadOutDataMapper().mapFrom(found);
     }
 
     BaseReadService<DomainType> getReadService();

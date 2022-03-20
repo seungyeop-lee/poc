@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface ListRestController<InObjectType, SearchInfo, ListResultType, OutObjectType> extends BaseListRestController<InObjectType, OutObjectType> {
     @GetMapping(ListRestPath.LIST)
     default OutObjectType listView(Pageable pageable, InObjectType param) {
-        SearchInfo searchInfo = getSearchInfoMapper().build(param);
+        SearchInfo searchInfo = getSearchInfoMapper().mapFrom(param);
 
         Page<ListResultType> listResult = getListService().list(searchInfo, pageable);
 
-        OutObjectType outObject = getListOutDataMapper().build(listResult);
+        OutObjectType outObject = getListOutDataMapper().mapFrom(listResult);
 
         return outObject;
     }

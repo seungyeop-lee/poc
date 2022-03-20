@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 public interface UpdateRestController<DomainType extends Updatable<UpdateDataType>, UpdateDataType, InObjectType, OutObjectType> extends BaseUpdateRestController<InObjectType, OutObjectType> {
     @PutMapping(UpdateRestPath.UPDATE)
     default OutObjectType update(@PathVariable Long id, InObjectType param) {
-        UpdateDataType updateData = this.getUpdateDataMapper().build(param);
+        UpdateDataType updateData = this.getUpdateDataMapper().mapFrom(param);
 
         DomainType updated = getUpdateService().update(id, updateData);
 
-        return getUpdateOutDataMapper().build(updated);
+        return getUpdateOutDataMapper().mapFrom(updated);
     }
 
     BaseMapper<InObjectType, UpdateDataType> getUpdateDataMapper();
