@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Read</title>
+</head>
+<body>
+<form method="post" th:object="${readResult}">
+    <p>
+        <label>이름: </label><span th:text="*{name}"></span>
+    </p>
+    <p>
+        <label>나이: </label> <span th:text="*{age}"></span>
+    </p>
+</form>
+<form id="action_form">
+    <button id="update_btn" type="submit">수정</button>
+    <button id="delete_btn" type="submit">삭제</button>
+</form>
+<a href="/board/list">목록</a>
+
+<script th:inline="javascript">
+    let id = /*[[ ${id} ]]*/'';
+    let del = '/board/' + id + '/delete';
+    document.getElementById('delete_btn').onclick = function (e) {
+        let actionForm = document.getElementById('action_form');
+        actionForm.setAttribute("method", 'post');
+        actionForm.setAttribute("action", del);
+    };
+    let update = '/board/' + id + '/update';
+    document.getElementById('update_btn').onclick = function (e) {
+        let actionForm = document.getElementById('action_form');
+        actionForm.setAttribute("method", 'get');
+        actionForm.setAttribute("action", update);
+    };
+</script>
+</body>
+</html>

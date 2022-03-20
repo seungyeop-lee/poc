@@ -1,0 +1,46 @@
+package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr;
+
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.create.CreatePath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.delete.DeletePath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.list.ListPath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.read.ReadPath;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.update.UpdatePath;
+
+public interface CrudlPath extends CreatePath, ReadPath, UpdatePath, DeletePath, ListPath {
+    CrudlViewPath getViewPath();
+
+    @Override
+    default String getCreateView() {
+        return getViewPath().getCreate();
+    }
+
+    @Override
+    default String getAfterCreateView(Long id) {
+        return getViewPath().getAfterCreate(id);
+    }
+
+    @Override
+    default String getAfterDeleteView() {
+        return getViewPath().getAfterDelete();
+    }
+
+    @Override
+    default String getListView() {
+        return getViewPath().getList();
+    }
+
+    @Override
+    default String getReadView() {
+        return getViewPath().getRead();
+    }
+
+    @Override
+    default String getUpdateView() {
+        return getViewPath().getUpdate();
+    }
+
+    @Override
+    default String getAfterUpdateView(Long id) {
+        return getViewPath().getAfterUpdate(id);
+    }
+}

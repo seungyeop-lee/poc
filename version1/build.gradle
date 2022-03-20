@@ -15,7 +15,7 @@ plugins {
 
 group = 'com.github.seungyeop_lee.spring_scaffold'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '9'
 
 configurations {
     compileOnly {
