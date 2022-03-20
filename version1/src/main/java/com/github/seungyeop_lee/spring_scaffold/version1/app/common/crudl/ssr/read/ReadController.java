@@ -1,6 +1,6 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.read;
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlConst;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ public interface ReadController<DomainType, ViewDataType> {
     default String readView(@PathVariable Long id, Model model) {
         DomainType found = getReadService().findById(id);
 
-        model.addAttribute(getReadResultObjName(), getReadViewDataBuilder().build(found));
+        model.addAttribute(getReadResultObjName(), getReadViewDataMapper().build(found));
         model.addAttribute("id", id);
 
         return getReadPath().getReadView();
@@ -23,5 +23,5 @@ public interface ReadController<DomainType, ViewDataType> {
 
     ReadPath getReadPath();
     ReadService<DomainType> getReadService();
-    BaseBuilder<DomainType, ViewDataType> getReadViewDataBuilder();
+    BaseMapper<DomainType, ViewDataType> getReadViewDataMapper();
 }

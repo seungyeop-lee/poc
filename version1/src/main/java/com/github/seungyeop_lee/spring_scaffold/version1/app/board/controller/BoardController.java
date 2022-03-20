@@ -3,7 +3,7 @@ package com.github.seungyeop_lee.spring_scaffold.version1.app.board.controller;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.board.domain.Board;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.board.service.BoardCrudlService;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.board.service.BoardSearchInfo;
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlController;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlPath;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlService;
@@ -49,12 +49,12 @@ public class BoardController implements CrudlController<
     }
 
     @Override
-    public BaseBuilder<BoardFormParameter, Board> getCreateDomainBuilder() {
+    public BaseMapper<BoardFormParameter, Board> getCreateDomainMapper() {
         return input -> Board.of(input.getName(), input.getAge());
     }
 
     @Override
-    public BaseBuilder<BoardSearchParameter, BoardSearchInfo> getSearchInfoBuilder() {
+    public BaseMapper<BoardSearchParameter, BoardSearchInfo> getSearchInfoMapper() {
         return input -> BoardSearchInfo.builder()
                 .name(input.getName())
                 .age(input.getAge())
@@ -62,7 +62,7 @@ public class BoardController implements CrudlController<
     }
 
     @Override
-    public BaseBuilder<Page<Board>, BoardListView> getListViewDataBuilder() {
+    public BaseMapper<Page<Board>, BoardListView> getListViewDataMapper() {
         return input -> BoardListView.of(
                 input.map(board -> BoardListView.BoardListViewItem.builder()
                         .id(board.getId())
@@ -72,17 +72,17 @@ public class BoardController implements CrudlController<
     }
 
     @Override
-    public BaseBuilder<Board, BoardReadView> getReadViewDataBuilder() {
+    public BaseMapper<Board, BoardReadView> getReadViewDataMapper() {
         return BoardReadView::from;
     }
 
     @Override
-    public BaseBuilder<Board, BoardReadView> getUpdateViewDataBuilder() {
+    public BaseMapper<Board, BoardReadView> getUpdateViewDataMapper() {
         return BoardReadView::from;
     }
 
     @Override
-    public BaseBuilder<BoardFormParameter, Board> getUpdateDomainBuilder() {
+    public BaseMapper<BoardFormParameter, Board> getUpdateDomainMapper() {
         return input -> Board.of(input.getName(), input.getAge());
     }
 }

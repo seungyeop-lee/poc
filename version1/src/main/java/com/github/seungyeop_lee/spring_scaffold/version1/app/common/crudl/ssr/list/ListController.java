@@ -1,6 +1,6 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.list;
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlConst;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +13,11 @@ public interface ListController<InObjectType, SearchInfo, ListResultType, ViewDa
             Pageable pageable,
             InObjectType param,
             Model model) {
-        SearchInfo searchInfo = getSearchInfoBuilder().build(param);
+        SearchInfo searchInfo = getSearchInfoMapper().build(param);
 
         Page<ListResultType> listResult = getListService().list(searchInfo, pageable);
 
-        ViewDataType outObject = getListViewDataBuilder().build(listResult);
+        ViewDataType outObject = getListViewDataMapper().build(listResult);
         model.addAttribute(getListObjName(), outObject);
 
         return getListPath().getListView();
@@ -28,9 +28,9 @@ public interface ListController<InObjectType, SearchInfo, ListResultType, ViewDa
     }
 
     ListPath getListPath();
-    BaseBuilder<InObjectType, SearchInfo> getSearchInfoBuilder();
+    BaseMapper<InObjectType, SearchInfo> getSearchInfoMapper();
 
     ListService<SearchInfo, ListResultType> getListService();
 
-    BaseBuilder<Page<ListResultType>, ViewDataType> getListViewDataBuilder();
+    BaseMapper<Page<ListResultType>, ViewDataType> getListViewDataMapper();
 }

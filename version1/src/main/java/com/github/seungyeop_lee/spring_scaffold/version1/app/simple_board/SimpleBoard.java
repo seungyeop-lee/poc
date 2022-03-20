@@ -1,6 +1,5 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.simple_board;
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.board.domain.Board;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.IdGetter;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.Updatable;
 import lombok.Getter;

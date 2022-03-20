@@ -1,6 +1,6 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.update;
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.Updatable;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlConst;
 import org.springframework.ui.Model;
@@ -13,14 +13,14 @@ public interface UpdateController<DomainType extends Updatable<UpdateDataType>, 
     default String updateView(@PathVariable Long id, Model model) {
         DomainType found = getUpdateService().findById(id);
 
-        model.addAttribute(getUpdateParamObjName(), getUpdateViewDataBuilder().build(found));
+        model.addAttribute(getUpdateParamObjName(), getUpdateViewDataMapper().build(found));
 
         return getUpdatePath().getUpdateView();
     }
 
     @PostMapping(UpdatePath.UPDATE)
     default String update(@PathVariable Long id, InObjectType param) {
-        UpdateDataType updateData = getUpdateDomainBuilder().build(param);
+        UpdateDataType updateData = getUpdateDomainMapper().build(param);
         getUpdateService().update(id, updateData);
 
         return getUpdatePath().getAfterUpdateView(id);
@@ -32,6 +32,6 @@ public interface UpdateController<DomainType extends Updatable<UpdateDataType>, 
 
     UpdatePath getUpdatePath();
     UpdateService<DomainType, UpdateDataType> getUpdateService();
-    BaseBuilder<DomainType, ViewDataType> getUpdateViewDataBuilder();
-    BaseBuilder<InObjectType, UpdateDataType> getUpdateDomainBuilder();
+    BaseMapper<DomainType, ViewDataType> getUpdateViewDataMapper();
+    BaseMapper<InObjectType, UpdateDataType> getUpdateDomainMapper();
 }

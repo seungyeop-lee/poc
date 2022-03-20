@@ -1,6 +1,6 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.create;
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.IdGetter;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlConst;
 import org.springframework.ui.Model;
@@ -17,7 +17,7 @@ public interface CreateController<DomainType extends IdGetter, InObjectType> {
 
     @PostMapping(CreatePath.CREATE)
     default String create(InObjectType param) {
-        DomainType domain = getCreateDomainBuilder().build(param);
+        DomainType domain = getCreateDomainMapper().build(param);
         DomainType created = getCreateService().create(domain);
 
         return getCreatePath().getAfterCreateView(created.getId());
@@ -29,5 +29,5 @@ public interface CreateController<DomainType extends IdGetter, InObjectType> {
 
     CreatePath getCreatePath();
     CreateService<DomainType> getCreateService();
-    BaseBuilder<InObjectType, DomainType> getCreateDomainBuilder();
+    BaseMapper<InObjectType, DomainType> getCreateDomainMapper();
 }

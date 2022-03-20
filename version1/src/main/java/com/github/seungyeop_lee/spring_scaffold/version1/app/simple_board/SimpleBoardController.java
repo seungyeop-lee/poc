@@ -1,7 +1,7 @@
 package com.github.seungyeop_lee.spring_scaffold.version1.app.simple_board;
 
 
-import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseBuilder;
+import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlController;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlPath;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.ssr.CrudlService;
@@ -47,12 +47,12 @@ public class SimpleBoardController implements CrudlController<
     }
 
     @Override
-    public BaseBuilder<SimpleBoard, SimpleBoard> getCreateDomainBuilder() {
+    public BaseMapper<SimpleBoard, SimpleBoard> getCreateDomainMapper() {
         return b -> b;
     }
 
     @Override
-    public BaseBuilder<SimpleBoard, SimpleBoardService.SimpleBoardSearchInfo> getSearchInfoBuilder() {
+    public BaseMapper<SimpleBoard, SimpleBoardService.SimpleBoardSearchInfo> getSearchInfoMapper() {
         return b -> SimpleBoardService.SimpleBoardSearchInfo
                 .builder()
                 .name(b.getName())
@@ -61,22 +61,22 @@ public class SimpleBoardController implements CrudlController<
     }
 
     @Override
-    public BaseBuilder<Page<SimpleBoard>, Page<SimpleBoard>> getListViewDataBuilder() {
+    public BaseMapper<Page<SimpleBoard>, Page<SimpleBoard>> getListViewDataMapper() {
         return p -> p;
     }
 
     @Override
-    public BaseBuilder<SimpleBoard, SimpleBoard> getReadViewDataBuilder() {
+    public BaseMapper<SimpleBoard, SimpleBoard> getReadViewDataMapper() {
         return b -> b;
     }
 
     @Override
-    public BaseBuilder<SimpleBoard, SimpleBoard> getUpdateViewDataBuilder() {
+    public BaseMapper<SimpleBoard, SimpleBoard> getUpdateViewDataMapper() {
         return b -> b;
     }
 
     @Override
-    public BaseBuilder<SimpleBoard, SimpleBoard> getUpdateDomainBuilder() {
+    public BaseMapper<SimpleBoard, SimpleBoard> getUpdateDomainMapper() {
         return b -> b;
     }
 }
