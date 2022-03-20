@@ -3,10 +3,11 @@ package com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.rest_
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.base.BaseMapper;
 import com.github.seungyeop_lee.spring_scaffold.version1.app.common.crudl.service.create.BaseCreateService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface CreateRestController<DomainType, InObjectType, OutObjectType> extends BaseCreateRestController<InObjectType, OutObjectType> {
     @PostMapping(CreateRestPath.CREATE)
-    default OutObjectType create(InObjectType param) {
+    default OutObjectType create(@RequestBody InObjectType param) {
         DomainType domain = getCreateDomainMapper().mapFrom(param);
         DomainType created = getCreateService().create(domain);
 
