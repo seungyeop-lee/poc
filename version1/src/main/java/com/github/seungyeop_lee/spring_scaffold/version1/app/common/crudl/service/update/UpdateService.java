@@ -6,9 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface UpdateService<DomainType extends Updatable<UpdateDataType>, UpdateDataType> extends BaseUpdateService<DomainType, UpdateDataType> {
     @Transactional
-    default void update(Long id, UpdateDataType updateInfo) {
+    default DomainType update(Long id, UpdateDataType updateInfo) {
         DomainType found = getUpdateRepository().findById(id).get();
         found.update(updateInfo);
+        return found;
     }
 
     UpdateRepository<DomainType> getUpdateRepository();
