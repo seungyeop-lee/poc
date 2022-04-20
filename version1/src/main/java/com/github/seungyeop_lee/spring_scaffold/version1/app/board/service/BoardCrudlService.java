@@ -14,7 +14,6 @@ public class BoardCrudlService implements CrudlService<Board, Board, BoardSearch
     private final BoardCrudRepository repository;
     private final BoardListRepository listRepository;
 
-
     @Override
     public CrudRepository<Board> getCrudRepository() {
         return repository;
