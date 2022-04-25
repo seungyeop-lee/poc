@@ -1,4 +1,0 @@
-package com.github.seungyeop_lee.java_sheatsheet.spring_scaffold.version1.app.common.crudl.repository;
-
-public interface CrudRepository<DomainType> extends CreateRepository<DomainType>, ReadRepository<DomainType>, UpdateRepository<DomainType>, DeleteRepository {
-}
