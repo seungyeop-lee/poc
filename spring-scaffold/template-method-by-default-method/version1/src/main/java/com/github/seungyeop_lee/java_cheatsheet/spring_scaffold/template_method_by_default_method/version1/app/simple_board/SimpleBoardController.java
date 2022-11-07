@@ -31,13 +31,13 @@ public class SimpleBoardController implements CrudlController<
     @Override
     public CrudlPath getCrudlPath() {
         return () -> CrudlViewPath.builder()
-                .create("/simple_board/create")
+                .create("simple_board/create")
                 .afterCreate("redirect:/simple-board/%d/read")
-                .read("/simple_board/read")
-                .update("/simple_board/update")
+                .read("simple_board/read")
+                .update("simple_board/update")
                 .afterUpdate("redirect:/simple-board/%d/read")
                 .afterDelete("redirect:/simple-board/list")
-                .list("/simple_board/list")
+                .list("simple_board/list")
                 .build();
     }
 

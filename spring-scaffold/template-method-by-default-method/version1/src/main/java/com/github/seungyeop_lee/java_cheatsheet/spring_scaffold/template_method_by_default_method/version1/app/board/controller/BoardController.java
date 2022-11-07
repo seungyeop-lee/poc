@@ -33,13 +33,13 @@ public class BoardController implements CrudlController<
     @Override
     public CrudlPath getCrudlPath() {
         return () -> CrudlViewPath.builder()
-                .create("/board/create")
+                .create("board/create")
                 .afterCreate("redirect:/board/%d/read")
-                .read("/board/read")
-                .update("/board/update")
+                .read("board/read")
+                .update("board/update")
                 .afterUpdate("redirect:/board/%d/read")
                 .afterDelete("redirect:/board/list")
-                .list("/board/list")
+                .list("board/list")
                 .build();
     }
 
