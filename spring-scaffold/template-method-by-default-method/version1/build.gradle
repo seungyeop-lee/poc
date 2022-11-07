@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.github.seungyeop_lee.java_sheatsheet.spring_scaffold.template_method_by_default_method'
+group = 'com.github.seungyeop_lee.java_cheatsheet.spring_scaffold.template_method_by_default_method'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
