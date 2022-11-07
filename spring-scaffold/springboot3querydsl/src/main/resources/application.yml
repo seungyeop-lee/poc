@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: local
+  jackson:
+    deserialization:
+      adjust-dates-to-context-time-zone: true # req, res의 시간데이터에 time zone 사용
+    time-zone: Asia/Seoul # 기본 타임존을 서울로 설정
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC # server -> db로 저장 할 때 UTC로 변경해서 저장
+
+springdoc:
+  swagger-ui:
+    use-root-path: false

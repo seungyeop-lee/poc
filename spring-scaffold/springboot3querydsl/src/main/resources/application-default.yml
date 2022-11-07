@@ -1,0 +1,21 @@
+logging:
+  level:
+    org.hibernate:
+      sql: debug
+      type: trace
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/app
+    username: root
+    password: root!
+  jpa:
+    open-in-view: true
+    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: 'true'
