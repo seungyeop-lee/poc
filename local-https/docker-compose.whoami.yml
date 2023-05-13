@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  whoami:
+    image: containous/whoami
+    container_name: whoami
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+      - "traefik.http.routers.whoami.tls=true"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
