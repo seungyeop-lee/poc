@@ -4,7 +4,7 @@ services:
   sshd-alpine:
     image: sshd-alpine:latest
     build:
-      context: ./sshd-alpine
+      context: ../sshd-alpine
     container_name: sshd-alpine
     networks:
       - proxy

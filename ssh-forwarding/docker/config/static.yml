@@ -1,0 +1,20 @@
+global:
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+
+log:
+  level: DEBUG
+  format: common
+
+entryPoints:
+  entryPoint-ssh:
+    address: ":22"
