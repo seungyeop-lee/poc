@@ -1,10 +1,14 @@
 version: '3'
 
 services:
-  sshd:
+  sshd-alpine:
     image: sshd-alpine:latest
     build:
       context: ./sshd-alpine
-    container_name: sshd
-    ports:
-      - "8022:22"
+    container_name: sshd-alpine
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

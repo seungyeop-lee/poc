@@ -1,0 +1,12 @@
+tcp:
+  routers:
+    router-ssh:
+      entryPoints:
+        - entryPoint-ssh
+      rule: "HostSNI(`*`)" # ssh는 SNI를 지원하지 않으므로 '*'이 강제 됨.
+      service: service-ssh
+  services:
+    service-ssh:
+      loadBalancer:
+        servers:
+          - address: sshd-alpine:22
