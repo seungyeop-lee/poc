@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  sshd:
+    image: sshd-alpine:latest
+    build:
+      context: ./sshd-alpine
+    container_name: sshd
+    ports:
+      - "8022:22"
