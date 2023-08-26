@@ -1,0 +1,16 @@
+success:
+  retrieved: '照会されました.'
+  created: '生成されました.'
+  updated: '修正されました.'
+  deleted: '削除されました.'
+  loggedIn: 'ログインされました.'
+warning:
+  badRequest: '不正なリクエストです.'
+  notFound: 'リクエストに対する資源が見つかりません。'
+  authentication:
+    invalidCredential: 'ログインIDやパスワードが一致しません。'
+error:
+  authentication:
+    noRolesAssigned: '権限がありません。'
+    needLogin: 'ログインを先にしてください。'
+  unhandledException: '処理されていないエラーが発生しました。'

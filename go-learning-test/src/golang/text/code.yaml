@@ -1,0 +1,14 @@
+Success:
+  Retrieved: "success.retrieved"
+  Created:   "success.created"
+  Updated:   "success.updated"
+  Deleted:   "success.deleted"
+  LoggedIn:  "success.loggedIn"
+Warning:
+  BadRequest:        "warning.badRequest"
+  NotFound:          "warning.notFound"
+  InvalidCredential: "warning.authentication.invalidCredential"
+Error:
+  NoRolesAssigned:    "error.authentication.noRolesAssigned"
+  NeedLogin:          "error.authentication.needLogin"
+  UnhandledException: "error.unhandledException"
