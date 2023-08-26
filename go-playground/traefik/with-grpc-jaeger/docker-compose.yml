@@ -1,0 +1,80 @@
+version: "3.7"
+
+networks:
+  traefik-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.1.1.0/24
+
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - 80:80
+      - 433:433
+      - 8080:8080
+    command:
+      - --api.insecure=true # enable api & dashboard
+
+      - --providers.docker # enable docker auto discovery
+      - --providers.docker.exposedbydefault=false # disable exposedbydefault
+
+      - --accesslog=true # enable access log
+
+      - --entrypoints.web.address=:80 # for web
+      - --entrypoints.grpc.address=:50051 # for grpc
+
+      # enable jaeger
+      - --tracing.jaeger=true
+      - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+      - --tracing.jaeger.localAgentHostPort=jaeger:6831
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # for docker auto discovery
+    networks:
+      traefik-net:
+        ipv4_address: 172.1.1.11
+
+  list-web-module:
+    build:
+      context: ./list-web
+      dockerfile: Dockerfile
+    environment:
+      JAEGER_AGENT_HOST: jaeger # set Jaeger Agent Host
+    extra_hosts:
+      - 'list-grpc:172.1.1.11'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.list-web.entryPoints=web'
+      - "traefik.http.routers.list-web.rule=Path(`/list`)" # route setting (/client)
+      - 'traefik.http.services.list-web.loadbalancer.server.port=8080'
+    networks:
+      traefik-net:
+        ipv4_address: 172.1.1.22
+
+  list-grpc-module:
+    build:
+      context: ./list-grpc
+      dockerfile: Dockerfile
+    environment:
+      JAEGER_AGENT_HOST: jaeger # set Jaeger Agent Host
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.list-grpc.entryPoints=grpc'
+      - "traefik.http.routers.list-grpc.rule=Host(`list-grpc`)" # route setting (/server)
+      - 'traefik.http.services.list-grpc.loadbalancer.server.port=50051'
+      - 'traefik.http.services.list-grpc.loadbalancer.server.scheme=h2c'
+    networks:
+      traefik-net:
+        ipv4_address: 172.1.1.21
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 5778:5778 # agent
+      - 6831:6831/udp # agent
+      - 6832:6832/udp # agent
+      - 14268:14268 # collector
+      - 16686:16686 # query
+    networks:
+      - traefik-net
