@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    image: scaffold-db
+    build:
+      context: ../db
+      dockerfile: ../db/Dockerfile
+    volumes:
+      - ../db/conf.d:/etc/mysql/conf.d
+      - ../db/data:/var/lib/mysql
+      - ../db/initdb.d:/docker-entrypoint-initdb.d
+    env_file: ../db/.env
+    ports:
+      - "3306:3306"
+  version1:
+    build:
+      context: ../version1
+      dockerfile: run-bootJar.Dockerfile
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    working_dir: "/app"
+    entrypoint:
+      - "./wait-for-it.sh"
+      - "db:3306"
+      - "-t"
+      - "0"
+      - "--"
+      - "java"
+      - "-jar"
+      - "-Dspring.profiles.active=localdocker"
+      - "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      - "app.jar"

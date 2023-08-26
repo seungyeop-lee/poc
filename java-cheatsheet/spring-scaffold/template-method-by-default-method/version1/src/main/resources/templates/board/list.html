@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:object="${listResult}">
+    <div th:each="item : *{listViewItemPage.getContent()}">
+        <p>
+            <label>이름: </label><span th:text="${item.name}"></span><label>, 나이: </label><span th:text="${item.age}"></span> <a th:href="'/board/' + ${item.id} + '/read'">상세</a>
+        </p>
+    </div>
+</div>
+<div>
+    <a href="/board/create">등록</a>
+</div>
+</body>
+</html>

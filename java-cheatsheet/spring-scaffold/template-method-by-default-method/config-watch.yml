@@ -1,0 +1,15 @@
+initCmd: "make up"
+endCmd: "make down"
+beforeCmd:
+afterCmd:
+  cmd: "bash cmd.sh rmi"
+  dir: ""
+sets:
+  - cmd:
+      dir: "version1"
+      cmd: "bash cmd.sh build update"
+    path: "version1/src/main"
+    excludeDir:
+      - "version1/src/main/generated"
+    waitMillisecond: 1000 # default 100
+  
