@@ -1,0 +1,16 @@
+success:
+  retrieved: '조회되었습니다.'
+  created: '생성되었습니다.'
+  updated: '수정되었습니다.'
+  deleted: '삭제되었습니다.'
+  loggedIn: '로그인되었습니다.'
+warning:
+  badRequest: '잘못된 요청입니다.'
+  notFound: '요청에 대한 자원을 찾을 수 없습니다.'
+  authentication:
+    invalidCredential: '로그인ID나 비밀번호가 일치하지 않습니다.'
+error:
+  authentication:
+    noRolesAssigned: '권한이 없습니다.'
+    needLogin: '로그인 먼저 하십시오.'
+  unhandledException: '처리되지 않은 오류가 발생했습니다.'
