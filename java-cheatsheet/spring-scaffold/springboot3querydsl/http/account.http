@@ -1,0 +1,76 @@
+### create1
+POST http://localhost:8080/accounts
+Content-Type: application/json
+Accept: application/json
+
+{
+  "loginId": "testLoginId1",
+  "name": "testName1",
+  "age": 21,
+  "email": "test1@test.com",
+  "gender": "MALE",
+  "interest": [
+    "프로그래밍"
+  ],
+  "joinPath": "인터넷",
+  "isLock": true,
+  "birthday": "1987-06-17T00:00:00.000+10:00"
+}
+
+### create2
+POST http://localhost:8080/accounts
+Content-Type: application/json
+Accept: application/json
+
+{
+  "loginId": "testLoginId2",
+  "name": "testName2",
+  "age": 22,
+  "email": "test2@test.com",
+  "gender": "FEMALE",
+  "interest": [
+    "게임"
+  ],
+  "joinPath": "전단지",
+  "isLock": false,
+  "birthday": "2022-10-26T00:00:00.000+09:00"
+}
+
+### create3
+POST http://localhost:8080/accounts
+Content-Type: application/json
+Accept: application/json
+
+{
+  "loginId": "testLoginId3",
+  "name": "testName3",
+  "age": 23,
+  "email": "test3@test.com",
+  "gender": "OTHER",
+  "interest": [
+    "여행"
+  ],
+  "joinPath": "소개",
+  "isLock": false,
+  "birthday": "2000-01-20T00:00:00.000+09:00"
+}
+
+### list all - json
+GET http://localhost:8080/accounts/list
+Accept: application/json
+
+### list all - hal+json
+GET http://localhost:8080/accounts/list
+Accept: application/hal+json
+
+### profile - hal+json
+GET http://localhost:8080/profile/accounts
+Accept: application/hal+json
+
+### profile - schema+json
+GET http://localhost:8080/profile/accounts
+Accept: application/schema+json
+
+### search test
+GET http://localhost:8080/accounts/search?age=21,22&page=0
+Accept: application/json
