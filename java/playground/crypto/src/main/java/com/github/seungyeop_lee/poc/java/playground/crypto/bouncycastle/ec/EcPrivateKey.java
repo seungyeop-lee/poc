@@ -1,11 +1,11 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.ec;
 
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 
-public class BouncyCastleEcPrivateKey {
+public class EcPrivateKey {
     private final ECPrivateKeyParameters key;
 
-    public BouncyCastleEcPrivateKey(ECPrivateKeyParameters key) {
+    public EcPrivateKey(ECPrivateKeyParameters key) {
         this.key = key;
     }
 

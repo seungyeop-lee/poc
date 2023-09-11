@@ -1,12 +1,12 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.signers.RSADigestSigner;
 
-public class BouncyCastleSha256WithRsa {
+public class Sha256WithRsaSigner {
 
-    public byte[] sign(byte[] data, BouncyCastleRsaPrivateKey privateKey) {
+    public byte[] sign(byte[] data, RsaPrivateKey privateKey) {
         try {
             RSADigestSigner signer = new RSADigestSigner(new SHA256Digest());
             signer.init(true, privateKey.unwrap());
@@ -17,7 +17,7 @@ public class BouncyCastleSha256WithRsa {
         }
     }
 
-    public boolean verify(byte[] data, byte[] signature, BouncyCastleRsaPublicKey publicKey) {
+    public boolean verify(byte[] data, byte[] signature, RsaPublicKey publicKey) {
         RSADigestSigner signer = new RSADigestSigner(new SHA256Digest());
         signer.init(false, publicKey.unwrap());
         signer.update(data, 0, data.length);
