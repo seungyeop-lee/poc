@@ -1,5 +1,6 @@
 package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
+import com.github.seungyeop_lee.poc.java.playground.crypto.CipherKey;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -9,13 +10,14 @@ import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 
 import java.io.IOException;
 
-public class RsaPrivateKey {
+public class RsaPrivateKey implements CipherKey {
     private final RSAPrivateCrtKeyParameters key;
 
     public RsaPrivateKey(RSAPrivateCrtKeyParameters key) {
         this.key = key;
     }
 
+    @Override
     public byte[] serialize() {
         try {
             PrivateKeyInfo pki = new PrivateKeyInfo(
@@ -37,6 +39,7 @@ public class RsaPrivateKey {
         }
     }
 
+    @Override
     public RSAPrivateCrtKeyParameters unwrap() {
         return key;
     }

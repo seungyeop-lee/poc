@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Sha256WithRsaSignerTest {
     @Test
-    void cryptoTest() {
+    void signTest() {
         Sha256WithRsaSigner rsa = new Sha256WithRsaSigner();
 
         // Generate ECDSA key pair
-        RsaKeyGenerator keyGenerator = new RsaKeyGenerator();
+        Rsa2048KeyGenerator keyGenerator = new Rsa2048KeyGenerator();
         RsaKeyPair keyPair = keyGenerator.generateKeyPair();
         RsaPrivateKey privateKey = keyPair.getPrivateKey();
         RsaPublicKey publicKey = keyPair.getPublicKey();

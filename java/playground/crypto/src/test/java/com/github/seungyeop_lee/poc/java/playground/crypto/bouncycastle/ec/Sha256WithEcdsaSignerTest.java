@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Sha256WithEcdsaSignerTest {
     @Test
-    void cryptoTest() {
+    void signTest() {
         Sha256WithEcdsaSigner ecdsa = new Sha256WithEcdsaSigner();
 
         // Generate ECDSA key pair

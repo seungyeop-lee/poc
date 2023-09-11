@@ -1,6 +1,8 @@
 package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
-public class RsaKeyPair {
+import com.github.seungyeop_lee.poc.java.playground.crypto.CipherKeyPair;
+
+public class RsaKeyPair implements CipherKeyPair {
     private final RsaPrivateKey privateKey;
     private final RsaPublicKey publicKey;
 
@@ -9,10 +11,12 @@ public class RsaKeyPair {
         this.publicKey = publicKey;
     }
 
+    @Override
     public RsaPrivateKey getPrivateKey() {
         return privateKey;
     }
 
+    @Override
     public RsaPublicKey getPublicKey() {
         return publicKey;
     }

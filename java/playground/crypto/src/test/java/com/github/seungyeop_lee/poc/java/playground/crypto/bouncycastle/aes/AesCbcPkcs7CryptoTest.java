@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AesCbcPkcs7CryptoTest {
     @Test
-    void cryptoTest() throws Exception {
+    void cryptoTest() {
         AesCbcPkcs7Crypto aes = new AesCbcPkcs7Crypto();
 
         Aes256KeyGenerator keyGenerator = new Aes256KeyGenerator();
