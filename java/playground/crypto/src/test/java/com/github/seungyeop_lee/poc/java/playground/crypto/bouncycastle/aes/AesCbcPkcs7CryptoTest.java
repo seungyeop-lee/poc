@@ -1,19 +1,19 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.aes;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BouncyCastleAes256CbcPkcs7Test {
+class AesCbcPkcs7CryptoTest {
     @Test
     void cryptoTest() throws Exception {
-        BouncyCastleAes256CbcPkcs7 aes = new BouncyCastleAes256CbcPkcs7();
+        AesCbcPkcs7Crypto aes = new AesCbcPkcs7Crypto();
 
-        BouncyCastleAes256KeyManager keyManager = new BouncyCastleAes256KeyManager();
-        BouncyCastleAes256Key key = keyManager.generateKey();
+        Aes256KeyGenerator keyGenerator = new Aes256KeyGenerator();
+        AesCipherKey key = keyGenerator.generateKey();
 
         byte[] serializedKey = key.serialize();
-        BouncyCastleAes256Key deserializedKey = keyManager.generateKeyFrom(serializedKey);
+        AesCipherKey deserializedKey = keyGenerator.generateKeyFrom(serializedKey);
 
         // Encryption
         String plaintext = "Hello, world!";

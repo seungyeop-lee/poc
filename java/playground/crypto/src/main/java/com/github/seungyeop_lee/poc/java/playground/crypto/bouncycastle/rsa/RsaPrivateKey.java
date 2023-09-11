@@ -1,4 +1,4 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -9,10 +9,10 @@ import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 
 import java.io.IOException;
 
-public class BouncyCastleRsaPrivateKey {
+public class RsaPrivateKey {
     private final RSAPrivateCrtKeyParameters key;
 
-    public BouncyCastleRsaPrivateKey(RSAPrivateCrtKeyParameters key) {
+    public RsaPrivateKey(RSAPrivateCrtKeyParameters key) {
         this.key = key;
     }
 

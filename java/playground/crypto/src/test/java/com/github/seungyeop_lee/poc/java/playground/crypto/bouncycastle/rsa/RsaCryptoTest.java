@@ -1,24 +1,25 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BouncyCastleRsaTest {
+class RsaCryptoTest {
     @Test
     void cryptoTest() {
-        BouncyCastleRsa rsa = new BouncyCastleRsa();
+        RsaCrypto rsa = new RsaCrypto();
 
         // Generate RSA Key Pair
-        BouncyCastleRsaKeyManager keyManager = new BouncyCastleRsaKeyManager();
-        BouncyCastleRsaPrivateKey privateKey = keyManager.getPrivateKey();
-        BouncyCastleRsaPublicKey publicKey = keyManager.getPublicKey();
+        RsaKeyGenerator keyGenerator = new RsaKeyGenerator();
+        RsaKeyPair keyPair = keyGenerator.generateKeyPair();
+        RsaPrivateKey privateKey = keyPair.getPrivateKey();
+        RsaPublicKey publicKey = keyPair.getPublicKey();
 
         // Serialize and Deserialize key pair
         byte[] serializedPrivateKey = privateKey.serialize();
         byte[] serializedPublicKey = publicKey.serialize();
-        BouncyCastleRsaPrivateKey deserializedPrivateKey = keyManager.getPrivateKeyFrom(serializedPrivateKey);
-        BouncyCastleRsaPublicKey deserializedPublicKey = keyManager.getPublicKeyFrom(serializedPublicKey);
+        RsaPrivateKey deserializedPrivateKey = keyGenerator.generatePrivateKeyFrom(serializedPrivateKey);
+        RsaPublicKey deserializedPublicKey = keyGenerator.generatePublicKeyFrom(serializedPublicKey);
 
         // Test Encryption and Decryption
         String plaintext = "Hello, world!";

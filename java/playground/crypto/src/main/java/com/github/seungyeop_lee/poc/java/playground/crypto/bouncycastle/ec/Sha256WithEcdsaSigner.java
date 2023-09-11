@@ -1,4 +1,4 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.ec;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -9,9 +9,9 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class BouncyCastleSha256WithEcdsa {
+public class Sha256WithEcdsaSigner {
 
-    public byte[] sign(byte[] data, BouncyCastleEcPrivateKey privateKey) {
+    public byte[] sign(byte[] data, EcPrivateKey privateKey) {
         ECPrivateKeyParameters ecPrivateKeyParameters = privateKey.unwrap();
         ECDSASigner signer = new ECDSASigner();
         signer.init(true, ecPrivateKeyParameters);
@@ -49,7 +49,7 @@ public class BouncyCastleSha256WithEcdsa {
         }
     }
 
-    public boolean verify(byte[] data, byte[] signatureBytes, BouncyCastleEcPublicKey publicKey) {
+    public boolean verify(byte[] data, byte[] signatureBytes, EcPublicKey publicKey) {
         ECPublicKeyParameters ecPublicKeyParameters = publicKey.unwrap();
         ECDSASigner signer = new ECDSASigner();
         signer.init(false, ecPublicKeyParameters);

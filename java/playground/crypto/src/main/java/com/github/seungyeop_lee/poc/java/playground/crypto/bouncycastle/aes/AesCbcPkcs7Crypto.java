@@ -1,4 +1,4 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.aes;
 
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
@@ -9,9 +9,9 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import java.security.SecureRandom;
 
-public class BouncyCastleAes256CbcPkcs7 {
+public class AesCbcPkcs7Crypto {
 
-    public byte[] encrypt(byte[] data, BouncyCastleAes256Key key) throws Exception {
+    public byte[] encrypt(byte[] data, AesCipherKey key) throws Exception {
         SecureRandom random = new SecureRandom();
         byte[] iv = new byte[16]; // 128-bit IV
         random.nextBytes(iv);
@@ -32,7 +32,7 @@ public class BouncyCastleAes256CbcPkcs7 {
         return result;
     }
 
-    public byte[] decrypt(byte[] data, BouncyCastleAes256Key key) throws Exception {
+    public byte[] decrypt(byte[] data, AesCipherKey key) throws Exception {
         byte[] iv = new byte[16];
         System.arraycopy(data, 0, iv, 0, iv.length);
 

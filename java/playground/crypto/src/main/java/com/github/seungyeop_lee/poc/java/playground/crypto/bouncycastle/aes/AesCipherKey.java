@@ -1,11 +1,11 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.aes;
 
 import org.bouncycastle.crypto.params.KeyParameter;
 
-public class BouncyCastleAes256Key {
+public class AesCipherKey {
     private final KeyParameter key;
 
-    public BouncyCastleAes256Key(KeyParameter key) {
+    public AesCipherKey(KeyParameter key) {
         this.key = key;
     }
 

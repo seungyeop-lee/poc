@@ -1,4 +1,4 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.ec;
 
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -12,32 +12,25 @@ import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class BouncyCastleEcKeyManager {
+public class EcKeyGenerator {
 
     private final ECDomainParameters ecDP;
-    private AsymmetricCipherKeyPair keyPair;
 
-    public BouncyCastleEcKeyManager() {
+    public EcKeyGenerator() {
         this("secp256k1");
     }
 
-    public BouncyCastleEcKeyManager(String secNameCurve) {
+    public EcKeyGenerator(String secNameCurve) {
         X9ECParameters ecP = SECNamedCurves.getByName(secNameCurve);
         ecDP = new ECDomainParameters(ecP.getCurve(), ecP.getG(), ecP.getN(), ecP.getH());
     }
 
-    public BouncyCastleEcPrivateKey getPrivateKey() {
-        if (keyPair == null) {
-            keyPair = generateKeyPair(ecDP);
-        }
-        return new BouncyCastleEcPrivateKey((ECPrivateKeyParameters) keyPair.getPrivate());
-    }
-
-    public BouncyCastleEcPublicKey getPublicKey() {
-        if (keyPair == null) {
-            keyPair = generateKeyPair(ecDP);
-        }
-        return new BouncyCastleEcPublicKey((ECPublicKeyParameters) keyPair.getPublic());
+    public EcKeyPair generateKeyPair() {
+        AsymmetricCipherKeyPair keyPair = generateKeyPair(ecDP);
+        return new EcKeyPair(
+                new EcPrivateKey((ECPrivateKeyParameters) keyPair.getPrivate()),
+                new EcPublicKey((ECPublicKeyParameters) keyPair.getPublic())
+        );
     }
 
     private static AsymmetricCipherKeyPair generateKeyPair(ECDomainParameters ecDP) {
@@ -46,14 +39,14 @@ public class BouncyCastleEcKeyManager {
         return generator.generateKeyPair();
     }
 
-    public BouncyCastleEcPrivateKey getPrivateKeyFrom(byte[] serializedKey) {
+    public EcPrivateKey generatePrivateKeyFrom(byte[] serializedKey) {
         BigInteger privKey = new BigInteger(1, serializedKey);
         ECPrivateKeyParameters keyParameters = new ECPrivateKeyParameters(privKey, ecDP);
-        return new BouncyCastleEcPrivateKey(keyParameters);
+        return new EcPrivateKey(keyParameters);
     }
 
-    public BouncyCastleEcPublicKey getPublicKeyFrom(byte[] serializedKey) {
+    public EcPublicKey generatePublicKeyFrom(byte[] serializedKey) {
         ECPublicKeyParameters keyParameters = new ECPublicKeyParameters(ecDP.getCurve().decodePoint(serializedKey), ecDP);
-        return new BouncyCastleEcPublicKey(keyParameters);
+        return new EcPublicKey(keyParameters);
     }
 }

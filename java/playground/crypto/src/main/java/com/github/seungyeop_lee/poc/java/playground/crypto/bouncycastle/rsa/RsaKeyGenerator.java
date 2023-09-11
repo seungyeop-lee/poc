@@ -1,4 +1,4 @@
-package org.example.bouncycastle;
+package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
@@ -12,43 +12,35 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class BouncyCastleRsaKeyManager {
+public class RsaKeyGenerator {
 
-    private AsymmetricCipherKeyPair keyPair;
-
-    public BouncyCastleRsaPrivateKey getPrivateKey() {
-        if (keyPair == null) {
-            keyPair = generateKeyPair();
-        }
-        return new BouncyCastleRsaPrivateKey((RSAPrivateCrtKeyParameters) keyPair.getPrivate());
+    public RsaKeyPair generateKeyPair() {
+        AsymmetricCipherKeyPair keyPair = generateBouncyCastleKeyPair();
+        return new RsaKeyPair(
+                new RsaPrivateKey((RSAPrivateCrtKeyParameters) keyPair.getPrivate()),
+                new RsaPublicKey((RSAKeyParameters) keyPair.getPublic())
+        );
     }
 
-    public BouncyCastleRsaPublicKey getPublicKey() {
-        if (keyPair == null) {
-            keyPair = generateKeyPair();
-        }
-        return new BouncyCastleRsaPublicKey((RSAKeyParameters) keyPair.getPublic());
-    }
-
-    public BouncyCastleRsaPrivateKey getPrivateKeyFrom(byte[] serializedKey) {
+    public RsaPrivateKey generatePrivateKeyFrom(byte[] serializedKey) {
         try {
             RSAPrivateCrtKeyParameters key = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(serializedKey);
-            return new BouncyCastleRsaPrivateKey(key);
+            return new RsaPrivateKey(key);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public BouncyCastleRsaPublicKey getPublicKeyFrom(byte[] serializedKey) {
+    public RsaPublicKey generatePublicKeyFrom(byte[] serializedKey) {
         try {
             RSAKeyParameters key = (RSAKeyParameters) PublicKeyFactory.createKey(serializedKey);
-            return new BouncyCastleRsaPublicKey(key);
+            return new RsaPublicKey(key);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static AsymmetricCipherKeyPair generateKeyPair() {
+    private static AsymmetricCipherKeyPair generateBouncyCastleKeyPair() {
         RSAKeyPairGenerator keyPairGenerator = new RSAKeyPairGenerator();
         RSAKeyGenerationParameters params = new RSAKeyGenerationParameters(
                 BigInteger.valueOf(65537), new SecureRandom(), 2048, 12);
