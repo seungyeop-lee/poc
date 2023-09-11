@@ -1,5 +1,6 @@
 package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.rsa;
 
+import com.github.seungyeop_lee.poc.java.playground.crypto.KeyPairGenerator;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
@@ -12,8 +13,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class RsaKeyGenerator {
+public class Rsa2048KeyGenerator implements KeyPairGenerator {
 
+    @Override
     public RsaKeyPair generateKeyPair() {
         AsymmetricCipherKeyPair keyPair = generateBouncyCastleKeyPair();
         return new RsaKeyPair(
@@ -22,6 +24,7 @@ public class RsaKeyGenerator {
         );
     }
 
+    @Override
     public RsaPrivateKey generatePrivateKeyFrom(byte[] serializedKey) {
         try {
             RSAPrivateCrtKeyParameters key = (RSAPrivateCrtKeyParameters) PrivateKeyFactory.createKey(serializedKey);
@@ -31,6 +34,7 @@ public class RsaKeyGenerator {
         }
     }
 
+    @Override
     public RsaPublicKey generatePublicKeyFrom(byte[] serializedKey) {
         try {
             RSAKeyParameters key = (RSAKeyParameters) PublicKeyFactory.createKey(serializedKey);

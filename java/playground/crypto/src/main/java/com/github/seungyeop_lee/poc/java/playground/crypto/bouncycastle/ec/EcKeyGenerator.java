@@ -1,5 +1,6 @@
 package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.ec;
 
+import com.github.seungyeop_lee.poc.java.playground.crypto.KeyPairGenerator;
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -12,7 +13,7 @@ import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class EcKeyGenerator {
+public class EcKeyGenerator implements KeyPairGenerator {
 
     private final ECDomainParameters ecDP;
 
@@ -25,6 +26,7 @@ public class EcKeyGenerator {
         ecDP = new ECDomainParameters(ecP.getCurve(), ecP.getG(), ecP.getN(), ecP.getH());
     }
 
+    @Override
     public EcKeyPair generateKeyPair() {
         AsymmetricCipherKeyPair keyPair = generateKeyPair(ecDP);
         return new EcKeyPair(
@@ -39,12 +41,14 @@ public class EcKeyGenerator {
         return generator.generateKeyPair();
     }
 
+    @Override
     public EcPrivateKey generatePrivateKeyFrom(byte[] serializedKey) {
         BigInteger privKey = new BigInteger(1, serializedKey);
         ECPrivateKeyParameters keyParameters = new ECPrivateKeyParameters(privKey, ecDP);
         return new EcPrivateKey(keyParameters);
     }
 
+    @Override
     public EcPublicKey generatePublicKeyFrom(byte[] serializedKey) {
         ECPublicKeyParameters keyParameters = new ECPublicKeyParameters(ecDP.getCurve().decodePoint(serializedKey), ecDP);
         return new EcPublicKey(keyParameters);

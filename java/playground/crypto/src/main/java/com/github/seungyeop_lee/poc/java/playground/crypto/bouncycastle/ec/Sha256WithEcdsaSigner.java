@@ -1,5 +1,7 @@
 package com.github.seungyeop_lee.poc.java.playground.crypto.bouncycastle.ec;
 
+import com.github.seungyeop_lee.poc.java.playground.crypto.CipherKey;
+import com.github.seungyeop_lee.poc.java.playground.crypto.Signer;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -9,12 +11,16 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class Sha256WithEcdsaSigner {
+public class Sha256WithEcdsaSigner implements Signer {
 
-    public byte[] sign(byte[] data, EcPrivateKey privateKey) {
-        ECPrivateKeyParameters ecPrivateKeyParameters = privateKey.unwrap();
+    @Override
+    public byte[] sign(byte[] data, CipherKey privateKey) {
+        return doSign(data, (ECPrivateKeyParameters) privateKey.unwrap());
+    }
+
+    private byte[] doSign(byte[] data, ECPrivateKeyParameters keyParameters) {
         ECDSASigner signer = new ECDSASigner();
-        signer.init(true, ecPrivateKeyParameters);
+        signer.init(true, keyParameters);
 
         SHA256Digest digest = new SHA256Digest();
         digest.update(data, 0, data.length);
@@ -49,10 +55,14 @@ public class Sha256WithEcdsaSigner {
         }
     }
 
-    public boolean verify(byte[] data, byte[] signatureBytes, EcPublicKey publicKey) {
-        ECPublicKeyParameters ecPublicKeyParameters = publicKey.unwrap();
+    @Override
+    public boolean verify(byte[] data, byte[] signature, CipherKey publicKey) {
+        return doVerify(data, signature, (ECPublicKeyParameters) publicKey.unwrap());
+    }
+
+    private boolean doVerify(byte[] data, byte[] signatureBytes, ECPublicKeyParameters keyParameters) {
         ECDSASigner signer = new ECDSASigner();
-        signer.init(false, ecPublicKeyParameters);
+        signer.init(false, keyParameters);
 
         SHA256Digest digest = new SHA256Digest();
         digest.update(data, 0, data.length);

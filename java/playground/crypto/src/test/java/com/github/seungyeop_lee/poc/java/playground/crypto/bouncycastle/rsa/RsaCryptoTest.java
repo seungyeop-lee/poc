@@ -10,7 +10,7 @@ class RsaCryptoTest {
         RsaCrypto rsa = new RsaCrypto();
 
         // Generate RSA Key Pair
-        RsaKeyGenerator keyGenerator = new RsaKeyGenerator();
+        Rsa2048KeyGenerator keyGenerator = new Rsa2048KeyGenerator();
         RsaKeyPair keyPair = keyGenerator.generateKeyPair();
         RsaPrivateKey privateKey = keyPair.getPrivateKey();
         RsaPublicKey publicKey = keyPair.getPublicKey();
