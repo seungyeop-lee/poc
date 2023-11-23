@@ -1,0 +1,8 @@
+server:
+  port: 8002
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/logindb
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: user
+    password: userPw
