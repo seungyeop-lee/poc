@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  twophase-login-db:
+    image: twophase-login-db
+    container_name: twophase-login-db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./initdb.d:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootPw
+      MYSQL_DATABASE: logindb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userPw
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    restart: always
+
+volumes:
+  db-data:
