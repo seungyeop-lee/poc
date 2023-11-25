@@ -16,6 +16,7 @@
 <form action="/member/login" method="post">
     <p>아이디</p>
     <input type="text" name="id"/>
+    <input type="hidden" name="uuid"/>
     <button type="button" id="loginButton">로그인</button>
     <button type="submit" id="confirmButton">로그인 확인</button>
 </form>
@@ -34,6 +35,10 @@
             .then(response => {
                 if (response.ok) {
                     document.getElementById('confirmButton').style.display = 'block';
+                    response.json().then(data => {
+                        console.log(data);
+                        document.querySelector('[name="uuid"]').setAttribute("value", data.uuid);
+                    });
                 }
             })
             .catch(error => console.error('Error:', error));

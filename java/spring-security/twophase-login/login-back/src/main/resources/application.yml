@@ -6,3 +6,6 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: user
     password: userPw
+logging:
+  level:
+    com.example.loginback: debug
