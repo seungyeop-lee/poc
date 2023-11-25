@@ -23,7 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(c -> c
                 .requestMatchers("/public/**").permitAll()
-                .requestMatchers("/member/login", "/member/login-fail", "/member/login-confirm").permitAll()
+                .requestMatchers("/member/login", "/member/login-fail", "/member/login/request").permitAll()
                 .anyRequest().authenticated()
         );
 
@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout", "GET"))
                 .logoutSuccessUrl("/")
         );
+
+        http.csrf(c -> c.disable());
 
         http.authenticationProvider(myAuthenticationProvider());
 
