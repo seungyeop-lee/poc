@@ -1,2 +1,7 @@
 server:
   port: 8001
+value:
+  back-url: http://localhost:8002
+logging:
+  level:
+    com.example.loginfront: debug

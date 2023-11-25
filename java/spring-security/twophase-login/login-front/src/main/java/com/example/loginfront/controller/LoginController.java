@@ -1,5 +1,7 @@
 package com.example.loginfront.controller;
 
+import com.example.loginfront.service.LoginForwardService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -8,9 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Map;
+
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class LoginController {
+
+    private final LoginForwardService loginForwardService;
 
     @GetMapping("/member/login")
     public String login() {
@@ -21,7 +28,8 @@ public class LoginController {
     @ResponseBody
     public ResponseEntity<?> loginRequest(@RequestParam("id") String id) {
         log.info("id: {}", id);
-        return ResponseEntity.ok().build();
+        String uuid = loginForwardService.requestLogin(id);
+        return ResponseEntity.ok(Map.of("uuid", uuid));
     }
 
     @GetMapping("/member/login-fail")

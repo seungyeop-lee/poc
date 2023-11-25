@@ -2,7 +2,6 @@ package com.example.loginfront.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -12,6 +11,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
@@ -29,7 +29,7 @@ public class SecurityConfig {
 
         http.formLogin(c -> c
                 .loginPage("/member/login")
-                .usernameParameter("id")
+                .usernameParameter("uuid")
                 .failureUrl("/member/login-fail")
                 .defaultSuccessUrl("/main")
         );
@@ -41,13 +41,6 @@ public class SecurityConfig {
 
         http.csrf(c -> c.disable());
 
-        http.authenticationProvider(myAuthenticationProvider());
-
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationProvider myAuthenticationProvider() {
-        return new ForwardAuthenticationProvider();
     }
 }
