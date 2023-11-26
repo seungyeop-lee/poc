@@ -1,10 +1,14 @@
 package com.example.loginfront.config;
 
+import com.example.loginfront.config.filter.CSPNonceFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.HeaderWriterFilter;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -41,6 +45,14 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false) //true면 로그인 금지, false면 로그인 가능 그러나 그 전 session은 만료
                         .expiredUrl("/member/login") //session 만료되었을 때 redirect url
                 )
+        );
+
+        http.addFilterBefore(new CSPNonceFilter(), HeaderWriterFilter.class);
+        http.headers(c -> c
+                .frameOptions(fo -> fo.deny()) // X-Frame-Options: DENY
+                .xssProtection(xp -> xp.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)) // X-XSS-Protection: 1; mode=block
+                .contentTypeOptions(Customizer.withDefaults()) // X-Content-Type-Options: nosniff
+                .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self' https://cdn.jsdelivr.net https://ajax.googleapis.com 'nonce-{nonce}'")) // CSP: script-src 'self'
         );
 
         return http.build();
