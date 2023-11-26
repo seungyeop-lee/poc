@@ -31,7 +31,7 @@ public class ForwardAuthenticationProvider implements AuthenticationProvider {
         boolean success = loginForwardService.confirmLogin(uuid);
         log.debug("success: {}", success);
         if (success) {
-            return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), null, List.of());
+            return UsernamePasswordAuthenticationToken.authenticated(authentication.getPrincipal(), null, List.of());
         } else {
             throw new NotFinishLoginProcessException("not yet approval");
         }
