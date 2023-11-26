@@ -27,14 +27,14 @@ public class LoginService {
         login.approveLogin();
     }
 
-    public boolean confirm(String uuid) {
+    public Login confirm(String uuid) {
         log.debug("confirm uuid: {}", uuid);
         Login login = requestRepo.get(uuid);
         Boolean approval = login.getApproval();
         if (approval) {
             requestRepo.remove(uuid);
         }
-        log.debug("confirm approval: {}", approval);
-        return approval;
+        log.debug("confirm login: {}", login);
+        return login;
     }
 }
