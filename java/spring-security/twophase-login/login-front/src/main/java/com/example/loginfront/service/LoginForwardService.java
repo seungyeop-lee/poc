@@ -2,8 +2,6 @@ package com.example.loginfront.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -31,17 +29,19 @@ public class LoginForwardService {
         return result.get("uuid");
     }
 
-    public boolean confirmLogin(String uuid) {
+    public String confirmLogin(String uuid) {
         log.debug("uuid: {}", uuid);
-        ResponseEntity<Void> response = restClient.post()
+        Map<String, String> result = restClient.post()
                 .uri("/login/confirm")
                 .contentType(APPLICATION_JSON)
                 .body(Map.of("uuid", uuid))
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {})
-                .toBodilessEntity();
-        log.debug("response: {}", response);
-        return response.getStatusCode().is2xxSuccessful();
+                .body(Map.class);
+        log.debug("response: {}", result);
+        if (result.get("approval").equals("true")) {
+            return result.get("id");
+        } else {
+            return null;
+        }
     }
-
 }

@@ -28,10 +28,10 @@ public class ForwardAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("authentication: {}", authentication);
         String uuid = (String) authentication.getPrincipal();
-        boolean success = loginForwardService.confirmLogin(uuid);
-        log.debug("success: {}", success);
-        if (success) {
-            return UsernamePasswordAuthenticationToken.authenticated(authentication.getPrincipal(), null, List.of());
+        String id = loginForwardService.confirmLogin(uuid);
+        log.debug("id: {}", id);
+        if (id != null) {
+            return UsernamePasswordAuthenticationToken.authenticated(id, null, List.of());
         } else {
             throw new NotFinishLoginProcessException("not yet approval");
         }

@@ -2,7 +2,6 @@ package com.example.loginback.login;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +34,13 @@ public class LoginController {
     @PostMapping("/login/confirm")
     public ResponseEntity<?> confirmLogin(@RequestBody Map<String, String> body) {
         log.debug("body: {}", body);
-        boolean approval = service.confirm(body.get("uuid"));
-        if (approval) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+        Login result = service.confirm(body.get("uuid"));
+        return ResponseEntity.ok(
+                Map.of(
+                        "id", result.getId(),
+                        "uuid", result.getUuid(),
+                        "approval", result.getApproval().toString()
+                )
+        );
     }
 }
