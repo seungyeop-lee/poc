@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  rclone:
+    image: rclone/rclone:1.65.2
+    volumes:
+      - ./config:/config/rclone
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    user: "${CUID}:${CGID}"
