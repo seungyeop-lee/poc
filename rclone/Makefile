@@ -1,6 +1,11 @@
 export CUID := $(shell id -u)
 export CGID := $(shell id -g)
 
+.PHONY:command
+command:
+	docker compose -f compose.yml \
+	run -it --rm rclone $(COMMAND)
+
 .PHONY:config
 config:
 	docker compose -f compose.yml \
