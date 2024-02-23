@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  rclone:
+    container_name: rclone_webdav
+    volumes:
+      - ./data:/data
+    ports:
+      - "8080:8080"
+    command:
+      - "--verbose"
+      - "serve"
+      - "webdav"
+      - "/data"
+      - "--addr"
+      - ":8080"
+      - "--htpasswd"
+      - "/config/rclone/htpasswd"
