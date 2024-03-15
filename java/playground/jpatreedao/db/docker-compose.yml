@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb:10.10
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+      - data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: example
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userPw
+      MYSQL_ROOT_PASSWORD: rootPw
+    ports:
+      - "3306:3306"
+    restart: always
+
+volumes:
+  data:

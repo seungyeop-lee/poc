@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: jpatreedao
+  datasource:
+    url: jdbc:mariadb://localhost:3306/example
+    username: user
+    password: userPw
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
