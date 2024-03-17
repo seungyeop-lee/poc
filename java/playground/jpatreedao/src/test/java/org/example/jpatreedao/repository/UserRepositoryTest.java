@@ -1,5 +1,6 @@
 package org.example.jpatreedao.repository;
 
+import jakarta.persistence.EntityManager;
 import org.example.jpatreedao.entity.User;
 import org.example.jpatreedao.entity.UserJpaRepository;
 import org.example.jpatreedao.entity.UserTree;
