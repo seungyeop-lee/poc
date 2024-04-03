@@ -1,0 +1,59 @@
+x-common-part: &common-part
+  build:
+    context: ./db
+    dockerfile: Dockerfile
+  volumes:
+    - ./db/initdb.d:/docker-entrypoint-initdb.d
+    - db-data:/var/lib/mysql
+    - db-log:/var/log/mysql
+    - db-backup:/backup
+    - db-backup-log:/backup-log
+  networks:
+    - mariabackup
+  environment:
+    MYSQL_PORT: 3306
+    MYSQL_ROOT_PASSWORD: rootPw
+    MYSQL_DATABASE: mariadb_backup
+    MYSQL_USER: user
+    MYSQL_PASSWORD: userPw
+    TZ: Asia/Seoul
+
+services:
+  db:
+    <<: *common-part
+    restart: always
+    ports:
+      - "3307:3306"
+  restore:
+    <<: *common-part
+    command:
+      - bash
+      - -c
+      - |
+        # 가장 최신의 xb 스냅샷 복원
+        restic restore latest --repo /backup -p /backup/password.txt --target . && \
+        # xb를 풀어낼 폴더 생성
+        mkdir mariadb-recovery && \
+        # xb를 역직렬화
+        mbstream -x --directory=mariadb-recovery <mariadb.xb && rm -f mariadb.xb \
+        # 복구 전 준비 (prepare)
+        mariabackup --target-dir=./mariadb-recovery --datadir=/var/lib/mysql --prepare && \
+        # 복구 (restore)
+        mariabackup --target-dir=./mariadb-recovery --move-back
+  debug:
+    <<: *common-part
+    entrypoint: sleep infinity
+
+volumes:
+  db-data:
+    name: mariabackup_db-data
+  db-log:
+    name: mariabackup_db-log
+  db-backup:
+    name: mariabackup_db-backup
+  db-backup-log:
+    name: mariabackup_db-backup-log
+
+networks:
+  mariabackup:
+    external: true
