@@ -76,15 +76,15 @@ debug-down:
 # test data
 .PHONY:insert1
 insert1:
-	(cd ../server && ./gradlew bootRun --args='insert 1')
+	(cd ../inserter && ./gradlew bootRun --args='insert 1')
 
 .PHONY:insert2
 insert2:
-	(cd ../server && ./gradlew bootRun --args='insert 2')
+	(cd ../inserter && ./gradlew bootRun --args='insert 2')
 
 .PHONY:truncate
 truncate:
-	(cd ../server && ./gradlew bootRun --args='truncate')
+	(cd ../inserter && ./gradlew bootRun --args='truncate')
 
 # usecase - simple
 .PHONY:simple-before-accident
