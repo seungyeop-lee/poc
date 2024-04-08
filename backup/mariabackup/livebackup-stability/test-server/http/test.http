@@ -1,0 +1,21 @@
+### 그룹 생성
+POST http://localhost:8080/group
+Content-Type: application/json
+
+{
+  "name": "group1"
+}
+
+> {%
+    client.global.set('groupId', response.body.id)
+%}
+
+### 사용자 생성
+POST http://localhost:8080/user
+Content-Type: application/json
+
+{
+  "name": "user1",
+  "email": "user1@example.com",
+  "groupId": {{groupId}}
+}
