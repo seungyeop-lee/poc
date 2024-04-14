@@ -1,0 +1,16 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google-idp:
+            provider: google
+            client-name: google-idp
+            client-id: 976349536322-j3l4gk88n4ubrpcpf58q1qpf9772n12c.apps.googleusercontent.com
+            client-secret:
+            redirect-uri: http://localhost:8080/login/oauth2/code/google-idp
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+              - openid
