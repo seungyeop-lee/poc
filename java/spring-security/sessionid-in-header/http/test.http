@@ -1,0 +1,13 @@
+### login
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=user&password=user
+
+> {%
+    client.global.set('X-Session-Id', response.headers.valueOf('X-Session-Id'))
+%}
+
+### hello
+GET http://localhost:8080/hello
+X-Session-Id: {{X-Session-Id}}
