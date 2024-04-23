@@ -1,3 +1,7 @@
+.PHONY:keygen
+keygen:
+	ssh-keygen -t rsa -b 4096 -C "xbeast7@gmail.com" -f ./key/id_rsa -N ""
+
 .PHONY:up
 up:
 	docker compose up -d --build
@@ -16,4 +20,4 @@ log:
 
 .PHONY:ssh
 ssh:
-	ssh admin@localhost -p 8022 #password: admin
+	ssh -i key/id_rsa -p 8022 admin@localhost
