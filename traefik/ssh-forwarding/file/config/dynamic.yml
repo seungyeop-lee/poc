@@ -9,4 +9,4 @@ tcp:
     service-ssh:
       loadBalancer:
         servers:
-          - address: sshd-alpine:22
+          - address: sshd:22

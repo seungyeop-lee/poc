@@ -1,19 +1,20 @@
-.PHONY:up
-up:
-	docker network create proxy
-	docker-compose -p traefik -f docker-compose.reverse-proxy.yml up -d
-	docker-compose -p sshd -f docker-compose.sshd.yml up -d --build
+PROJECT_NAME := traefik-ssh-forwarding
+
+.PHONY:up-alpine
+up-alpine:
+	docker compose -p ${PROJECT_NAME} -f compose.yml -f compose.alpine.yml up -d --build
+
+.PHONY:up-ubuntu
+up-ubuntu:
+	docker compose -p ${PROJECT_NAME} -f compose.yml -f compose.ubuntu.yml up -d --build
 
 .PHONY:down
 down:
-	docker-compose -p traefik down
-	docker-compose -p sshd down
-	docker network rm proxy
+	docker compose -p ${PROJECT_NAME} down
 
 .PHONY:log
 log:
-	docker-compose -p traefik logs -f \
-	& docker-compose -p sshd logs -f
+	docker compose -p ${PROJECT_NAME} logs -f
 
 .PHONY:ssh
 ssh:

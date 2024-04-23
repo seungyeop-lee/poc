@@ -1,0 +1,6 @@
+services:
+  sshd:
+    image: sshd-ubuntu:latest
+    build:
+      context: ../sshd-alpine
+      dockerfile: ubuntu.Dockerfile

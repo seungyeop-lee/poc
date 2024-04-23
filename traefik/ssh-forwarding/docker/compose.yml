@@ -1,0 +1,24 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.11.0
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+      - "8022:22"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/static.yml:/etc/traefik/traefik.yml:ro
+  sshd:
+    container_name: sshd
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.tcp.routers.router-ssh.entrypoints=entryPoint-ssh"
+      - "traefik.tcp.routers.router-ssh.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.router-ssh.service=service-ssh"
+      - "traefik.tcp.services.service-ssh.loadbalancer.server.port=22"
