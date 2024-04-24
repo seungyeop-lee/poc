@@ -1,0 +1,15 @@
+services:
+  dind:
+    image: docker-sshd:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8022:22"
+    volumes:
+      - docker-lib:/var/lib/docker
+volumes:
+  docker-lib: {}
