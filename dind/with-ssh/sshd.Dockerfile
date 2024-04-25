@@ -8,7 +8,7 @@ RUN apk update && \
 RUN mkdir /var/run/sshd \
     && echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config \
     && echo 'AuthorizedKeysFile /etc/ssh/authorized_keys' >> /etc/ssh/sshd_config \
-    && echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config \
+    && echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config \
     && ssh-keygen -A # ssh 접속용 호스트키 생성, /etc/ssh/에 저장 됨.
 
 # ssh 접속 유저 추가

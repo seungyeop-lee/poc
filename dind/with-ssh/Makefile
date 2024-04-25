@@ -21,3 +21,18 @@ log:
 .PHONY:ssh
 ssh:
 	ssh -i key/id_rsa -p 8022 admin@localhost
+
+############ ssh, scp test ############
+
+.PHONY:ssh-pwconnect
+ssh-pwconnect:
+	docker compose exec client bash -c "sshpass -p admin ssh -o StrictHostKeyChecking=no admin@server"
+
+.PHONY:ssh-dockerps
+ssh-dockerps:
+	docker compose exec client bash -c "ssh -i ~/key/id_rsa admin@server docker ps -a"
+
+.PHONY:scp-hello
+scp-hello:
+	docker compose exec client bash -c "touch hello.txt"
+	docker compose exec client bash -c "scp -i ~/key/id_rsa hello.txt admin@server:/home/admin"

@@ -1,9 +1,9 @@
 services:
-  dind:
+  server:
     image: docker-sshd:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: sshd.Dockerfile
     privileged: true
     security_opt:
       - no-new-privileges:true
@@ -11,5 +11,13 @@ services:
       - "8022:22"
     volumes:
       - docker-lib:/var/lib/docker
+  client:
+    image: ssh-client:latest
+    build:
+      context: .
+      dockerfile: sshclient.Dockerfile
+    volumes:
+      - ./key:/root/key
+
 volumes:
   docker-lib: {}
