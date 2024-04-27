@@ -21,4 +21,5 @@ build-spring-container:
 
 .PHONY:load-spring-container
 load-spring-container:
-	docker load --input out/spring_linux_arm64.tar | sed 's/^.*:\(.*\)$/\1/' | xargs -I% docker tag % spring-server:latest
+	############################################# 실제로는 's/^.*:\(.*\)$/\1/' 가 실행 됨
+	docker load --input out/spring_linux_arm64.tar | sed 's/^.*:\(.*\)$$/\1/' | xargs -I% docker tag % spring-server:latest
