@@ -1,6 +1,6 @@
 .PHONY:keygen
 keygen:
-	ssh-keygen -t rsa -b 4096 -C "xbeast7@gmail.com" -f ./key/id_rsa -N ""
+	ssh-keygen -t rsa -b 4096 -C "xbeast7@gmail.com" -f ./key/id_rsa -N "" -m PEM
 
 .PHONY:up
 up:
