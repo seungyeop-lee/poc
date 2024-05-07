@@ -1,5 +1,9 @@
-.PHONY:keygen
-keygen:
+.PHONY:keygen-openssh
+keygen-openssh:
+	ssh-keygen -t rsa -b 4096 -C "xbeast7@gmail.com" -f ./key/id_rsa -N ""
+
+.PHONY:keygen-rsa
+keygen-rsa:
 	ssh-keygen -t rsa -b 4096 -C "xbeast7@gmail.com" -f ./key/id_rsa -N "" -m PEM
 
 .PHONY:up
