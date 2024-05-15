@@ -1,0 +1,58 @@
+package example.server.config.auth.oauth2;
+
+import example.server.app.user.UserService;
+import example.server.model.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class MyOAuth2UserService extends DefaultOAuth2UserService {
+
+    private final UserService userService;
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+        log.info("OAuth2User: {}", oAuth2User);
+
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        OAuth2Response oAuth2Response = toOAuth2Response(registrationId, oAuth2User);
+        if (oAuth2Response == null) {
+            log.info("Unsupported registrationId: {}", registrationId);
+            return null;
+        }
+
+        return userService.findByProvider(oAuth2Response.getProvider(), oAuth2Response.getProviderId())
+                .map(MyOAuth2User::from)
+                .orElseGet(() -> createNewUser(oAuth2Response));
+    }
+
+    private static OAuth2Response toOAuth2Response(String registrationId, OAuth2User oAuth2User) {
+        if (registrationId.equals("google")) {
+            return new OAuth2GoogleResponse(oAuth2User.getAttributes());
+        } else {
+            return null;
+        }
+    }
+
+    private MyOAuth2User createNewUser(OAuth2Response oAuth2Response) {
+        User saved = userService.create(
+                new UserService.CreateCommand(
+                        oAuth2Response.getProvider(),
+                        oAuth2Response.getProviderId(),
+                        oAuth2Response.getName(),
+                        oAuth2Response.getEmail()
+                )
+        );
+        return MyOAuth2User.from(saved);
+    }
+}

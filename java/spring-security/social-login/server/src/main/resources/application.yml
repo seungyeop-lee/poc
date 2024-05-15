@@ -1,0 +1,30 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        highlight_sql: false
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: [YOUR_CLIENT_ID]
+            client-secret: [YOUR_CLIENT_SECRET]
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+server:
+  port: 8080
+service:
+  jwt:
+    secret: [YOUR_JWT_SECRET_KEY]
