@@ -22,12 +22,11 @@ public class MyOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessH
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        MyOAuth2User customUserDetails = (MyOAuth2User) authentication.getPrincipal();
-        String username = customUserDetails.getUsername();
-        String token = jwtUtil.createJwt(username, 60 * 60 * 60L);
-        String uuid = UUID.randomUUID().toString();
-        authService.saveToken(uuid, token);
-        
-        response.sendRedirect("http://localhost:3000/token?uuid=" + uuid);
+        MyOAuth2User oAuth2User = (MyOAuth2User) authentication.getPrincipal();
+        String token = jwtUtil.createJwt(oAuth2User.toUserInfo(), 60 * 60 * 60L);
+        String code = UUID.randomUUID().toString();
+        authService.saveToken(code, token);
+
+        response.sendRedirect("http://localhost:3000/token?code=" + code);
     }
 }

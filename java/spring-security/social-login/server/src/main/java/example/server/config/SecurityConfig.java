@@ -4,6 +4,7 @@ import example.server.config.auth.jwt.JWTFilter;
 import example.server.config.auth.jwt.JWTUtil;
 import example.server.config.auth.oauth2.MyOAuth2LoginSuccessHandler;
 import example.server.config.auth.oauth2.MyOAuth2UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,13 @@ public class SecurityConfig {
         );
 
         http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+
+        http.exceptionHandling(e -> e
+                // 인증되지 않은 사용자의 요청 처리
+                .authenticationEntryPoint((request, response, authException) -> response.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
+                // 인가되지 않은 사용자의 요청 처리
+                .accessDeniedHandler((request, response, accessDeniedException) -> response.setStatus(HttpServletResponse.SC_FORBIDDEN))
+        );
 
         return http.build();
     }

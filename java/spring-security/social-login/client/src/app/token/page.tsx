@@ -2,18 +2,18 @@
 
 import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect} from "react";
-import {useMemberState} from "@/state/memberState";
+import {useMemberStore} from "@/store/memberStore";
 
 export default function TokenPage() {
-    const { obtainAccessToken } = useMemberState();
+    const { obtainAccessToken } = useMemberStore();
     let router = useRouter();
     let searchParams = useSearchParams();
-    let uuid = searchParams.get("uuid");
+    let code = searchParams.get("code");
 
     useEffect(() => {
-        if (uuid) obtainAccessToken(uuid);
+        if (code) obtainAccessToken(code);
         router.push("/");
-    }, [obtainAccessToken, uuid]);
+    }, [obtainAccessToken, code]);
 
     return <></>;
 }

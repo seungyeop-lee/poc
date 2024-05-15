@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -30,13 +31,16 @@ public class JWTFilter extends OncePerRequestFilter {
         if (accessToken == null) {
             log.info("token null");
             filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
             return;
         }
 
-        //토큰
+        //토큰 획득
         String token = accessToken.replaceFirst("Bearer", "").trim();
+        if (!StringUtils.hasText(token)) {
+            log.info("token is empty");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
@@ -47,11 +51,8 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        //토큰에서 username 획득
-        String username = jwtUtil.getUsername(token);
-
         //UserDetails에 회원 정보 객체 담기
-        OAuth2User oAuth2User = MyOAuth2User.of(null, username);
+        OAuth2User oAuth2User = MyOAuth2User.from(token, jwtUtil);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = UsernamePasswordAuthenticationToken.authenticated(oAuth2User, null, oAuth2User.getAuthorities());

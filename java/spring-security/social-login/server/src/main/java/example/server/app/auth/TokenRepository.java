@@ -14,11 +14,11 @@ public class TokenRepository {
         this.tokenMap = new ConcurrentHashMap<>();
     }
 
-    public void save(String uuid, String token) {
-        tokenMap.put(uuid, token);
+    public void save(String code, String token) {
+        tokenMap.put(code, token);
     }
 
-    public String popToken(String uuid) {
-        return tokenMap.remove(uuid);
+    public String popToken(String code) {
+        return tokenMap.remove(code);
     }
 }

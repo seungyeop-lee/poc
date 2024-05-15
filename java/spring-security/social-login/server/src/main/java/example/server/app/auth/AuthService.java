@@ -9,11 +9,11 @@ public class AuthService {
 
     private final TokenRepository tokenRepository;
 
-    public void saveToken(String uuid, String token) {
-        tokenRepository.save(uuid, token);
+    public void saveToken(String code, String token) {
+        tokenRepository.save(code, token);
     }
 
-    public String popToken(String uuid) {
-        return tokenRepository.popToken(uuid);
+    public String popToken(String code) {
+        return tokenRepository.popToken(code);
     }
 }
