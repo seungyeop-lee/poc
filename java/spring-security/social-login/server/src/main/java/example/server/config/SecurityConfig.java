@@ -34,7 +34,7 @@ public class SecurityConfig {
         configCors(http);
 
         http.authorizeHttpRequests(c -> c
-                .requestMatchers("/user/**").authenticated()
+                .requestMatchers("/user/my").authenticated()
                 .anyRequest().permitAll()
         );
 

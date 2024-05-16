@@ -3,6 +3,8 @@ package example.server.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,26 +18,32 @@ public class User {
 
     private String uid;
 
-    private String provider;
-
-    private String providerUserId;
+    private String email;
 
     private String name;
 
-    private String email;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<SocialUser> socialUsers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user")
+    private LocalUser localUser;
 
     public static User forNewOf(
-            String provider,
-            String providerUserId,
-            String name,
-            String email
+            String email,
+            String name
     ) {
         User user = new User();
         user.uid = UUID.randomUUID().toString();
-        user.provider = provider;
-        user.providerUserId = providerUserId;
-        user.name = name;
         user.email = email;
+        user.name = name;
         return user;
+    }
+
+    public void addSocialUser(SocialUser socialUser) {
+        socialUsers.add(socialUser);
+    }
+
+    public void setLocalUser(LocalUser localUser) {
+        this.localUser = localUser;
     }
 }

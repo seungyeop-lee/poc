@@ -2,7 +2,7 @@ package example.server.config.auth.oauth2.userservice;
 
 import example.server.app.user.UserService;
 import example.server.config.auth.model.MyOAuth2User;
-import example.server.model.User;
+import example.server.model.SocialUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -46,7 +46,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private MyOAuth2User createNewUser(OAuth2Response oAuth2Response) {
-        User saved = userService.create(
+        SocialUser saved = userService.joinBySocialUser(
                 new UserService.CreateCommand(
                         oAuth2Response.getProvider(),
                         oAuth2Response.getProviderId(),

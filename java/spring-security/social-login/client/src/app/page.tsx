@@ -1,30 +1,64 @@
 'use client';
 
 import {useMemberStore} from "@/store/memberStore";
+import {useState} from "react";
 
-const clear = useMemberStore.persist.clearStorage;
+const clearMemberStore = useMemberStore.persist?.clearStorage;
 
 export default function Home() {
     const {accessToken} = useMemberStore();
+    const [email, setEmail] = useState<string>();
+    const [password, setPassword] = useState<string>();
 
     return <>
         <div className="m-5">
             <h1 className="text-4xl font-bold text-center">Welcome to the Social Login App</h1>
-            <div className="flex flex-col items-center mt-10">
-                <button
-                    className="bg-red-500 hover:bg-red-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
-                    onClick={() => {
-                        window.location.href = "http://localhost:8080/oauth2/authorization/google";
-                    }}>
-                    Google Login
-                </button>
-                <button
-                    className="bg-green-500 hover:bg-green-600 px-6 py-2.5 text-sm leading-5 rounded-md font-semibold text-white mt-3"
-                    onClick={() => {
-                        window.location.href = "http://localhost:8080/oauth2/authorization/naver";
-                    }}>
-                    Naver Login
-                </button>
+            <div className="flex mt-10">
+                <div className="flex justify-center items-center grow">
+                    <div className="grid grid-cols-1 gap-2">
+                        <label className="block">
+                            <span>이메일</span>
+                            <input type="email" className="mt-1 block w-full" onChange={e => setEmail(e.target.value)}></input>
+                        </label>
+                        <label className="block">
+                            <span>패스워드</span>
+                            <input type="password" className="mt-1 block w-full" onChange={e => setPassword(e.target.value)}></input>
+                        </label>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 ms-5">
+                        <div className="flex justify-center">
+                            <button
+                                className="outline outline-green-600 hover:outline-green-800 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold w-full"
+                            >
+                                로그인
+                            </button>
+                        </div>
+                        <div className="flex justify-center">
+                            <button
+                                className="outline outline-red-300 hover:outline-red-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold w-full"
+                                onClick={() => joinRequest(email, password)}
+                            >
+                                회원가입
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col justify-center items-center grow">
+                    <button
+                        className="bg-red-500 hover:bg-red-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
+                        onClick={() => {
+                            window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                        }}>
+                        Google Login
+                    </button>
+                    <button
+                        className="bg-green-500 hover:bg-green-600 px-6 py-2.5 text-sm leading-5 rounded-md font-semibold text-white mt-3"
+                        onClick={() => {
+                            window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+                        }}>
+                        Naver Login
+                    </button>
+                </div>
             </div>
             <hr className="my-5"/>
             <div className="flex flex-col">
@@ -46,7 +80,7 @@ export default function Home() {
                     <button
                         className="bg-black hover:bg-gray-800 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
                         onClick={() => {
-                            clear();
+                            clearMemberStore();
                             window.location.reload();
                         }}
                     >
@@ -65,6 +99,30 @@ export default function Home() {
     </>;
 }
 
+function joinRequest(email: string | undefined, password: string | undefined) {
+    fetch("http://localhost:8080/user/join", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password,
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert("회원가입이 완료되었습니다.");
+                window.location.reload();
+            } else {
+                throw new Error("HTTP status " + response.status);
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+}
+
 function callTest(
     accessToken: string | undefined,
     url: string
@@ -80,7 +138,9 @@ function callTest(
     })
         .then(response => {
             if (response.ok) {
-                response.text().then(text => { alert(text); })
+                response.text().then(text => {
+                    alert(text);
+                })
             } else {
                 throw new Error("HTTP status " + response.status);
             }

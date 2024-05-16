@@ -2,7 +2,7 @@ package example.server.config.auth.model;
 
 import example.server.helper.jwt.JWTBuilder;
 import example.server.helper.jwt.JWTReader;
-import example.server.model.User;
+import example.server.model.SocialUser;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -33,12 +33,12 @@ public class MyOAuth2User implements OAuth2User {
         return user;
     }
 
-    public static MyOAuth2User from(User user) {
+    public static MyOAuth2User from(SocialUser user) {
         return MyOAuth2User.of(
-                user.getUid(),
+                user.getUser().getUid(),
                 user.getProvider(),
-                user.getName(),
-                user.getEmail()
+                user.getUser().getName(),
+                user.getUser().getEmail()
         );
     }
 
