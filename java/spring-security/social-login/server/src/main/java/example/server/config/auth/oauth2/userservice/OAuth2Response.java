@@ -1,4 +1,4 @@
-package example.server.config.auth.oauth2;
+package example.server.config.auth.oauth2.userservice;
 
 public interface OAuth2Response {
     //제공자 (Ex. naver, google, ...)

@@ -14,7 +14,9 @@ export const useMemberStore = create(persist<MemberStore>((set, get) => ({
         );
 
         let token = await response.text();
-        set({accessToken: token});
+        if (token) {
+            set({accessToken: token});
+        }
     }
 }), {
     name: 'member-store'

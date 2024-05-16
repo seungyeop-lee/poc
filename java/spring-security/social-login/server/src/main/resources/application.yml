@@ -43,3 +43,5 @@ server:
 service:
   jwt:
     secret: [YOUR_JWT_SECRET_KEY]
+  oauth2:
+    codeNoticeUrl: http://localhost:3000/token

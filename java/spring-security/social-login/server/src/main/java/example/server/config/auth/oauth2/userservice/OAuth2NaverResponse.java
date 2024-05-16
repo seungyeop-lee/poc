@@ -1,9 +1,9 @@
-package example.server.config.auth.oauth2;
+package example.server.config.auth.oauth2.userservice;
 
 import java.util.Map;
 
 public class OAuth2NaverResponse implements OAuth2Response {
-    
+
     private final Map<String, Object> attribute;
 
     public OAuth2NaverResponse(Map<String, Object> attribute) {

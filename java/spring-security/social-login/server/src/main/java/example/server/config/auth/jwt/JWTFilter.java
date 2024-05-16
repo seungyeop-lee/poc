@@ -1,6 +1,6 @@
 package example.server.config.auth.jwt;
 
-import example.server.config.auth.oauth2.MyOAuth2User;
+import example.server.config.auth.model.MyOAuth2User;
 import example.server.helper.jwt.JWTHelperManager;
 import example.server.helper.jwt.JWTReader;
 import jakarta.servlet.FilterChain;

@@ -1,8 +1,8 @@
 package example.server.config;
 
 import example.server.config.auth.jwt.JWTFilter;
-import example.server.config.auth.oauth2.MyOAuth2LoginSuccessHandler;
-import example.server.config.auth.oauth2.MyOAuth2UserService;
+import example.server.config.auth.oauth2.successhandler.MyOAuth2LoginSuccessHandler;
+import example.server.config.auth.oauth2.userservice.MyOAuth2UserService;
 import example.server.helper.jwt.JWTHelperManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

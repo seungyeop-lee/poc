@@ -1,8 +1,9 @@
-package example.server.config.auth.oauth2;
+package example.server.config.auth.model;
 
 import example.server.helper.jwt.JWTBuilder;
 import example.server.helper.jwt.JWTReader;
 import example.server.model.User;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+@ToString
 public class MyOAuth2User implements OAuth2User {
 
     private String uid;
@@ -64,7 +66,7 @@ public class MyOAuth2User implements OAuth2User {
         return this.name;
     }
 
-    public String toJwt(JWTBuilder jwtBuilder) {
+    public String toAccessToken(JWTBuilder jwtBuilder) {
         return jwtBuilder
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)

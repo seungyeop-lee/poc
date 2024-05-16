@@ -1,4 +1,4 @@
-package example.server.config.auth.oauth2;
+package example.server.config.auth.oauth2.userservice;
 
 import java.util.Map;
 

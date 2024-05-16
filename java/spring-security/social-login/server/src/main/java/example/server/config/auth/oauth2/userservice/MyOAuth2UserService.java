@@ -1,6 +1,7 @@
-package example.server.config.auth.oauth2;
+package example.server.config.auth.oauth2.userservice;
 
 import example.server.app.user.UserService;
+import example.server.config.auth.model.MyOAuth2User;
 import example.server.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

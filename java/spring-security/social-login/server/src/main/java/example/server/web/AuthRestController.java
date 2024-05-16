@@ -16,6 +16,6 @@ public class AuthRestController {
 
     @GetMapping("/token")
     public String getToken(@RequestParam("code") String code) {
-        return authService.popToken(code);
+        return authService.popAccessToken(code);
     }
 }
