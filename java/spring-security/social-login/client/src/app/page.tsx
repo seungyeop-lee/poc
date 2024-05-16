@@ -18,6 +18,13 @@ export default function Home() {
                     }}>
                     Google Login
                 </button>
+                <button
+                    className="bg-green-500 hover:bg-green-600 px-6 py-2.5 text-sm leading-5 rounded-md font-semibold text-white mt-3"
+                    onClick={() => {
+                        window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+                    }}>
+                    Naver Login
+                </button>
             </div>
             <hr className="my-5"/>
             <div className="flex flex-col">

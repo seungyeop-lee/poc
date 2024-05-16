@@ -37,11 +37,11 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private static OAuth2Response toOAuth2Response(String registrationId, OAuth2User oAuth2User) {
-        if (registrationId.equals("google")) {
-            return new OAuth2GoogleResponse(oAuth2User.getAttributes());
-        } else {
-            return null;
-        }
+        return switch (registrationId) {
+            case "google" -> new OAuth2GoogleResponse(oAuth2User.getAttributes());
+            case "naver" -> new OAuth2NaverResponse(oAuth2User.getAttributes());
+            default -> null;
+        };
     }
 
     private MyOAuth2User createNewUser(OAuth2Response oAuth2Response) {
