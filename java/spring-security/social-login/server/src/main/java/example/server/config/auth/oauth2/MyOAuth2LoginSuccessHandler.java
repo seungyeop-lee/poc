@@ -1,7 +1,7 @@
 package example.server.config.auth.oauth2;
 
 import example.server.app.auth.AuthService;
-import example.server.config.auth.jwt.JWTUtil;
+import example.server.helper.jwt.JWTHelperManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,13 +17,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MyOAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JWTUtil jwtUtil;
+    private final JWTHelperManager jwtHelperManager;
     private final AuthService authService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         MyOAuth2User oAuth2User = (MyOAuth2User) authentication.getPrincipal();
-        String token = jwtUtil.createJwt(oAuth2User.toUserInfo(), 60 * 60 * 60L);
+        String token = oAuth2User.toJwt(jwtHelperManager.getJwtBuilder());
         String code = UUID.randomUUID().toString();
         authService.saveToken(code, token);
 

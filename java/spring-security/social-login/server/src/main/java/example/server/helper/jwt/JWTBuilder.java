@@ -1,0 +1,63 @@
+package example.server.helper.jwt;
+
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class JWTBuilder extends JWTHelper {
+
+    private static final Long DEFAULT_EXPIRED_MS = 1000L * 60 * 30; // 30 minutes
+
+    private JWSSigner signer;
+    private Long expiredMs;
+    private Map<String, Object> claims = new HashMap<>();
+
+    static JWTBuilder of(String secret) {
+        return run(() -> {
+            JWTBuilder writer = new JWTBuilder();
+            byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+            writer.signer = new MACSigner(secretBytes);
+            return writer;
+        });
+    }
+
+    public JWTBuilder withExpiredMs(Long expiredMs) {
+        this.expiredMs = expiredMs;
+        return this;
+    }
+
+    public JWTBuilder withClaim(String name, String value) {
+        claims.put(name, value);
+        return this;
+    }
+
+    public String build() {
+        return run(() -> {
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
+                    .issueTime(new Date())
+                    .expirationTime(new Date(System.currentTimeMillis() + (expiredMs != null ? expiredMs : DEFAULT_EXPIRED_MS)));
+            claims.forEach(builder::claim);
+            JWTClaimsSet claimsSet = builder.build();
+
+            SignedJWT signedJWT = new SignedJWT(
+                    new JWSHeader(JWSAlgorithm.HS256),
+                    claimsSet
+            );
+
+            signedJWT.sign(signer);
+
+            return signedJWT.serialize();
+        });
+    }
+}

@@ -1,6 +1,8 @@
 package example.server.config.auth.jwt;
 
 import example.server.config.auth.oauth2.MyOAuth2User;
+import example.server.helper.jwt.JWTHelperManager;
+import example.server.helper.jwt.JWTReader;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,39 +22,25 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
+    private final JWTHelperManager jwtHelperManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //Header에서 Authorization Key 획득
-        String accessToken = request.getHeader("Authorization");
-
-        //Authorization 헤더 검증
-        if (accessToken == null) {
-            log.info("token null");
+        String token = extractToken(request);
+        if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        //토큰 획득
-        String token = accessToken.replaceFirst("Bearer", "").trim();
-        if (!StringUtils.hasText(token)) {
-            log.info("token is empty");
-            filterChain.doFilter(request, response);
+        JWTReader jwtReader = jwtHelperManager.getJwtReader(token);
+        try {
+            jwtReader.validate();
+        } catch (Exception e) {
+            log.error("JWT validation failed", e);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-
-        //토큰 소멸 시간 검증
-        if (jwtUtil.isExpired(token)) {
-            log.info("token expired");
-            filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
-        }
-
-        //UserDetails에 회원 정보 객체 담기
-        OAuth2User oAuth2User = MyOAuth2User.from(token, jwtUtil);
+        OAuth2User oAuth2User = MyOAuth2User.from(jwtReader);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = UsernamePasswordAuthenticationToken.authenticated(oAuth2User, null, oAuth2User.getAuthorities());
@@ -61,5 +49,19 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
+    }
+
+    public String extractToken(HttpServletRequest request) {
+        String accessToken = request.getHeader("Authorization");
+        if (accessToken == null) {
+            return null;
+        }
+
+        String token = accessToken.replaceFirst("Bearer", "").trim();
+        if (!StringUtils.hasText(token)) {
+            return null;
+        }
+
+        return token;
     }
 }

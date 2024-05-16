@@ -1,9 +1,9 @@
 package example.server.config;
 
 import example.server.config.auth.jwt.JWTFilter;
-import example.server.config.auth.jwt.JWTUtil;
 import example.server.config.auth.oauth2.MyOAuth2LoginSuccessHandler;
 import example.server.config.auth.oauth2.MyOAuth2UserService;
+import example.server.helper.jwt.JWTHelperManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +24,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JWTUtil jwtUtil;
     private final MyOAuth2UserService oAuth2UserService;
     private final MyOAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JWTHelperManager jwtHelperManager;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .successHandler(oAuth2LoginSuccessHandler)
         );
 
-        http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+        http.addFilterAfter(new JWTFilter(jwtHelperManager), OAuth2LoginAuthenticationFilter.class);
 
         http.exceptionHandling(e -> e
                 // 인증되지 않은 사용자의 요청 처리

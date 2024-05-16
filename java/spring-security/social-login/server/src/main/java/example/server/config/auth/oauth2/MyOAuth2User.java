@@ -1,6 +1,7 @@
 package example.server.config.auth.oauth2;
 
-import example.server.config.auth.jwt.JWTUtil;
+import example.server.helper.jwt.JWTBuilder;
+import example.server.helper.jwt.JWTReader;
 import example.server.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -39,12 +40,12 @@ public class MyOAuth2User implements OAuth2User {
         );
     }
 
-    public static MyOAuth2User from(String token, JWTUtil jwtUtil) {
+    public static MyOAuth2User from(JWTReader jwtReader) {
         return MyOAuth2User.of(
-                jwtUtil.getUid(token),
-                jwtUtil.getProvider(token),
-                jwtUtil.getName(token),
-                jwtUtil.getEmail(token)
+                jwtReader.getClaim("uid"),
+                jwtReader.getClaim("provider"),
+                jwtReader.getClaim("name"),
+                jwtReader.getClaim("email")
         );
     }
 
@@ -63,7 +64,12 @@ public class MyOAuth2User implements OAuth2User {
         return this.name;
     }
 
-    public JWTUtil.UserInfo toUserInfo() {
-        return new JWTUtil.UserInfo(this.uid, this.provider, this.name, this.email);
+    public String toJwt(JWTBuilder jwtBuilder) {
+        return jwtBuilder
+                .withClaim("uid", this.uid)
+                .withClaim("provider", this.provider)
+                .withClaim("name", this.name)
+                .withClaim("email", this.email)
+                .build();
     }
 }
