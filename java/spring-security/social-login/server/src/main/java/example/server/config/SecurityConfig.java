@@ -43,7 +43,7 @@ public class SecurityConfig {
         configCors(http);
 
         http.authorizeHttpRequests(c -> c
-                .requestMatchers("/user/my").authenticated()
+                .requestMatchers("/user/my", "/auth/token/info").authenticated()
                 .anyRequest().permitAll()
         );
 

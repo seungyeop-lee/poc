@@ -5,7 +5,10 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Map;
 
 public class JWTReader extends JWTHelper {
 
@@ -39,6 +42,19 @@ public class JWTReader extends JWTHelper {
 
     public String getClaim(String claimName) {
         return run(() -> signedJWT.getJWTClaimsSet().getStringClaim(claimName));
+    }
+
+    public String getParsedString() {
+        return run(
+                () -> {
+                    Map<String, Object> jsonObject = signedJWT.getPayload().toJSONObject();
+                    String iatFormatted = LocalDateTime.ofEpochSecond((Long) jsonObject.get("iat"), 0, ZoneOffset.UTC).toString();
+                    jsonObject.put("iat", iatFormatted);
+                    String expFormatted = LocalDateTime.ofEpochSecond((Long) jsonObject.get("exp"), 0, ZoneOffset.UTC).toString();
+                    jsonObject.put("exp", expFormatted);
+                    return jsonObject.toString();
+                }
+        );
     }
 
     public static class Builder {

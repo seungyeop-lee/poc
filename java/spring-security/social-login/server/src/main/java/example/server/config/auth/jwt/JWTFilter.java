@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.StringUtils;
@@ -43,7 +42,8 @@ public class JWTFilter extends OncePerRequestFilter {
         OAuth2User oAuth2User = MyLoginUser.from(jwtReader);
 
         //스프링 시큐리티 인증 토큰 생성
-        Authentication authToken = UsernamePasswordAuthenticationToken.authenticated(oAuth2User, null, oAuth2User.getAuthorities());
+        UsernamePasswordAuthenticationToken authToken = UsernamePasswordAuthenticationToken.authenticated(oAuth2User, null, oAuth2User.getAuthorities());
+        authToken.setDetails(jwtReader.getParsedString());
 
         //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);

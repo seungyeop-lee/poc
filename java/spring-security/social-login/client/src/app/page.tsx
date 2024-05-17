@@ -84,6 +84,13 @@ export default function Home() {
                         }}>
                         /user/my
                     </button>
+                    <button
+                        className="bg-sky-500 hover:bg-sky-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white ms-1"
+                        onClick={() => {
+                            callTest(accessToken, "http://localhost:8080/auth/token/info");
+                        }}>
+                        /auth/token/info
+                    </button>
                 </div>
             </div>
             <hr className="my-5"/>
