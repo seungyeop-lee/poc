@@ -17,6 +17,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -36,6 +40,7 @@ public class SecurityConfig {
     private final JWTHelperManager jwtHelperManager;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,6 +55,9 @@ public class SecurityConfig {
         http.oauth2Login(c -> c
                 .userInfoEndpoint(ec -> ec
                         .userService(oAuth2UserService)
+                )
+                .authorizationEndpoint(ec -> ec
+                        .authorizationRequestResolver(authorizationRequestResolver(clientRegistrationRepository))
                 )
                 .successHandler(loginSuccessHandler)
                 .failureHandler((request, response, exception) -> response.sendRedirect(loginFailUrl))
@@ -105,6 +113,18 @@ public class SecurityConfig {
 
             return configuration;
         }));
+    }
+
+    private OAuth2AuthorizationRequestResolver authorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
+        DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver = new DefaultOAuth2AuthorizationRequestResolver(
+                clientRegistrationRepository,
+                OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
+        );
+        authorizationRequestResolver.setAuthorizationRequestCustomizer(c -> c
+                .additionalParameters(params -> {
+                    params.put("prompt", "consent");
+                }));
+        return authorizationRequestResolver;
     }
 
     @Bean
