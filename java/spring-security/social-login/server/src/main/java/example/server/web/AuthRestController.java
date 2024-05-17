@@ -1,6 +1,7 @@
 package example.server.web;
 
 import example.server.app.auth.AuthService;
+import example.server.app.auth.TokenRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ public class AuthRestController {
     private final AuthService authService;
 
     @GetMapping("/token")
-    public String getToken(@RequestParam("code") String code) {
-        return authService.popAccessToken(code);
+    public TokenRecord getToken(@RequestParam("code") String code) {
+        return authService.getToken(code);
     }
 }

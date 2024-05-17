@@ -7,7 +7,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 const clearMemberStore = useMemberStore.persist?.clearStorage;
 
 export default function Home() {
-    const {accessToken} = useMemberStore();
+    const {accessToken, refreshToken} = useMemberStore();
     const searchParams = useSearchParams();
     const error = searchParams.get("error");
     const router = useRouter();
@@ -107,9 +107,18 @@ export default function Home() {
                             {accessToken}
                         </div>
                     </div>}
+                {refreshToken != null &&
+                    <div className="mt-5">
+                        <h3 className="text-xl">Refresh Token</h3>
+                        <div className="break-words">
+                            {refreshToken}
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-    </>;
+    </>
+        ;
 }
 
 function joinRequest(email: string | undefined, password: string | undefined) {

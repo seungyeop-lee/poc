@@ -8,19 +8,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class InMemoryAccessTokenRepository implements AccessTokenRepository {
 
-    private final Map<String, String> tokenMap;
+    private final Map<String, TokenRecord> tokenMap;
 
     public InMemoryAccessTokenRepository() {
         this.tokenMap = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void save(String code, String token) {
+    public void save(String code, TokenRecord token) {
         tokenMap.put(code, token);
     }
 
     @Override
-    public String popToken(String code) {
-        return tokenMap.remove(code);
+    public TokenRecord getToken(String code) {
+        return tokenMap.get(code);
     }
 }

@@ -11,11 +11,11 @@ public class AuthService {
 
     private final AccessTokenRepository accessTokenRepository;
 
-    public void saveAccessToken(String code, String token) {
+    public void saveAccessToken(String code, TokenRecord token) {
         accessTokenRepository.save(code, token);
     }
 
-    public String popAccessToken(String code) {
-        return accessTokenRepository.popToken(code);
+    public TokenRecord getToken(String code) {
+        return accessTokenRepository.getToken(code);
     }
 }

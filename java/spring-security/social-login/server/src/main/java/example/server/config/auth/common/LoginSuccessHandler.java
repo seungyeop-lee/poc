@@ -1,6 +1,7 @@
 package example.server.config.auth.common;
 
 import example.server.app.auth.AuthService;
+import example.server.app.auth.TokenRecord;
 import example.server.helper.jwt.JWTHelperManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,9 +27,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         MyLoginUser oAuth2User = (MyLoginUser) authentication.getPrincipal();
-        String token = oAuth2User.toAccessToken(jwtHelperManager.getJwtBuilder());
+        String accessToken = oAuth2User.toAccessToken(jwtHelperManager.getJwtBuilder());
+        String refreshToken = oAuth2User.toRefreshToken(jwtHelperManager.getJwtBuilder());
         String code = UUID.randomUUID().toString();
-        authService.saveAccessToken(code, token);
+        authService.saveAccessToken(code, new TokenRecord(accessToken, refreshToken));
 
         response.sendRedirect(String.format("%s?code=%s", codeNoticeUrl, code));
     }

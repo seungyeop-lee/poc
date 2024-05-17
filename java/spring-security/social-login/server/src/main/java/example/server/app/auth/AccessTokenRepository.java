@@ -1,7 +1,7 @@
 package example.server.app.auth;
 
 public interface AccessTokenRepository {
-    void save(String code, String token);
+    void save(String code, TokenRecord token);
 
-    String popToken(String code);
+    TokenRecord getToken(String code);
 }

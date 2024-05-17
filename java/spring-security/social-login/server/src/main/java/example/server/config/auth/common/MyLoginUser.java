@@ -78,6 +78,17 @@ public class MyLoginUser implements OAuth2User {
 
     public String toAccessToken(JWTBuilder jwtBuilder) {
         return jwtBuilder
+                .withClaim("category", "access")
+                .withClaim("uid", this.uid)
+                .withClaim("provider", this.provider)
+                .withClaim("name", this.name)
+                .withClaim("email", this.email)
+                .build();
+    }
+
+    public String toRefreshToken(JWTBuilder jwtBuilder) {
+        return jwtBuilder
+                .withClaim("category", "refresh")
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)
                 .withClaim("name", this.name)
