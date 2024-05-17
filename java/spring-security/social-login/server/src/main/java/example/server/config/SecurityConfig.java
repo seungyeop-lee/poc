@@ -1,11 +1,14 @@
 package example.server.config;
 
+import example.server.app.user.UserService;
+import example.server.config.auth.common.LoginSuccessHandler;
 import example.server.config.auth.jwt.JWTFilter;
-import example.server.config.auth.oauth2.successhandler.MyOAuth2LoginSuccessHandler;
-import example.server.config.auth.oauth2.userservice.MyOAuth2UserService;
+import example.server.config.auth.local.LocalAuthenticationProvider;
+import example.server.config.auth.oauth2.MyOAuth2UserService;
 import example.server.helper.jwt.JWTHelperManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,9 +28,14 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value("${service.oauth2.loginFailUrl}")
+    private String loginFailUrl;
+
     private final MyOAuth2UserService oAuth2UserService;
-    private final MyOAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final LoginSuccessHandler loginSuccessHandler;
     private final JWTHelperManager jwtHelperManager;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,7 +51,16 @@ public class SecurityConfig {
                 .userInfoEndpoint(ec -> ec
                         .userService(oAuth2UserService)
                 )
-                .successHandler(oAuth2LoginSuccessHandler)
+                .successHandler(loginSuccessHandler)
+                .failureHandler((request, response, exception) -> response.sendRedirect(loginFailUrl))
+        );
+
+        http.formLogin(c -> c
+                .loginProcessingUrl("/user/login")
+                .usernameParameter("email")
+                .successHandler(loginSuccessHandler)
+                // 로그인 실패 시 리다이렉션 방지
+                .failureHandler((request, response, exception) -> response.sendRedirect(loginFailUrl))
         );
 
         http.addFilterAfter(new JWTFilter(jwtHelperManager), OAuth2LoginAuthenticationFilter.class);
@@ -60,9 +78,6 @@ public class SecurityConfig {
     private static void disableDefaultSecurity(HttpSecurity http) throws Exception {
         //csrf 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
-
-        //From 로그인 방식 비활성화
-        http.formLogin(AbstractHttpConfigurer::disable);
 
         //HTTP Basic 인증 방식 비활성화
         http.httpBasic(AbstractHttpConfigurer::disable);
@@ -90,5 +105,10 @@ public class SecurityConfig {
 
             return configuration;
         }));
+    }
+
+    @Bean
+    public LocalAuthenticationProvider localAuthenticationProvider() {
+        return new LocalAuthenticationProvider(userService, passwordEncoder);
     }
 }

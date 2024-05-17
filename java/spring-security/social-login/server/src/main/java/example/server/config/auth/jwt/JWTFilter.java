@@ -1,6 +1,6 @@
 package example.server.config.auth.jwt;
 
-import example.server.config.auth.model.MyOAuth2User;
+import example.server.config.auth.common.MyLoginUser;
 import example.server.helper.jwt.JWTHelperManager;
 import example.server.helper.jwt.JWTReader;
 import jakarta.servlet.FilterChain;
@@ -40,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
-        OAuth2User oAuth2User = MyOAuth2User.from(jwtReader);
+        OAuth2User oAuth2User = MyLoginUser.from(jwtReader);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = UsernamePasswordAuthenticationToken.authenticated(oAuth2User, null, oAuth2User.getAuthorities());

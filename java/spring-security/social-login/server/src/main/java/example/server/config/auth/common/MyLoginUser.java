@@ -1,7 +1,8 @@
-package example.server.config.auth.model;
+package example.server.config.auth.common;
 
 import example.server.helper.jwt.JWTBuilder;
 import example.server.helper.jwt.JWTReader;
+import example.server.model.LocalUser;
 import example.server.model.SocialUser;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,20 +13,20 @@ import java.util.List;
 import java.util.Map;
 
 @ToString
-public class MyOAuth2User implements OAuth2User {
+public class MyLoginUser implements OAuth2User {
 
     private String uid;
     private String provider;
     private String name;
     private String email;
 
-    public static MyOAuth2User of(
+    public static MyLoginUser of(
             String uid,
             String provider,
             String name,
             String email
     ) {
-        MyOAuth2User user = new MyOAuth2User();
+        MyLoginUser user = new MyLoginUser();
         user.uid = uid;
         user.provider = provider;
         user.name = name;
@@ -33,8 +34,8 @@ public class MyOAuth2User implements OAuth2User {
         return user;
     }
 
-    public static MyOAuth2User from(SocialUser user) {
-        return MyOAuth2User.of(
+    public static MyLoginUser from(SocialUser user) {
+        return MyLoginUser.of(
                 user.getUser().getUid(),
                 user.getProvider(),
                 user.getUser().getName(),
@@ -42,8 +43,17 @@ public class MyOAuth2User implements OAuth2User {
         );
     }
 
-    public static MyOAuth2User from(JWTReader jwtReader) {
-        return MyOAuth2User.of(
+    public static MyLoginUser from(LocalUser user) {
+        return MyLoginUser.of(
+                user.getUser().getUid(),
+                user.getProvider(),
+                user.getUser().getName(),
+                user.getUser().getEmail()
+        );
+    }
+
+    public static MyLoginUser from(JWTReader jwtReader) {
+        return MyLoginUser.of(
                 jwtReader.getClaim("uid"),
                 jwtReader.getClaim("provider"),
                 jwtReader.getClaim("name"),

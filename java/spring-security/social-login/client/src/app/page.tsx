@@ -1,33 +1,45 @@
 'use client';
 
 import {useMemberStore} from "@/store/memberStore";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
 
 const clearMemberStore = useMemberStore.persist?.clearStorage;
 
 export default function Home() {
     const {accessToken} = useMemberStore();
+    const searchParams = useSearchParams();
+    const error = searchParams.get("error");
+    const router = useRouter();
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
+
+    useEffect(() => {
+        if (error != null) {
+            alert("로그인 중 에러가 발생하였습니다.");
+            router.push("/");
+        }
+    }, [error, router]);
 
     return <>
         <div className="m-5">
             <h1 className="text-4xl font-bold text-center">Welcome to the Social Login App</h1>
             <div className="flex mt-10">
-                <div className="flex justify-center items-center grow">
+                <form className="flex justify-center items-center grow" action="http://localhost:8080/user/login" method="post">
                     <div className="grid grid-cols-1 gap-2">
                         <label className="block">
                             <span>이메일</span>
-                            <input type="email" className="mt-1 block w-full" onChange={e => setEmail(e.target.value)}></input>
+                            <input type="email" name="email" className="mt-1 block w-full" onChange={e => setEmail(e.target.value)}></input>
                         </label>
                         <label className="block">
                             <span>패스워드</span>
-                            <input type="password" className="mt-1 block w-full" onChange={e => setPassword(e.target.value)}></input>
+                            <input type="password" name="password" className="mt-1 block w-full" onChange={e => setPassword(e.target.value)}></input>
                         </label>
                     </div>
                     <div className="grid grid-cols-1 gap-2 ms-5">
                         <div className="flex justify-center">
                             <button
+                                type="submit"
                                 className="outline outline-green-600 hover:outline-green-800 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold w-full"
                             >
                                 로그인
@@ -35,6 +47,7 @@ export default function Home() {
                         </div>
                         <div className="flex justify-center">
                             <button
+                                type="button"
                                 className="outline outline-red-300 hover:outline-red-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold w-full"
                                 onClick={() => joinRequest(email, password)}
                             >
@@ -42,7 +55,7 @@ export default function Home() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </form>
                 <div className="flex flex-col justify-center items-center grow">
                     <button
                         className="bg-red-500 hover:bg-red-600 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"

@@ -46,4 +46,11 @@ public class User {
     public void setLocalUser(LocalUser localUser) {
         this.localUser = localUser;
     }
+
+    // 로컬 회원가입 시 이름이 이메일로 지정되므로, 소셜로그인 시 이름 변경
+    public void updateName(String name) {
+        if (this.email.equals(this.name)) {
+            this.name = name;
+        }
+    }
 }

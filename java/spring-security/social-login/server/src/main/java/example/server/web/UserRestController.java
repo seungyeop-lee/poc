@@ -1,7 +1,7 @@
 package example.server.web;
 
 import example.server.app.user.UserService;
-import example.server.config.auth.model.MyOAuth2User;
+import example.server.config.auth.common.MyLoginUser;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class UserRestController {
 
     @GetMapping("/my")
     public String myInfo() {
-        MyOAuth2User oAuth2User = (MyOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MyLoginUser oAuth2User = (MyLoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return oAuth2User.toString();
     }
 }

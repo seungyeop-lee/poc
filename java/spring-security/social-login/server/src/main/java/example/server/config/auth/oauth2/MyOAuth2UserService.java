@@ -1,7 +1,7 @@
-package example.server.config.auth.oauth2.userservice;
+package example.server.config.auth.oauth2;
 
 import example.server.app.user.UserService;
-import example.server.config.auth.model.MyOAuth2User;
+import example.server.config.auth.common.MyLoginUser;
 import example.server.model.SocialUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         return userService.findByProvider(oAuth2Response.getProvider(), oAuth2Response.getProviderId())
-                .map(MyOAuth2User::from)
+                .map(MyLoginUser::from)
                 .orElseGet(() -> createNewUser(oAuth2Response));
     }
 
@@ -45,7 +45,7 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
         };
     }
 
-    private MyOAuth2User createNewUser(OAuth2Response oAuth2Response) {
+    private MyLoginUser createNewUser(OAuth2Response oAuth2Response) {
         SocialUser saved = userService.joinBySocialUser(
                 new UserService.CreateCommand(
                         oAuth2Response.getProvider(),
@@ -54,6 +54,6 @@ public class MyOAuth2UserService extends DefaultOAuth2UserService {
                         oAuth2Response.getEmail()
                 )
         );
-        return MyOAuth2User.from(saved);
+        return MyLoginUser.from(saved);
     }
 }

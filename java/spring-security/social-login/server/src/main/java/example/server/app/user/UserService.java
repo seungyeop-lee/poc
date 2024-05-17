@@ -39,6 +39,8 @@ public class UserService {
         SocialUser savedSocialUser = socialUserRepository.save(socialUser);
         user.addSocialUser(savedSocialUser);
 
+        user.updateName(command.name());
+
         return socialUser;
     }
 
@@ -55,6 +57,10 @@ public class UserService {
         savedUser.setLocalUser(savedLocalUser);
 
         return savedLocalUser;
+    }
+
+    public Optional<LocalUser> findLocalUserByEmail(String email) {
+        return repository.findByEmail(email).map(User::getLocalUser);
     }
 
     public record CreateCommand(

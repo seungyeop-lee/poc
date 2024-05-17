@@ -27,4 +27,8 @@ public class LocalUser {
         localUser.user = user;
         return localUser;
     }
+
+    public String getProvider() {
+        return "vook";
+    }
 }

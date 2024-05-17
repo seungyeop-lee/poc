@@ -1,0 +1,17 @@
+### 회원 가입
+POST http://localhost:8080/user/join
+Content-Type: application/json
+
+{
+  "email": "xbeast7@gmail.com",
+  "password": "abcd1234"
+}
+
+### 로그인
+POST http://localhost:8080/user/login
+Content-Type: application/x-www-form-urlencoded
+
+email=xbeast7@gmail.com&password=abcd1234
+
+### 토큰 획득
+GET http://localhost:8080/auth/token?code=435f58e8-a09d-4abb-9564-3ad7a48950f1
