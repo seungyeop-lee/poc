@@ -45,16 +45,19 @@ public class UserService {
     }
 
     public LocalUser joinByLocalUser(String email, String password) {
-        repository.findByEmail(email).ifPresent(user -> {
+        repository.findByEmail(email).map(User::getLocalUser).ifPresent(user -> {
             throw new IllegalArgumentException("User already exists");
         });
 
-        User newUser = User.forNewOf(email, email);
-        User savedUser = repository.save(newUser);
+        User user = repository.findByEmail(email)
+                .orElseGet(() -> {
+                    User newUser = User.forNewOf(email, email);
+                    return repository.save(newUser);
+                });
 
-        LocalUser localUser = LocalUser.forNewOf(passwordEncoder.encode(password), savedUser);
+        LocalUser localUser = LocalUser.forNewOf(passwordEncoder.encode(password), user);
         LocalUser savedLocalUser = localUserRepository.save(localUser);
-        savedUser.setLocalUser(savedLocalUser);
+        user.setLocalUser(savedLocalUser);
 
         return savedLocalUser;
     }
