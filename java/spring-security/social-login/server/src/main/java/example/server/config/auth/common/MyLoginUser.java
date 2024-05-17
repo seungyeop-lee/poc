@@ -76,8 +76,9 @@ public class MyLoginUser implements OAuth2User {
         return this.name;
     }
 
-    public String toAccessToken(JWTBuilder jwtBuilder) {
+    public String toAccessToken(JWTBuilder jwtBuilder, Integer accessTokenExpiredMinute) {
         return jwtBuilder
+                .withExpiredMs(1000L * 60 * accessTokenExpiredMinute)
                 .withClaim("category", "access")
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)
@@ -86,8 +87,9 @@ public class MyLoginUser implements OAuth2User {
                 .build();
     }
 
-    public String toRefreshToken(JWTBuilder jwtBuilder) {
+    public String toRefreshToken(JWTBuilder jwtBuilder, Integer refreshTokenExpiredMinute) {
         return jwtBuilder
+                .withExpiredMs(1000L * 60 * refreshTokenExpiredMinute)
                 .withClaim("category", "refresh")
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)

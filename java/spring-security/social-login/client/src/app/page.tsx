@@ -7,7 +7,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 const clearMemberStore = useMemberStore.persist?.clearStorage;
 
 export default function Home() {
-    const {accessToken, refreshToken} = useMemberStore();
+    const {accessToken, refreshToken, refreshAccessToken} = useMemberStore();
     const searchParams = useSearchParams();
     const error = searchParams.get("error");
     const router = useRouter();
@@ -93,6 +93,14 @@ export default function Home() {
                     <button
                         className="bg-black hover:bg-gray-800 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
                         onClick={() => {
+                            refreshAccessToken();
+                        }}
+                    >
+                        refresh token
+                    </button>
+                    <button
+                        className="bg-black hover:bg-gray-800 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white ms-1"
+                        onClick={() => {
                             clearMemberStore();
                             window.location.reload();
                         }}
@@ -109,7 +117,7 @@ export default function Home() {
                     </div>}
                 {refreshToken != null &&
                     <div className="mt-5">
-                        <h3 className="text-xl">Refresh Token</h3>
+                    <h3 className="text-xl">Refresh Token</h3>
                         <div className="break-words">
                             {refreshToken}
                         </div>
@@ -118,7 +126,6 @@ export default function Home() {
             </div>
         </div>
     </>
-        ;
 }
 
 function joinRequest(email: string | undefined, password: string | undefined) {

@@ -48,3 +48,5 @@ service:
   oauth2:
     codeNoticeUrl: http://localhost:3000/token
     loginFailUrl: http://localhost:3000?error
+    accessTokenExpiredMinute: 30 # 30 minutes
+    refreshTokenExpiredMinute: 10080 # 60 * 24 * 7 == 1 week

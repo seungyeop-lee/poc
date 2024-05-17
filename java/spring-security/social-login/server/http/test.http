@@ -21,3 +21,12 @@ password = abcd1234
 
 ### 토큰 획득
 GET http://localhost:8080/auth/token?code={{code}}
+
+> {%
+    client.global.set('access_token', response.headers.valueOf('Authorization'));
+    client.global.set('refresh_token', response.headers.valueOf('X-Refresh-Authorization'));
+%}
+
+### 토큰 갱신
+GET http://localhost:8080/auth/refresh
+X-Refresh-Authorization: {{refresh_token}}

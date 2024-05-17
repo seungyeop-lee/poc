@@ -21,14 +21,20 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${service.oauth2.codeNoticeUrl}")
     private String codeNoticeUrl;
 
+    @Value("${service.oauth2.accessTokenExpiredMinute}")
+    private Integer accessTokenExpiredMinute;
+
+    @Value("${service.oauth2.refreshTokenExpiredMinute}")
+    private Integer refreshTokenExpiredMinute;
+
     private final JWTHelperManager jwtHelperManager;
     private final AuthService authService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         MyLoginUser oAuth2User = (MyLoginUser) authentication.getPrincipal();
-        String accessToken = oAuth2User.toAccessToken(jwtHelperManager.getJwtBuilder());
-        String refreshToken = oAuth2User.toRefreshToken(jwtHelperManager.getJwtBuilder());
+        String accessToken = oAuth2User.toAccessToken(jwtHelperManager.getJwtBuilder(), accessTokenExpiredMinute);
+        String refreshToken = oAuth2User.toRefreshToken(jwtHelperManager.getJwtBuilder(), refreshTokenExpiredMinute);
         String code = UUID.randomUUID().toString();
         authService.saveAccessToken(code, new TokenRecord(accessToken, refreshToken));
 
