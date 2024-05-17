@@ -29,8 +29,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // h2
-    runtimeOnly 'com.h2database:h2'
+    // mariadb
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
