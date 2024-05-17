@@ -15,13 +15,13 @@ export const useMemberStore = create(persist<MemberStore>((set, get) => ({
             `http://localhost:8080/auth/token?code=${code}`,
         );
 
-        let tokenRecord = await response.json();
-        if (tokenRecord) {
-            set({
-                accessToken: tokenRecord.access,
-                refreshToken: tokenRecord.refresh
-            });
-        }
+        let accessToken = response.headers.get('Authorization') || '';
+        let refreshToken = response.headers.get('X-Refresh-Authorization') || '';
+
+        set({
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        });
     }
 }), {
     name: 'member-store'
