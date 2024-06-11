@@ -15,34 +15,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JWTBuilder extends JWTHelper {
+public class JWTWriter extends JWTHelper {
 
     private static final Long DEFAULT_EXPIRED_MS = 1000L * 60 * 30; // 30 minutes
 
     private JWSSigner signer;
     private Long expiredMs;
-    private Map<String, Object> claims = new HashMap<>();
+    private final Map<String, Object> claims = new HashMap<>();
 
-    static JWTBuilder of(String secret) {
+    static JWTWriter of(String secret) {
         return run(() -> {
-            JWTBuilder writer = new JWTBuilder();
+            JWTWriter writer = new JWTWriter();
             byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
             writer.signer = new MACSigner(secretBytes);
             return writer;
         });
     }
 
-    public JWTBuilder withExpiredMs(Long expiredMs) {
+    public JWTWriter withExpiredMs(Long expiredMs) {
         this.expiredMs = expiredMs;
         return this;
     }
 
-    public JWTBuilder withClaim(String name, String value) {
+    public JWTWriter withClaim(String name, String value) {
         claims.put(name, value);
         return this;
     }
 
-    public String build() {
+    public String jwtString() {
         return run(() -> {
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
                     .issueTime(new Date())
@@ -59,5 +59,18 @@ public class JWTBuilder extends JWTHelper {
 
             return signedJWT.serialize();
         });
+    }
+
+    public static class Builder {
+
+        private final String secret;
+
+        public Builder(String jwtSecret) {
+            this.secret = jwtSecret;
+        }
+
+        public JWTWriter build() {
+            return JWTWriter.of(secret);
+        }
     }
 }

@@ -2,9 +2,9 @@ package example.server.web;
 
 import example.server.app.auth.AuthService;
 import example.server.app.auth.TokenRecord;
-import example.server.helper.jwt.JWTBuilder;
 import example.server.helper.jwt.JWTHelperManager;
 import example.server.helper.jwt.JWTReader;
+import example.server.helper.jwt.JWTWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,21 +57,21 @@ public class AuthRestController {
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        JWTBuilder baseJwtBuilder = jwtHelperManager.getJwtBuilder();
-        baseJwtBuilder.withClaim("uid", jwtReader.getClaim("uid"));
-        baseJwtBuilder.withClaim("provider", jwtReader.getClaim("provider"));
-        baseJwtBuilder.withClaim("name", jwtReader.getClaim("name"));
-        baseJwtBuilder.withClaim("email", jwtReader.getClaim("email"));
+        JWTWriter jwtWriter = jwtHelperManager.getJwtWriter();
+        jwtWriter.withClaim("uid", jwtReader.getClaim("uid"));
+        jwtWriter.withClaim("provider", jwtReader.getClaim("provider"));
+        jwtWriter.withClaim("name", jwtReader.getClaim("name"));
+        jwtWriter.withClaim("email", jwtReader.getClaim("email"));
 
-        String accessToken = baseJwtBuilder
+        String accessToken = jwtWriter
                 .withClaim("category", "access")
                 .withExpiredMs(1000L * 60 * accessTokenExpiredMinute)
-                .build();
+                .jwtString();
 
-        String refreshToken = baseJwtBuilder
+        String refreshToken = jwtWriter
                 .withClaim("category", "refresh")
                 .withExpiredMs(1000L * 60 * refreshTokenExpiredMinute)
-                .build();
+                .jwtString();
 
         response.setHeader("Authorization", accessToken);
         response.setHeader("X-Refresh-Authorization", refreshToken);

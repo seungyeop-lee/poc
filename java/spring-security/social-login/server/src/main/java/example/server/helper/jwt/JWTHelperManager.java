@@ -10,17 +10,17 @@ public class JWTHelperManager {
     @Value("${service.jwt.secret}")
     private String jwtSecret;
 
-    private JWTBuilder jwtBuilder;
+    private JWTWriter.Builder jwtWriterBuilder;
     private JWTReader.Builder jwtReaderBuilder;
 
     @PostConstruct
     public void init() {
-        jwtBuilder = JWTBuilder.of(jwtSecret);
+        jwtWriterBuilder = new JWTWriter.Builder(jwtSecret);
         jwtReaderBuilder = new JWTReader.Builder(jwtSecret);
     }
 
-    public JWTBuilder getJwtBuilder() {
-        return jwtBuilder;
+    public JWTWriter getJwtWriter() {
+        return jwtWriterBuilder.build();
     }
 
     public JWTReader getJwtReader(String token) {

@@ -1,7 +1,7 @@
 package example.server.config.auth.common;
 
-import example.server.helper.jwt.JWTBuilder;
 import example.server.helper.jwt.JWTReader;
+import example.server.helper.jwt.JWTWriter;
 import example.server.model.LocalUser;
 import example.server.model.SocialUser;
 import lombok.ToString;
@@ -76,25 +76,25 @@ public class MyLoginUser implements OAuth2User {
         return this.name;
     }
 
-    public String toAccessToken(JWTBuilder jwtBuilder, Integer accessTokenExpiredMinute) {
-        return jwtBuilder
+    public String toAccessToken(JWTWriter writer, Integer accessTokenExpiredMinute) {
+        return writer
                 .withExpiredMs(1000L * 60 * accessTokenExpiredMinute)
                 .withClaim("category", "access")
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)
                 .withClaim("name", this.name)
                 .withClaim("email", this.email)
-                .build();
+                .jwtString();
     }
 
-    public String toRefreshToken(JWTBuilder jwtBuilder, Integer refreshTokenExpiredMinute) {
-        return jwtBuilder
+    public String toRefreshToken(JWTWriter writer, Integer refreshTokenExpiredMinute) {
+        return writer
                 .withExpiredMs(1000L * 60 * refreshTokenExpiredMinute)
                 .withClaim("category", "refresh")
                 .withClaim("uid", this.uid)
                 .withClaim("provider", this.provider)
                 .withClaim("name", this.name)
                 .withClaim("email", this.email)
-                .build();
+                .jwtString();
     }
 }

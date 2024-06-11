@@ -33,8 +33,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         MyLoginUser oAuth2User = (MyLoginUser) authentication.getPrincipal();
-        String accessToken = oAuth2User.toAccessToken(jwtHelperManager.getJwtBuilder(), accessTokenExpiredMinute);
-        String refreshToken = oAuth2User.toRefreshToken(jwtHelperManager.getJwtBuilder(), refreshTokenExpiredMinute);
+        String accessToken = oAuth2User.toAccessToken(jwtHelperManager.getJwtWriter(), accessTokenExpiredMinute);
+        String refreshToken = oAuth2User.toRefreshToken(jwtHelperManager.getJwtWriter(), refreshTokenExpiredMinute);
         String code = UUID.randomUUID().toString();
         authService.saveAccessToken(code, new TokenRecord(accessToken, refreshToken));
 
