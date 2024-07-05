@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/opentelemetry
+    username: username
+    password: password
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+otel:
+  service:
+    name: simple-for-otel
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: otlp
+  logs:
+    exporter: otlp
+  exporter:
+    otlp:
+      traces:
+        protocol: grpc
+        endpoint: http://localhost:4317
+      metrics:
+        protocol: grpc
+        endpoint: http://localhost:4317
+      logs:
+        protocol: grpc
+        endpoint: http://localhost:4317

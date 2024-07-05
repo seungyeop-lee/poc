@@ -18,8 +18,8 @@ spring:
         registration:
           google:
             client-name: google
-            client-id: [YOUR_CLIENT_ID]
-            client-secret: [YOUR_CLIENT_SECRET]
+            client-id: 888756350502-376ig1il0g9mdb8vbs1nj8u291lh4hl3.apps.googleusercontent.com
+            client-secret: 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
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             authorization-grant-type: authorization_code
             scope:
@@ -27,8 +27,8 @@ spring:
               - email
           naver:
             client-name: naver
-            client-id: [YOUR_CLIENT_ID]
-            client-secret: [YOUR_CLIENT_SECRET]
+            client-id: 6GvPB1Vy2bLOso6T4GiL
+            client-secret: pFwxDbmmsq
             redirect-uri: http://localhost:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope:
@@ -44,7 +44,7 @@ server:
   port: 8080
 service:
   jwt:
-    secret: [YOUR_JWT_SECRET_KEY]
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdba
   oauth2:
     codeNoticeUrl: http://localhost:3000/token
     loginFailUrl: http://localhost:3000?error
