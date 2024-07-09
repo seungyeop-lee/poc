@@ -1,0 +1,40 @@
+management:
+  metrics:
+    #https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.supported
+    #https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties
+    enable:
+      all: false
+      jvm: true
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+otel:
+  service:
+    name: admin
+  instrumentation:
+    micrometer:
+      enabled: true
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: otlp
+  logs:
+    exporter: otlp
+  exporter:
+    otlp:
+      traces:
+        protocol: grpc
+        endpoint: http://localhost:4317
+      metrics:
+        protocol: grpc
+        endpoint: http://localhost:4317
+      logs:
+        protocol: grpc
+        endpoint: http://localhost:4317
+logging:
+  config: classpath:logback.xml

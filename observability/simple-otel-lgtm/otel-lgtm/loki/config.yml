@@ -1,0 +1,44 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2023-07-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+compactor:
+  working_directory: /loki/retention
+  retention_enabled: true
+  retention_delete_delay: 2h  # 삭제 지연 시간
+  delete_request_store: filesystem
+
+storage_config:
+  tsdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/index_cache
+
+# https://grafana.com/docs/loki/latest/operations/storage/retention/
+limits_config:
+  retention_period: 168h  # 7일 (7 * 24 시간)
+
+analytics:
+  reporting_enabled: false
