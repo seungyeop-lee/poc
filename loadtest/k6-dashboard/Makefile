@@ -17,3 +17,12 @@ current_date:=$(shell date +"%Y-%m-%d_%H-%M-%S")
 .PHONY:run
 run:
 	bin/k6 run --out 'dashboard=period=1s&export=out/report_$(current_date).html' src/script.js
+
+# https://grafana.com/docs/k6/latest/results-output/web-dashboard/
+# k6 프로젝트를 보니, k6가 build 될 때부터 xk6-dashboard를 포함하고 있었음
+.PHONY:run-plain
+run-plain:
+	K6_WEB_DASHBOARD=true \
+	K6_WEB_DASHBOARD_EXPORT=out/report_$(current_date).html \
+	K6_WEB_DASHBOARD_PERIOD=1s \
+	k6 run src/script.js
