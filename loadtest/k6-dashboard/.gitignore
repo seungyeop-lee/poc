@@ -1,0 +1,4 @@
+node_modules/
+k6
+out/
+bin/
