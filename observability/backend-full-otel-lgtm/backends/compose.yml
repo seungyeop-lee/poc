@@ -1,0 +1,64 @@
+services:
+  traefik:
+    image: traefik:v3.1.0
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/config:/etc/traefik:ro
+    networks:
+      - otel-poc
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=otel-poc"
+      - "traefik.http.routers.api.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.service=api"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - otel-poc
+  aiservice:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=otel-poc"
+      - "traefik.http.routers.aiservice.rule=Host(`aiservice.localhost`)"
+      - "traefik.http.routers.aiservice.entrypoints=web"
+      - "traefik.http.routers.aiservice.service=aiservice"
+      - "traefik.http.services.aiservice.loadbalancer.server.port=8081"
+    ports:
+      - "8081:8081"
+    networks:
+      - otel-poc
+  vocabularyservice:
+    build:
+      context: ./vocabulary-service
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=otel-poc"
+      - "traefik.http.routers.vocabularyservice.rule=Host(`vocabularyservice.localhost`)"
+      - "traefik.http.routers.vocabularyservice.entrypoints=web"
+      - "traefik.http.routers.vocabularyservice.service=vocabularyservice"
+      - "traefik.http.services.vocabularyservice.loadbalancer.server.port=8082"
+    ports:
+      - "8082:8082"
+    networks:
+      - otel-poc
+
+networks:
+  otel-poc:
+    external: true
