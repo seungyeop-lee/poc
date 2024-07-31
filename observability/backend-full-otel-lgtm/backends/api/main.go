@@ -1,120 +1,48 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
+	"errors"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
+
+	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 
 	"github.com/labstack/echo/v4"
 )
 
-const AiServiceUrl = "http://aiservice:8081"
-const VocabularyServiceUrl = "http://vocabularyservice:8082"
-
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	// Set up OpenTelemetry.
+	otelShutdown, err := setupOTelSDK(ctx)
+	if err != nil {
+		return
+	}
+	// Handle shutdown properly so nothing leaks.
+	defer func() {
+		err = errors.Join(err, otelShutdown(context.Background()))
+	}()
+
 	e := echo.New()
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(200, map[string]string{
-			"name":   "api",
-			"status": "UP",
-		})
-	})
-	e.POST("/term/auto", func(c echo.Context) error {
-		term, err := getTerm(c)
-		if err != nil {
-			return err
+	e.Use(otelecho.Middleware("api"))
+	HandlerManager{}.Register(e)
+
+	// Start server
+	go func() {
+		if err := e.Start(":8080"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			e.Logger.Fatal("shutting down the server")
 		}
+	}()
 
-		meaning, err := getMeaning(term)
-		if err != nil {
-			return err
-		}
-
-		id, err := saveTerm(term, meaning)
-		if err != nil {
-			return err
-		}
-
-		return c.JSON(
-			200,
-			TermAutoResponse{Id: id, Term: term, Meaning: meaning},
-		)
-	})
-	e.Logger.Fatal(e.Start(":8080"))
-}
-
-func getTerm(c echo.Context) (string, error) {
-	var req TermAutoRequest
-	if err := c.Bind(&req); err != nil {
-		return "", err
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
 	}
-	return req.Term, nil
-}
-
-func getMeaning(term string) (string, error) {
-	reqStruct := AiServiceTermCreateRequest{Term: term}
-	reqJson, err := json.Marshal(reqStruct)
-	if err != nil {
-		return "", err
-	}
-
-	aiRes, err := http.Post(AiServiceUrl+"/term/create", "application/json", bytes.NewBuffer(reqJson))
-	if err != nil {
-		return "", err
-	}
-	defer aiRes.Body.Close()
-
-	var resStruct AiServiceTermCreateResponse
-	if err := json.NewDecoder(aiRes.Body).Decode(&resStruct); err != nil {
-		return "", err
-	}
-	return resStruct.Meaning, nil
-}
-
-func saveTerm(term string, meaning string) (int, error) {
-	reqStruct := VocabularyServiceTermCreateRequest{Term: term, Meaning: meaning}
-	reqJson, err := json.Marshal(reqStruct)
-	if err != nil {
-		return 0, err
-	}
-
-	vocabularyRes, err := http.Post(VocabularyServiceUrl+"/term", "application/json", bytes.NewBuffer(reqJson))
-	if err != nil {
-		return 0, err
-	}
-	defer vocabularyRes.Body.Close()
-
-	var resStruct VocabularyServiceTermCreateResponse
-	if err := json.NewDecoder(vocabularyRes.Body).Decode(&resStruct); err != nil {
-		return 0, err
-	}
-	return resStruct.Id, nil
-}
-
-type TermAutoRequest struct {
-	Term string `json:"term"`
-}
-
-type TermAutoResponse struct {
-	Id      int    `json:"id"`
-	Term    string `json:"term"`
-	Meaning string `json:"meaning"`
-}
-
-type AiServiceTermCreateRequest struct {
-	Term string `json:"term"`
-}
-
-type AiServiceTermCreateResponse struct {
-	Term    string `json:"term"`
-	Meaning string `json:"meaning"`
-}
-
-type VocabularyServiceTermCreateRequest struct {
-	Term    string `json:"term"`
-	Meaning string `json:"meaning"`
-}
-
-type VocabularyServiceTermCreateResponse struct {
-	Id int `json:"id"`
 }
