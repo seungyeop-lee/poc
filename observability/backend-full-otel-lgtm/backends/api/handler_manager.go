@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 )
 
@@ -33,16 +35,18 @@ func (h HandlerManager) Register(e *echo.Echo) {
 		})
 	})
 	e.POST("/term/auto", func(c echo.Context) error {
+		ctx := c.Request().Context()
+
 		term, err := getTerm(c)
 		if err != nil {
 			return err
 		}
 		logger.InfoContext(
-			c.Request().Context(),
+			ctx,
 			fmt.Sprintf("Request Term: %s", term),
 		)
 
-		meaning, err := getMeaning(term)
+		meaning, err := getMeaning(ctx, term)
 		if err != nil {
 			return err
 		}
@@ -54,7 +58,7 @@ func (h HandlerManager) Register(e *echo.Echo) {
 
 		response := TermAutoResponse{Id: id, Term: term, Meaning: meaning}
 		logger.InfoContext(
-			c.Request().Context(),
+			ctx,
 			fmt.Sprintf("Response: %v", response),
 		)
 
@@ -73,14 +77,21 @@ func getTerm(c echo.Context) (string, error) {
 	return req.Term, nil
 }
 
-func getMeaning(term string) (string, error) {
+func getMeaning(ctx context.Context, term string) (string, error) {
 	reqStruct := AiServiceTermCreateRequest{Term: term}
 	reqJson, err := json.Marshal(reqStruct)
 	if err != nil {
 		return "", err
 	}
 
-	aiRes, err := http.Post(AiServiceUrl+"/term/create", "application/json", bytes.NewBuffer(reqJson))
+	c := http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+	r, err := http.NewRequestWithContext(ctx, "POST", AiServiceUrl+"/term/create", bytes.NewBuffer(reqJson))
+	if err != nil {
+		return "", err
+	}
+	aiRes, err := c.Do(r)
 	if err != nil {
 		return "", err
 	}

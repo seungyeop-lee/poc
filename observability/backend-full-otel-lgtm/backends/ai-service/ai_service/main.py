@@ -1,31 +1,12 @@
-import time
-
 from fastapi import FastAPI
-from dataclasses import dataclass
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+from ai_service.otel import init_otel
+from ai_service.routers import router
+
+init_otel()
 
 app = FastAPI()
+app.include_router(router)
 
-
-@dataclass
-class CreateTermRequest:
-    term: str
-
-
-@dataclass
-class CreateTermResponse:
-    term: str
-    meaning: str
-
-
-@app.get("/health")
-def health():
-    return {
-        "name": "ai-service",
-        "status": "UP"
-    }
-
-
-@app.post("/term/create")
-def create_term(request: CreateTermRequest):
-    meaning = "Meaning of " + request.term
-    return CreateTermResponse(term=request.term, meaning=meaning)
+FastAPIInstrumentor.instrument_app(app)

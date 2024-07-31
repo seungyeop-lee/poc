@@ -2,6 +2,8 @@ github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK3
 github.com/cenkalti/backoff/v4 v4.3.0/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
+github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
 github.com/go-logr/logr v1.4.2/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
@@ -36,6 +38,10 @@ go.opentelemetry.io/contrib/bridges/otelslog v0.3.0 h1:Kf8NK4WW/pn3f9Gwx6XJAB2zl
 go.opentelemetry.io/contrib/bridges/otelslog v0.3.0/go.mod h1:JV00+So1cv6GIYNUeO0xFfl/qE+DUtS3hpBlLIyOFUE=
 go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.53.0 h1:85yXs++3rTVZNNkcXYlc1wCbUOvZvpiA5QvMSaX+SUI=
 go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.53.0/go.mod h1:25X27kodOL0ZXxaHcxe7R+O7iaj7yEJeZFMlm7r0EAg=
+go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.53.0 h1:IVtyPth4Rs5P8wIf0mP2KVKFNTJ4paX9qQ4Hkh5gFdc=
+go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.53.0/go.mod h1:ImRBLMJv177/pwiLZ7tU7HDGNdBv7rS0HQ99eN/zBl8=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 h1:4K4tsIXefpVJtvA/8srF4V4y0akAoPHkIslgAkjixJA=
+go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0/go.mod h1:jjdQuTGVsXV4vSs+CJ2qYDeDPf9yIJV23qlIzBm73Vg=
 go.opentelemetry.io/contrib/propagators/autoprop v0.53.0 h1:4zaVLcJ5mvYw0vlk63TX62qS4qty/4jAY1BKZ1usu18=
 go.opentelemetry.io/contrib/propagators/autoprop v0.53.0/go.mod h1:RPlvYtxp5D8PKnRzyPM+rwMQrvzdlfA49Sgworkg7aQ=
 go.opentelemetry.io/contrib/propagators/aws v1.28.0 h1:acyTl4oyin/iLr5Nz3u7p/PKHUbLh42w/fqg9LblExk=
