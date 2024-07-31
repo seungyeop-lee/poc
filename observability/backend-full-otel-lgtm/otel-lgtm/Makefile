@@ -1,4 +1,4 @@
-DOCKER_COMPOSE_PROJECT_NAME=otel-poc-backend
+DOCKER_COMPOSE_PROJECT_NAME=otel-poc-lgtm
 
 .PHONY:up
 up:
