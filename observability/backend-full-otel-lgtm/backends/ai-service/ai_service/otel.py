@@ -16,15 +16,15 @@ def init_otel():
         SERVICE_NAME: "ai-service"
     })
 
-    traceProvider = TracerProvider(resource=resource)
+    trace_provider = TracerProvider(resource=resource)
     processor = BatchSpanProcessor(
         OTLPSpanExporter(endpoint=otel_endpoint, insecure=True),
     )
-    traceProvider.add_span_processor(processor)
-    trace.set_tracer_provider(traceProvider)
+    trace_provider.add_span_processor(processor)
+    trace.set_tracer_provider(trace_provider)
 
     reader = PeriodicExportingMetricReader(
         OTLPMetricExporter(endpoint=otel_endpoint, insecure=True),
     )
-    meterProvider = MeterProvider(resource=resource, metric_readers=[reader])
-    metrics.set_meter_provider(meterProvider)
+    meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
+    metrics.set_meter_provider(meter_provider)
