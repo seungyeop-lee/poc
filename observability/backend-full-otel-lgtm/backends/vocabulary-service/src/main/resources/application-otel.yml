@@ -1,0 +1,30 @@
+management:
+  metrics:
+    #https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.supported
+    #https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.customizing.per-meter-properties
+    enable:
+      all: false
+      jvm: true
+otel:
+  service:
+    name: vocabulary-service
+  instrumentation:
+    micrometer:
+      enabled: true
+  traces:
+    exporter: otlp
+  metrics:
+    exporter: otlp
+  logs:
+    exporter: otlp
+  exporter:
+    otlp:
+      traces:
+        protocol: grpc
+        endpoint: http://otel-collector:4317
+      metrics:
+        protocol: grpc
+        endpoint: http://otel-collector:4317
+      logs:
+        protocol: grpc
+        endpoint: http://otel-collector:4317

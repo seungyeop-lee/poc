@@ -27,4 +27,13 @@ public class Term {
         result.meaning = meaning;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Term{" +
+                "id=" + id +
+                ", term='" + term + '\'' +
+                ", meaning='" + meaning + '\'' +
+                '}';
+    }
 }

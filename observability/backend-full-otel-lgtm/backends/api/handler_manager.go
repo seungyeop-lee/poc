@@ -51,7 +51,7 @@ func (h HandlerManager) Register(e *echo.Echo) {
 			return err
 		}
 
-		id, err := saveTerm(term, meaning)
+		id, err := saveTerm(ctx, term, meaning)
 		if err != nil {
 			return err
 		}
@@ -59,7 +59,7 @@ func (h HandlerManager) Register(e *echo.Echo) {
 		response := TermAutoResponse{Id: id, Term: term, Meaning: meaning}
 		logger.InfoContext(
 			ctx,
-			fmt.Sprintf("Response: %v", response),
+			fmt.Sprintf("Response: %+v", response),
 		)
 
 		return c.JSON(
@@ -84,44 +84,56 @@ func getMeaning(ctx context.Context, term string) (string, error) {
 		return "", err
 	}
 
-	c := http.Client{
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-	}
-	r, err := http.NewRequestWithContext(ctx, "POST", AiServiceUrl+"/term/create", bytes.NewBuffer(reqJson))
+	req, err := http.NewRequestWithContext(ctx, "POST", AiServiceUrl+"/term/create", bytes.NewBuffer(reqJson))
 	if err != nil {
 		return "", err
 	}
-	aiRes, err := c.Do(r)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := callHttp(req)
 	if err != nil {
 		return "", err
 	}
-	defer aiRes.Body.Close()
+	defer res.Body.Close()
 
 	var resStruct AiServiceTermCreateResponse
-	if err := json.NewDecoder(aiRes.Body).Decode(&resStruct); err != nil {
+	if err := json.NewDecoder(res.Body).Decode(&resStruct); err != nil {
 		return "", err
 	}
 	return resStruct.Meaning, nil
 }
 
-func saveTerm(term string, meaning string) (int, error) {
+func saveTerm(ctx context.Context, term string, meaning string) (int, error) {
 	reqStruct := VocabularyServiceTermCreateRequest{Term: term, Meaning: meaning}
 	reqJson, err := json.Marshal(reqStruct)
 	if err != nil {
 		return 0, err
 	}
 
-	vocabularyRes, err := http.Post(VocabularyServiceUrl+"/term", "application/json", bytes.NewBuffer(reqJson))
+	req, err := http.NewRequestWithContext(ctx, "POST", VocabularyServiceUrl+"/term", bytes.NewBuffer(reqJson))
 	if err != nil {
 		return 0, err
 	}
-	defer vocabularyRes.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := callHttp(req)
+	if err != nil {
+		return 0, err
+	}
+	defer res.Body.Close()
 
 	var resStruct VocabularyServiceTermCreateResponse
-	if err := json.NewDecoder(vocabularyRes.Body).Decode(&resStruct); err != nil {
+	if err := json.NewDecoder(res.Body).Decode(&resStruct); err != nil {
 		return 0, err
 	}
 	return resStruct.Id, nil
+}
+
+func callHttp(req *http.Request) (*http.Response, error) {
+	c := http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+	return c.Do(req)
 }
 
 type TermAutoRequest struct {
