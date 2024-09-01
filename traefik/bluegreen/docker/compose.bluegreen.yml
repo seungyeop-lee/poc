@@ -1,0 +1,40 @@
+services:
+  blue: &target
+    image: blue:latest
+    build:
+      context: ../pochelper/echo
+      dockerfile: Dockerfile
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.blue.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.blue.entrypoints=entryPoint-web"
+      - "traefik.http.routers.blue.service=bluegreen"
+      - "traefik.http.routers.blue.middlewares=blue-retry@docker"
+      - "traefik.http.middlewares.blue-retry.retry.attempts=4"
+      - "traefik.http.middlewares.blue-retry.retry.initialinterval=200ms"
+      - "traefik.http.services.bluegreen.loadbalancer.server.port=80"
+    entrypoint: "/app/echo blue"
+    networks:
+      - proxy
+
+  green:
+    <<: *target
+    image: green:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.green.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.green.entrypoints=entryPoint-web"
+      - "traefik.http.routers.green.service=bluegreen"
+      - "traefik.http.routers.green.middlewares=green-retry@docker"
+      - "traefik.http.middlewares.green-retry.retry.attempts=4"
+      - "traefik.http.middlewares.green-retry.retry.initialinterval=200ms"
+      - "traefik.http.services.bluegreen.loadbalancer.server.port=80"
+    entrypoint: "/app/echo green"
+
+networks:
+  proxy:
+    external: true

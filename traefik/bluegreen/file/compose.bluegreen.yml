@@ -1,0 +1,20 @@
+services:
+  blue: &target
+    image: blue:latest
+    build:
+      context: ../pochelper/echo
+      dockerfile: Dockerfile
+    security_opt:
+      - no-new-privileges:true
+    entrypoint: "/app/echo blue"
+    networks:
+      - proxy
+
+  green:
+    <<: *target
+    image: green:latest
+    entrypoint: "/app/echo green"
+
+networks:
+  proxy:
+    external: true

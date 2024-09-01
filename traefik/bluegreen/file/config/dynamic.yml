@@ -1,0 +1,19 @@
+http:
+  routers:
+    bluegreen:
+      entrypoints:
+        - entryPoint-web
+      rule: "Path(`/`)"
+      service: bluegreen
+      middlewares:
+        - bluegreen-retry
+  services:
+    bluegreen:
+      loadBalancer:
+        servers:
+          - url: "http://blue"
+  middlewares:
+    bluegreen-retry:
+      retry:
+        attempts: 4
+        initialInterval: 200ms
