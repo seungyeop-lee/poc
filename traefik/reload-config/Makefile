@@ -14,4 +14,4 @@ down:
 
 .PHONY:log
 log:
-	docker-compose -p traefik logs -f
+	docker compose -p traefik logs -f

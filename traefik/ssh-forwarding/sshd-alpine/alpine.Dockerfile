@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.20.2
 
 # sshd 설치
 RUN apk add --update --no-cache openssh \
