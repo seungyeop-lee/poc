@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: mongo:7.0.14
+    container_name: mongodb
+    hostname: mongodb
+    volumes:
+      - ./initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb-data:/data/db/
+      - mongodb-log:/var/log/mongodb/
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    networks:
+      - mongodb_network
+
+volumes:
+  mongodb-data:
+  mongodb-log:
+
+networks:
+  mongodb_network:
