@@ -7,6 +7,6 @@ class ChatMessageRequest(BaseModel):
 
 
 class CreateChatHistoryRequest(BaseModel):
-    systemPrompt: str = Field(examples=["너는 친절한 어시스턴트야."])
-    contextPrompt: list[ChatMessageRequest] = Field(examples=[[{"role": "user", "message": "너는 누구니?"}]])
-    modelMessage: str = Field(examples=["안녕하세요. 저는 어시스턴트입니다!"])
+    system_prompt: str = Field(examples=["너는 친절한 어시스턴트야."])
+    context_prompt: list[ChatMessageRequest] = Field(examples=[[{"role": "user", "message": "너는 누구니?"}]])
+    assistant_message: str = Field(examples=["안녕하세요. 저는 어시스턴트입니다!"])

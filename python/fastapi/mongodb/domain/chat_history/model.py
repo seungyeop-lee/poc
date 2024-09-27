@@ -10,9 +10,9 @@ class ChatMessage(BaseModel):
 
 
 class ChatHistoryDetail(BaseModel):
-    systemPrompt: str = Field(...)
-    contextPrompt: list[ChatMessage] = Field(...)
-    modelMessage: str = Field(...)
+    system_prompt: str = Field(...)
+    context_prompt: list[ChatMessage] = Field(...)
+    assistant_message: str = Field(...)
 
 
 class ChatHistory(Document):

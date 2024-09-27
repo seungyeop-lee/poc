@@ -18,9 +18,9 @@ router = APIRouter()
 async def create_chat_history(req: CreateChatHistoryRequest):
     chat_history = ChatHistory(
         detail=(ChatHistoryDetail(
-            systemPrompt=req.systemPrompt,
-            contextPrompt=[ChatMessage(role=chat.role, message=chat.message) for chat in req.contextPrompt],
-            modelMessage=req.modelMessage
+            system_prompt=req.system_prompt,
+            context_prompt=[ChatMessage(role=chat.role, message=chat.message) for chat in req.context_prompt],
+            assistant_message=req.assistant_message
         )),
         created_at=datetime.now()
     )
@@ -45,9 +45,9 @@ async def search_chat_history(
 def apply_query(query, search_filter):
     if query:
         search_filter["$or"] = [
-            {"detail.contextPrompt.message": {"$regex": query, "$options": "i"}},
-            {"detail.systemPrompt": {"$regex": query, "$options": "i"}},
-            {"detail.modelMessage": {"$regex": query, "$options": "i"}}
+            {"detail.context_prompt.message": {"$regex": query, "$options": "i"}},
+            {"detail.system_prompt": {"$regex": query, "$options": "i"}},
+            {"detail.assistant_message": {"$regex": query, "$options": "i"}}
         ]
 
 
@@ -78,13 +78,13 @@ async def export_chat_history(ids: List[str] = Body(...)) -> StreamingResponse:
 def mapToCsv(chat_histories: list[ChatHistory]) -> StringIO:
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["id", "systemPrompt", "contextPrompt", "modelMessage", "createdAt"])
+    writer.writerow(["id", "system_prompt", "context_prompt", "assistant_message", "created_at"])
     for chat_history in chat_histories:
         writer.writerow([
             str(chat_history.id),
-            chat_history.detail.systemPrompt,
-            " | ".join([f"{msg.role}: {msg.message}" for msg in chat_history.detail.contextPrompt]),
-            chat_history.detail.modelMessage,
+            chat_history.detail.system_prompt,
+            " | ".join([f"{msg.role}: {msg.message}" for msg in chat_history.detail.context_prompt]),
+            chat_history.detail.assistant_message,
             chat_history.created_at.isoformat()
         ])
     return output
