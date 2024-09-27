@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.4.2
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootPw
+      MYSQL_DATABASE: assistant
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminPw
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+  mongodb:
+    image: mongo:7.0.14
+    volumes:
+      - ./mongodb/initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb-data:/data/db/
+      - mongodb-log:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+
+volumes:
+  mysql-data: { }
+  mongodb-data: { }
+  mongodb-log: { }
