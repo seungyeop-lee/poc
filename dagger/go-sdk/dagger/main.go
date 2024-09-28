@@ -16,19 +16,20 @@ package main
 
 import (
 	"context"
+	"dagger/go-sdk/internal/dagger"
 )
 
 type GoSdk struct{}
 
 // Returns a container that echoes whatever string argument is provided
-func (m *GoSdk) ContainerEcho(stringArg string) *Container {
+func (m *GoSdk) ContainerEcho(stringArg string) *dagger.Container {
 	return dag.Container().
 		From("alpine:latest").
 		WithExec([]string{"echo", stringArg})
 }
 
 // Returns lines that match a pattern in the files of the provided Directory
-func (m *GoSdk) GrepDir(ctx context.Context, directoryArg *Directory, pattern string) (string, error) {
+func (m *GoSdk) GrepDir(ctx context.Context, directoryArg *dagger.Directory, pattern string) (string, error) {
 	return dag.Container().
 		From("alpine:latest").
 		WithMountedDirectory("/mnt", directoryArg).
@@ -37,7 +38,7 @@ func (m *GoSdk) GrepDir(ctx context.Context, directoryArg *Directory, pattern st
 		Stdout(ctx)
 }
 
-func (m *GoSdk) Web(source *Directory) *Container {
+func (m *GoSdk) Web(source *dagger.Directory) *dagger.Container {
 	return dag.Container().
 		From("nginx").
 		WithDirectory("/usr/share/nginx/html", source)
