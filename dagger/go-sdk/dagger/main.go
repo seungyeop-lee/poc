@@ -17,6 +17,9 @@ package main
 import (
 	"context"
 	"dagger/go-sdk/internal/dagger"
+	"strings"
+
+	"github.com/seungyeop-lee/easycmd"
 )
 
 type GoSdk struct{}
@@ -46,4 +49,12 @@ func (m *GoSdk) Web(source *dagger.Directory) *dagger.Container {
 
 func (m *GoSdk) HelloWorld() string {
 	return "Hello LSY!"
+}
+
+func (m *GoSdk) OtherLibrary(cmd string) string {
+	s := strings.Builder{}
+	_ = easycmd.New(func(c *easycmd.Config) {
+		c.StdOut = &s
+	}).Run(cmd)
+	return s.String()
 }

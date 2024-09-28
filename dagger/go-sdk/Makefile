@@ -17,3 +17,7 @@ hello-world:
 .PHONY:echo
 echo:
 	dagger call container-echo --string-arg="Echo LSY!" stdout
+
+.PHONY:other-library
+other-library:
+	dagger call other-library --cmd="whoami"
