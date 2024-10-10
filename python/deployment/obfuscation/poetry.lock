@@ -342,6 +342,51 @@ files = [
 ]
 
 [[package]]
+name = "pyarmor-cli-core-darwin"
+version = "6.5.3"
+description = "Provide pre-built extension modules `pytransform3` and `pyarmor_runtime` for Pyarmor"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp310-none-any.whl", hash = "sha256:274b2fecbaf7d597fd19681199acfeeb9724e3fc20fe3996cb92ae355c686a78"},
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp311-none-any.whl", hash = "sha256:7850e8c07a42c046ef0e31456a05440ecb5017b50af92df564a857ae06eca877"},
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp312-none-any.whl", hash = "sha256:fce0db06b81c0a75a045d5c94fef9b54622a001e566ad110c7dbe28cb9b29859"},
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp37-none-any.whl", hash = "sha256:4d8c56ab2469d05556126f00974dd98b456522ca8e5384f0da490caee5a16195"},
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp38-none-any.whl", hash = "sha256:71113970e178b05400d5e9402c32fd8ae2a82104f4f805c770561cc78c28c046"},
+    {file = "pyarmor.cli.core.darwin-6.5.3-cp39-none-any.whl", hash = "sha256:04e8a2c2b3d28f99e845ca3e0296fb84f9ba31e4cec5de91a83ee980d799d031"},
+]
+
+[[package]]
+name = "pyarmor-cli-core-linux"
+version = "6.5.3"
+description = "Provide pre-built extension modules `pytransform3` and `pyarmor_runtime` for Pyarmor"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyarmor.cli.core.linux-6.5.3-cp310-none-any.whl", hash = "sha256:d62fdc49ed2b5ce81feade3b6fcdd22f4706b41b59061361165c71106305db46"},
+    {file = "pyarmor.cli.core.linux-6.5.3-cp311-none-any.whl", hash = "sha256:a814b92e76960c0c6ccfd22718d01ee2ce676846609d426efc9f170fa0ac37cc"},
+    {file = "pyarmor.cli.core.linux-6.5.3-cp312-none-any.whl", hash = "sha256:bf6d4d38877af4708a419f3efdee9791c07f17e7507c1e803b381bfdcfa0708a"},
+    {file = "pyarmor.cli.core.linux-6.5.3-cp37-none-any.whl", hash = "sha256:cd8251d8c7a06f8a18fe4ca28535ff8026c0d734d63738798196c0e307681223"},
+    {file = "pyarmor.cli.core.linux-6.5.3-cp38-none-any.whl", hash = "sha256:e507c0405960fa2177841b698e1f471477647ae9199102399c7ddef61236f0a5"},
+    {file = "pyarmor.cli.core.linux-6.5.3-cp39-none-any.whl", hash = "sha256:c2aea075a1d0b39c40726957945ee4d019f0b6ae3f48bed5ef8e4fdaf92d6543"},
+]
+
+[[package]]
+name = "pyarmor-cli-core-windows"
+version = "6.5.3"
+description = "Provide pre-built extension modules `pytransform3` and `pyarmor_runtime` for Pyarmor"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyarmor.cli.core.windows-6.5.3-cp310-none-any.whl", hash = "sha256:928f920d03c958118f449157fbf9a573a21ee2c0cace99f347bd6aab7c39849c"},
+    {file = "pyarmor.cli.core.windows-6.5.3-cp311-none-any.whl", hash = "sha256:b7fa2549c9389b325901c2cfc0aa64ba99c0f5da7a8dc4de8315d4cea9d34d86"},
+    {file = "pyarmor.cli.core.windows-6.5.3-cp312-none-any.whl", hash = "sha256:c2dd93840abee252a46e93f7d22900baa2f288a8fe7b67fb2c1ca4afe39655a5"},
+    {file = "pyarmor.cli.core.windows-6.5.3-cp37-none-any.whl", hash = "sha256:0f404625d66f1e27b3a886abe332619fbdf4d6de2612c56474e0de4bd8657deb"},
+    {file = "pyarmor.cli.core.windows-6.5.3-cp38-none-any.whl", hash = "sha256:ba3fa961e1861bce02abd12ae2f939b0f6dcb441d044dc161e082274144474f9"},
+    {file = "pyarmor.cli.core.windows-6.5.3-cp39-none-any.whl", hash = "sha256:c6cfc4f134ee29f773a3dc44634c8353cc0894926891e966d6fc72707fc5a970"},
+]
+
+[[package]]
 name = "pydantic"
 version = "2.9.2"
 description = "Data validation using Python type hints"
@@ -919,4 +964,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12.0,<3.13.0"
-content-hash = "8bcd4a0f74c4f2adde941c31464deae09bf3296be00de7fd8be9a2082d577349"
+content-hash = "34e749b6326c25e5be7fef89e07413d42634c975cbd470fd4fa6451cf8ef1863"

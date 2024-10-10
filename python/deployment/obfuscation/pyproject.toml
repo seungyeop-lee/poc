@@ -12,6 +12,9 @@ uvicorn = {extras = ["standard"], version = "^0.31.1"}
 pyarmor = "^8.5.12"
 pyinstaller = "^6.10.0"
 numpy = "^2.1.2"
+pyarmor-cli-core-windows = "^6.5.3"
+pyarmor-cli-core-linux = "^6.5.3"
+pyarmor-cli-core-darwin = "^6.5.3"
 
 
 [build-system]
