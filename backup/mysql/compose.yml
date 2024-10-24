@@ -1,0 +1,29 @@
+services:
+  source:
+    image: mysql:8.4.3
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d:ro
+      - ./source-initdb.d:/docker-entrypoint-initdb.d
+      - ./dump:/dump
+      - sourcedb-data:/var/lib/mysql
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootPw
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+  target:
+    image: mysql:8.4.3
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d:ro
+      - ./dump:/dump
+      - targetdb-data:/var/lib/mysql
+    environment:
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootPw
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+volumes:
+  sourcedb-data: {}
+  targetdb-data: {}
