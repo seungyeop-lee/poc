@@ -1,0 +1,31 @@
+services:
+  source:
+    image: mongo:8.0.1
+    volumes:
+      - ./source-initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./dump:/dump
+      - source-data:/data/db/
+      - source-log:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootPw
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+  target:
+    image: mongo:8.0.1
+    volumes:
+      - ./dump:/dump
+      - target-data:/data/db/
+      - target-log:/var/log/mongodb/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootPw
+    ports:
+      - "27018:27017"
+    restart: unless-stopped
+volumes:
+  source-data: { }
+  source-log: { }
+  target-data: { }
+  target-log: { }
