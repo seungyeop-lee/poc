@@ -1,32 +1,40 @@
 package poc.java.springsecurity.loginbyjson.server.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
 
 public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Override
     protected String obtainUsername(HttpServletRequest request) {
         return getValue(request, this.getUsernameParameter());
     }
 
+    @Override
     protected String obtainPassword(HttpServletRequest request) {
         return getValue(request, this.getPasswordParameter());
     }
 
     private String getValue(HttpServletRequest request, String key) {
+        Object savedBodyNode = request.getAttribute("bodyNode");
+        if (savedBodyNode != null) {
+            JsonNode savedKeyNode = ((JsonNode) savedBodyNode).get(key);
+            return savedKeyNode == null ? null : savedKeyNode.asText();
+        }
+
         try {
-            String body = new HttpServletRequestWrapper(request)
-                    .getReader()
-                    .lines()
-                    .collect(Collectors.joining());
-            return objectMapper.readTree(body).get(key).asText();
+            JsonNode bodyNode = objectMapper.readTree(StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8));
+            request.setAttribute("bodyNode", bodyNode);
+            JsonNode keyNode = bodyNode.get(key);
+            return keyNode == null ? null : keyNode.asText();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
