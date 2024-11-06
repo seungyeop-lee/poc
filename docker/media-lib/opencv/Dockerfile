@@ -1,5 +1,9 @@
 # mod from https://github.com/gigante/python-opencv
-FROM ubuntu:24.04
+ARG IMAGE_NAME=ubuntu:24.04
+FROM ${IMAGE_NAME}
+
+ARG WITH_FFMPEG=OFF
+ARG WITH_CUDA=OFF
 
 ARG OPENCV_VERSION=4.10.0
 ARG DEBIAN_FRONTEND=noninteractive
@@ -22,7 +26,6 @@ RUN set -ex \
         libtbb12 libtbb-dev \
         libeigen3-dev \
         tesseract-ocr tesseract-ocr-por libtesseract-dev \
-        python3 python3-pip python3-numpy python3-dev \
     && wget -q --no-check-certificate https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -O opencv.zip \
     && wget -q --no-check-certificate https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -O opencv_contrib.zip \
     && unzip -qq opencv.zip -d /opt && rm -rf opencv.zip \
@@ -46,10 +49,10 @@ RUN set -ex \
         -D WITH_GSTREAMER=OFF \
         -D WITH_GTK=OFF \
         -D WITH_QT=OFF \
-        -D WITH_CUDA=OFF \
+        -D WITH_CUDA=${WITH_CUDA} \
         -D WITH_VTK=OFF \
         -D WITH_OPENEXR=OFF \
-        -D WITH_FFMPEG=OFF \
+        -D WITH_FFMPEG=${WITH_FFMPEG} \
         -D WITH_OPENCL=OFF \
         -D WITH_OPENNI=OFF \
         -D WITH_XINE=OFF \
@@ -71,8 +74,6 @@ RUN set -ex \
         /opt/opencv-${OPENCV_VERSION} \
     && make -j$(nproc) \
     && make install \
-    && make -j$(nproc) \
-    && make install \
     && rm -rf /opt/build/* \
     && rm -rf /opt/opencv-${OPENCV_VERSION} \
     && rm -rf /opt/opencv_contrib-${OPENCV_VERSION} \
@@ -88,6 +89,5 @@ RUN set -ex \
         libopenjp2-7-dev \
         libtbb-dev \
         libtesseract-dev \
-        python3-dev \
     && apt-get -qq autoremove \
     && apt-get -qq clean
