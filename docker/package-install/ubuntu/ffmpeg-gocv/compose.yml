@@ -1,0 +1,6 @@
+services:
+  ffmpeg-gocv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
