@@ -30,3 +30,11 @@ cam-to-rtsp-run:
 .PHONY:rtsp-img-rtsp-run
 rtsp-img-rtsp-run:
 	(cd rtsp-img-rtsp && go run main.go)
+
+.PHONY:rtsp-mirror-up
+rtsp-mirror-up:
+	(cd rtsp-mirror && make up)
+
+.PHONY:rtsp-mirror-down
+rtsp-mirror-down:
+	(cd rtsp-mirror && make down)

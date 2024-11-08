@@ -1,0 +1,13 @@
+services:
+  rtsp-mirror:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: sleep infinity
+    networks:
+      - mediamtx
+  
+networks:
+  mediamtx:
+    external: true
