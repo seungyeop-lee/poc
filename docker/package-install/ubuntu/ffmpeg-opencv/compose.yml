@@ -1,0 +1,10 @@
+services:
+  ffmpeg-opencv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BASE_IMAGE=ubuntu:24.04
+        - FFMPEG_VERSION=7.1
+        - OPENCV_VERSION=4.10.0.84
+    command: sleep infinity
