@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/pion/mediadevices/pkg/driver/camera"
-	"gocv.io/x/gocv"
 	"io"
 	"os"
 	"os/exec"
+
+	_ "github.com/pion/mediadevices/pkg/driver/camera"
+	"gocv.io/x/gocv"
 )
 
 func main() {
@@ -65,6 +66,7 @@ func sendVideoToRTSP(rtspURL string, width, height int) (*io.PipeWriter, error) 
 		"-preset", "ultrafast",
 		"-tune", "zerolatency",
 		"-x264-params", "bframes=0",
+		"-g", "60", // 프레임의 2배가 일반적으로 사용됨
 		"-fflags", "nobuffer",
 		"-flags", "low_delay",
 		"-f", "rtsp",

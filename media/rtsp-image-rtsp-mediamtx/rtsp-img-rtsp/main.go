@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"gocv.io/x/gocv"
 	"image"
 	"image/color"
 	"io"
 	"os"
 	"os/exec"
+
+	"gocv.io/x/gocv"
 )
 
 func main() {
@@ -70,6 +71,7 @@ func sendImageToRTSP(rtspURL string, width, height int) (*io.PipeWriter, error) 
 		"-preset", "ultrafast",
 		"-tune", "zerolatency",
 		"-x264-params", "bframes=0",
+		"-g", "60", // 프레임의 2배가 일반적으로 사용됨
 		"-fflags", "nobuffer",
 		"-flags", "low_delay",
 		"-f", "rtsp",
