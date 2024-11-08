@@ -3,4 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - BASE_IMAGE=ubuntu:24.04
+        - FFMPEG_VERSION=7.1
+        - GOCV_VERSION=0.39.0
+        - GOCV_MAKE_TARGET=install
     command: sleep infinity
