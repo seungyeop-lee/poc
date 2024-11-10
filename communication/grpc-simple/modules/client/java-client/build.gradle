@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+group = 'com.seungyeop-lee.poc.communication.grpc-simple.client'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE'
+
+    implementation project(':modules:proto:java')
+}
+
+test {
+    useJUnitPlatform()
+}

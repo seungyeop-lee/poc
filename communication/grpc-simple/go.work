@@ -1,0 +1,7 @@
+go 1.23.3
+
+use (
+	modules/proto/go
+	modules/client/go-client
+	modules/server/go-server
+)

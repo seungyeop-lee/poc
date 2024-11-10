@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package grpcsimple;
+
+option go_package = "github.com/seungyeop-lee/poc/communication/grpc-simple/proto/go/grpcsimple";
+option java_package = "com.seungyeoplee.poc.communication.grpcsimple.proto";
+option java_outer_classname = "GrpcSimpleProto";
+
+service SimpleService {
+  rpc sendData (DataRequest) returns (DataResponse);
+}
+
+message DataRequest {
+  string name = 1;
+  bytes data = 2;
+}
+
+message DataResponse {
+  string resultMessage = 1;
+  bytes resultData = 2;
+}
