@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: java-server
+  rabbitmq:
+    username: admin
+    password: password
