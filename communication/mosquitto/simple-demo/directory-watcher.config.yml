@@ -1,0 +1,33 @@
+watchTargets:
+  - path: 'go-server'
+    lifeCycle:
+      onStartWatch:
+        - "go run main.go"
+      onChange:
+        - "go run main.go"
+    option:
+      excludeDir:
+        - go-server/.idea
+      interruptible: true
+  - path: 'java-server'
+    lifeCycle:
+      onStartWatch:
+        - "./gradlew bootRun"
+      onChange:
+        - "./gradlew bootRun"
+    option:
+      excludeDir:
+        - java-server/.idea
+        - java-server/.gradle
+        - java-server/build
+      interruptible: true
+  - path: 'python-server'
+    lifeCycle:
+      onStartWatch:
+        - "poetry run python mosquitto_python_server/main.py"
+      onChange:
+        - "poetry run python mosquitto_python_server/main.py"
+    option:
+      excludeDir:
+        - python-server/.idea
+      interruptible: true

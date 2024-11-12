@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "mosquitto-python-server"
+version = "0.1.0"
+description = ""
+authors = ["Seungyeop Lee <xbeast7@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+paho-mqtt = "^2.1.0"
+fastapi = {extras = ["standard"], version = "^0.115.4"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

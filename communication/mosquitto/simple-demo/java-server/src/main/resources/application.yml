@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: java-server
+
+mqtt:
+  broker:
+    url: tcp://localhost:1883
+  inboundClientId: java-server-inbound
+  outboundClientId: java-server-outbound
