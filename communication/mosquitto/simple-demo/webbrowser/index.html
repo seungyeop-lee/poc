@@ -1,0 +1,26 @@
+<html>
+    <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+    <script>
+        var client = mqtt.connect('ws://localhost:8000')
+        client.on('connect', function () {
+            client.subscribe('poc/communication/mosquitto/#')
+        })
+        client.on('message', function (topic, message) {
+            // message is Buffer
+            console.log(message.toString())
+            client.end()
+        })
+    </script>
+    <body>
+        <h1>Simple Mosquitto Demo</h1>
+        <p>Open the console to see the message received from the mosquitto broker.</p>
+        <p>Check the mosquitto broker logs to see the message sent from the web browser.</p>
+
+        <button onclick="client.publish('poc/communication/mosquitto/webbrowser', JSON.stringify({
+            name: 'from web browser',
+            currentTime: 1,
+            enable: true,
+            data: 'SGVsbG8gZnJvbSBXZWJicm93c2VyIE1RVFQh' //Hello from Webbrowser MQTT!
+        }))">Send Message</button>
+    </body>
+</html>
