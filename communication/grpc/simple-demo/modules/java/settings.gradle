@@ -1,0 +1,5 @@
+rootProject.name = 'grpc-simple'
+
+include ':proto'
+include ':server'
+include ':client'

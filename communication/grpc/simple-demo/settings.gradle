@@ -1,6 +1,0 @@
-rootProject.name = 'grpc-simple'
-
-include ':modules:proto:java'
-include ':modules:server:java-server'
-include ':modules:client:java-client'
-

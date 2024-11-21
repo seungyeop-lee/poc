@@ -7,7 +7,7 @@ authors = ["seungyeop-lee <xbeast7@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.12"
 grpcio = "^1.67.1"
-python_protobuf = { path = "../../proto/python", develop = true }
+python_protobuf = { path = "../proto", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

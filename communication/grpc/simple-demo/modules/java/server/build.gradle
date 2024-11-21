@@ -35,7 +35,7 @@ dependencies {
 
     implementation 'net.devh:grpc-server-spring-boot-starter:3.1.0.RELEASE'
 
-    implementation project(':modules:proto:java')
+    implementation project(':proto')
 }
 
 tasks.named('test') {
