@@ -1,4 +1,4 @@
-module go-onvif-simple
+module onvif-controller
 
 go 1.23.3
 

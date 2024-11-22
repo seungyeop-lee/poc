@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"go-onvif-simple/internal"
 	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/spf13/cobra"
+
+	"onvif-controller/internal"
 )
 
 func main() {
