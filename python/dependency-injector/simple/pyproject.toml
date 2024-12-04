@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "di-poc-simple"
+version = "0.1.0"
+description = ""
+authors = ["Seungyeop Lee <xbeast7@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dependency-injector = "^4.43.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
