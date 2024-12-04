@@ -1,23 +1,27 @@
 .PHONY:run-plain
 run-plain:
-	python3 main.py
+	poetry run python3 main.py
 
 .PHONY:obfuscation
 obfuscation:
-	pyarmor gen -r -i app
+	poetry run pyarmor gen -r -i app
 
 .PHONY:run-obfuscation
 run-obfuscation:
-	python3 main.py
+	poetry run python3 main-dist.py
 
 .PHONY:build-plain
 build-plain:
-	pyinstaller --onefile main.py
+	poetry run pyinstaller --onefile main.py
 
 .PHONY:build-obfuscation
 build-obfuscation:
-	pyinstaller --onefile main-dist.py
+	poetry run pyinstaller --exclude-module app --onefile main-dist.py
 
-.PHONY:run-packaged
-run-packaged:
+.PHONY:run-packaged-plain
+run-packaged-plain:
 	dist/main
+
+.PHONY:run-packaged-obfuscation
+run-packaged-obfuscation:
+	dist/main-dist
