@@ -1,0 +1,17 @@
+[project]
+name = "multi-app-with-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.115.6",
+    "logic",
+    "marimo[sql]>=0.10.12",
+]
+
+[tool.uv.workspace]
+members = ["logic"]
+
+[tool.uv.sources]
+logic = { workspace = true }
