@@ -51,6 +51,29 @@ export function useFFmpeg() {
       'output.mp4',
     ]);
     return await ffmpeg.readFile('output.mp4');
+
+    // metadata
+    // await ffmpeg.ffprobe(['-v', 'error', file.name, '-o', 'output.txt']);
+    // const data = (await ffmpeg.readFile('output.txt')) as Uint8Array;
+    // console.log(data);
+    // console.log(new TextDecoder().decode(data));
+    // return await ffmpeg.readFile(file.name);
+
+    // demuxing
+    // const resultNum = await ffmpeg.exec(['-i', file.name, '-c', 'copy', '-f', 'null', '-']);
+    // console.log(`demuxing: ${resultNum}`);
+    // if (resultNum !== 0) {
+    //   throw new Error('demuxing failed');
+    // }
+    // return await ffmpeg.readFile(file.name);
+
+    // demuxing + decoding
+    // const resultNum = await ffmpeg.exec(['-i', file.name, '-f', 'null', '-strict', '-2', '-']);
+    // console.log(`demuxing + decoding: ${resultNum}`);
+    // if (resultNum !== 0) {
+    //   throw new Error('demuxing + decoding failed');
+    // }
+    // return await ffmpeg.readFile(file.name);
   };
 
   return {
