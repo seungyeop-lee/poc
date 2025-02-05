@@ -43,9 +43,22 @@ export default function Home() {
                 log(`frameflow 인코딩 완료 - 소요시간: ${endTranscodingTime - startTranscodingTime}ms`);
               }}
             >
-              frameflow
+              FrameFlow <br />
+              인코딩
             </button>
-            <p className="w-36 invisible">temp</p>
+            <button
+              type="button"
+              className="btn w-36"
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = '/original.mp4';
+                a.download = 'original.mp4';
+                a.click();
+              }}
+            >
+              테스트 데이터 <br />
+              다운로드
+            </button>
           </div>
           <div className="flex justify-center items-end">
             <button
