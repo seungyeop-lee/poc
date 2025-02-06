@@ -1,10 +1,10 @@
 'use client';
 
-import useLog from '@/app/useLog';
-import useTranscoding from '@/app/useTranscoding';
+import useTranscoding from '@/app/ffmpeg/useTranscoding';
+import useLog from '@/hooks/useLog';
 import React, {useEffect, useState} from 'react';
 
-export default function Home() {
+export default function FFmpegHome() {
   const { source, frameflow, ffmpeg, transcoded } = useTranscoding();
   const { logDivRef, messageRef, log } = useLog();
   const [preset, setPreset] = useState('ultrafast');
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="w-svh h-svh p-5 flex flex-col justify-center items-center space-y-5">
       <div className="flex justify-center">
-        <h1 className="text-2xl">Video Encoding on Web Demo</h1>
+        <h1 className="text-2xl">Video Encoding by FFmpeg WASM Demo</h1>
       </div>
       <div className="grow flex flex-col w-[100%] md:w-[80%] xl:w-[60%] space-y-3 overflow-y-auto">
         <div className="space-y-3">

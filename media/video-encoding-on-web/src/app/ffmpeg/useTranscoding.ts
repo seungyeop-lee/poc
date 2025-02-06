@@ -1,8 +1,8 @@
-import {useFFmpeg} from '@/app/useFFmpeg';
+import {useFFmpeg} from '@/hooks/useFFmpeg';
 import downloadFile from '@/lib/downloadFile';
 import {FFmpeg} from '@ffmpeg/ffmpeg';
 import React, {useState} from 'react';
-import useFrameFlow from "@/app/useFrameFlow";
+import useFrameFlow from "@/hooks/useFrameFlow";
 
 export default function useTranscoding() {
   const { load, transcoding: ffmpegTranscoding } = useFFmpeg();
