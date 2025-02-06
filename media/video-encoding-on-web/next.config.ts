@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
   headers: async () => {
@@ -16,6 +16,15 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/test/(.*)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          }
+        ]
+      }
     ];
   }
 };

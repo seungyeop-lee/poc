@@ -51,7 +51,7 @@ export default function Home() {
               className="btn w-36"
               onClick={() => {
                 const a = document.createElement('a');
-                a.href = '/original.mp4';
+                a.href = '/test/original.mp4';
                 a.download = 'original.mp4';
                 a.click();
               }}
