@@ -51,8 +51,8 @@ export default function FFmpegHome() {
               className="btn w-36"
               onClick={() => {
                 const a = document.createElement('a');
-                a.href = '/test/original.mp4';
-                a.download = 'original.mp4';
+                a.href = '/test/target.mp4';
+                a.download = 'target.mp4';
                 a.click();
               }}
             >
