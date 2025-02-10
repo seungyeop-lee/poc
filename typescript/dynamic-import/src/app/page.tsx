@@ -1,20 +1,20 @@
-import { Api } from '../lib/api/api';
-import { logic } from '@/lib/logic/logic';
+import Link from "next/link";
 
-export default async function Home() {
-  const api = new Api();
-  const apiResult = await api.get('/test');
-  const logicResult = logic();
-
+export default function Home() {
   return (
-    <div className="flex flex-col justify-center items-center h-screen gap-4">
-      <h1 className="text-2xl">API Test Result</h1>
-      <div className="p-4 bg-gray-100 rounded">
-        {apiResult.data}
+    <div className="w-svh h-svh p-5 flex flex-col justify-center items-center space-y-5">
+      <div className="flex justify-center">
+        <h1 className="text-2xl">Dynamic Import Demo</h1>
       </div>
-      <h1 className="text-2xl">Logic Test Result</h1>
-      <div className="p-4 bg-gray-100 rounded">
-        {logicResult}
+      <div className="grow flex flex-col w-[100%] md:w-[80%] xl:w-[60%]">
+        <ul className="space-y-3">
+          <li className="p-4 bg-slate-200 rounded w-32">
+            <Link href={'/csr'}>CSR</Link>
+          </li>
+          <li className="p-4 bg-slate-200 rounded w-32">
+            <Link href={'/ssr'}>SSR</Link>
+          </li>
+        </ul>
       </div>
     </div>
   );
