@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+html, body {
+    margin: 0; /* 기본 margin 제거 */
+    padding: 0; /* 기본 padding 제거 */
+    height: 100%; /* body 높이를 100%로 설정 */
+}

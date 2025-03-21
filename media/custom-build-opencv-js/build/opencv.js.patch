@@ -1,0 +1,47 @@
+--- opencv.original.js	2025-03-21 14:04:47
++++ opencv.js	2025-03-21 14:07:35
+@@ -4,11 +4,6 @@
+     define(function () {
+       return (root.cv = factory());
+     });
+-  } else if (typeof module === 'object' && module.exports) {
+-    // Node. Does not work with strict CommonJS, but
+-    // only CommonJS-like environments that support module.exports,
+-    // like Node.
+-    module.exports = factory();
+   } else if (typeof window === 'object') {
+     // Browser globals
+     root.cv = factory();
+@@ -19,7 +14,7 @@
+     // Other shells, e.g. d8
+     root.cv = factory();
+   }
+-}(this, function () {
++}(globalThis, function () {
+   var cv = (() => {
+   var _scriptName = typeof document != 'undefined' ? document.currentScript?.src : undefined;
+   if (typeof __filename != 'undefined') _scriptName = _scriptName || __filename;
+@@ -34,16 +29,12 @@
+ }
+ );
+ })();
+-if (typeof exports === 'object' && typeof module === 'object') {
+-  module.exports = cv;
+-  // This default export looks redundant, but it allows TS to import this
+-  // commonjs style module.
+-  module.exports.default = cv;
+-} else if (typeof define === 'function' && define['amd'])
+-  define([], () => cv);
+-
+   if (typeof Module === 'undefined')
+-    Module = {};
++    var Module = {};
+   return cv(Module);
+ }));
+-        
+\ No newline at end of file
++
++const cv = globalThis.cv;
++
++export default cv;
++export { cv };
