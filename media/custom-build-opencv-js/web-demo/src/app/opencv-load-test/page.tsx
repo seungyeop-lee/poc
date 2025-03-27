@@ -12,6 +12,8 @@ export default function OpenCVLoadTestPage() {
 
     const sift = new cv.SIFT(1000)
     setLoadSift(!!sift)
+
+    console.dir(cv)
   }, [])
 
   return (
