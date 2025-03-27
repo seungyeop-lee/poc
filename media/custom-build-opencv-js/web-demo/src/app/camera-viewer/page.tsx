@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import useVideoSource from '@/app/to-grayscale/hooks/useVideoSource'
+import useVideoSource from '@/hooks/useVideoSource'
 import { getVideoInfo } from '@/utils/video-utils'
 
 export default function Page() {

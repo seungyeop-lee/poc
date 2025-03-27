@@ -3,8 +3,8 @@
 import { cv } from '@/libs/opencv/opencv'
 import { useEffect, useRef, useState } from 'react'
 import VideoFileSelector from '@/app/to-grayscale/components/VideoFileSelector'
-import useVideoSource from '@/app/to-grayscale/hooks/useVideoSource'
-import useVideoCap from '@/app/to-grayscale/hooks/useVideoCap'
+import useVideoSource from '@/hooks/useVideoSource'
+import useVideoCap from '@/hooks/useVideoCap'
 import { getVideoInfo } from '@/utils/video-utils'
 
 export default function Page() {
