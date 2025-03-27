@@ -188,6 +188,7 @@ features2d = {'Feature2D': ['detect', 'compute', 'detectAndCompute', 'descriptor
               'SIFT': ['create'], #SIFT 알고리즘 추가
               'DescriptorMatcher': ['add', 'clear', 'empty', 'isMaskSupported', 'train', 'match', 'knnMatch', 'radiusMatch', 'clone', 'create'],
               'BFMatcher': ['isMaskSupported', 'create'],
+              'FlannBasedMatcher': ['isMaskSupported', 'create'],
               '': ['drawKeypoints', 'drawMatches', 'drawMatchesKnn']}
 
 photo = {'': ['createAlignMTB', 'createCalibrateDebevec', 'createCalibrateRobertson', \
@@ -234,8 +235,7 @@ calib3d = {
     'UsacParams': ['UsacParams']
 }
 
-# white_list = makeWhiteList([core, imgproc, objdetect, video, dnn, features2d, photo, calib3d])
-white_list = makeWhiteList([core, imgproc, features2d])
+white_list = makeWhiteList([core, imgproc, objdetect, video, dnn, features2d, photo, calib3d])
 
 # namespace_prefix_override['dnn'] = ''  # compatibility stuff (enabled by default)
 # namespace_prefix_override['aruco'] = ''  # compatibility stuff (enabled by default)
