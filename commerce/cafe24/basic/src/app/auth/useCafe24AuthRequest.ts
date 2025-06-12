@@ -1,8 +1,8 @@
-import {makeHmac} from "@/utils/crypto";
 import {redirect, useSearchParams} from "next/navigation";
 import {LocalStorage} from "@/utils/LocalStorage";
 import buildAuthRedirectUrl from "@/server/buildAuthRedirectUrl";
 import {useEffect, useState} from "react";
+import checkHmac from "@/server/checkHmac";
 
 export function useCafe24AuthRequest() {
     const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ export function useCafe24AuthRequest() {
     }, [])
 
     return {
-        isValid: () => {
+        isValid: async () => {
             const queryString = searchParams.toString();
             const truncatedQuery = queryString.substring(0, queryString.lastIndexOf('&'));
             const hmacValue = decodeURIComponent(searchParams.get('hmac') || '');
@@ -29,9 +29,7 @@ export function useCafe24AuthRequest() {
                 return false;
             }
 
-            const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY!;
-            const madeHmac = makeHmac(truncatedQuery, SECRET_KEY);
-            return madeHmac === hmacValue
+            return await checkHmac(hmacValue, truncatedQuery)
         },
         authUrl,
         requestAuth: () => {

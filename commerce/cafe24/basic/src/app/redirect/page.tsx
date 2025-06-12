@@ -28,7 +28,7 @@ export default function RedirectPage() {
     return (
         <NoSSRWrapper>
             <div className="p-10 space-y-3">
-                <p>HMAC Valid: {isValid() ? 'yes' : 'no'}</p>
+                <p>State Valid: {isValid() ? 'yes' : 'no'}</p>
                 <button className="btn" onClick={async () => {
                     const tokenInfo = await requestTokenByCode();
                     setTokenInfo(tokenInfo);
