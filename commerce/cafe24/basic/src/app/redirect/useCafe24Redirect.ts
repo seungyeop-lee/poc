@@ -3,6 +3,7 @@ import {LocalStorage} from "@/utils/LocalStorage";
 import requestTokenByCode from "@/server/requestTokenByCode";
 import requestTokenByRefreshToken from "@/server/requestTokenByRefreshToken";
 import requestListAllProduct from "@/server/requestListAllProduct";
+import requestOrderInfo from "@/server/requestOrderInfo";
 
 export function useCafe24Redirect() {
     const searchParams = useSearchParams();
@@ -25,6 +26,10 @@ export function useCafe24Redirect() {
         requestListAllProduct: async (accessToken: string) => {
             const mallId = LocalStorage.getItem('mallId') || '';
             return await requestListAllProduct(mallId, accessToken);
+        },
+        requestOrderInfo: async (accessToken: string, orderId: string) => {
+            const mallId = LocalStorage.getItem('mallId') || '';
+            return await requestOrderInfo(mallId, accessToken, orderId);
         }
     }
 }
