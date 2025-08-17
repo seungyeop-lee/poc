@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = ""           # 예: "my-nextjs-stack"
+s3_prefix = ""            # 예: "nextjs-artifacts"
+s3_bucket = ""            # 예: "my-sam-deploy-bucket"
+region = "ap-northeast-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = [""] # 예: ["myfunction=123456789012.dkr.ecr.us-east-1.amazonaws.com/myfunction"]
