@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: |
+  CloudFront Distribution
+  
+Parameters:
+  AcmCertificateArnParameter:
+    Type: String
+    Description: ARN for the ACM certificate in us-east-1.
+  CustomDomainName:
+    Type: String
+    Description: Custom domain name for CloudFront distribution (e.g., a.com).
+  OriginDomainName:
+    Type: String
+    Description: Origin domain name (will be updated when SAM stack deploys)
+    Default: "example.com"
+
+Resources:
+  NextjsCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: 'CloudFront for serverless API'
+        Aliases:
+          - !Ref CustomDomainName
+        Origins:
+          - Id: 'ApiGatewayOrigin'
+            DomainName: !Ref OriginDomainName  # 파라미터로 동적 설정
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: 'https-only'
+        DefaultCacheBehavior:
+          TargetOriginId: 'ApiGatewayOrigin'
+          ViewerProtocolPolicy: 'redirect-to-https'
+          AllowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']
+          CachedMethods: ['GET', 'HEAD']
+          Compress: true
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'  # CachingDisabled (managed policy)
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArnParameter
+          SslSupportMethod: 'sni-only'
+          MinimumProtocolVersion: 'TLSv1.2_2021'
+
+Outputs:
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref NextjsCloudFrontDistribution
+    Export:
+      Name: !Sub '${AWS::StackName}:CloudFrontDistributionId'
