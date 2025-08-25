@@ -65,9 +65,7 @@ Resources:
           AllowedMethods: ['GET', 'HEAD', 'OPTIONS']
           CachedMethods: ['GET', 'HEAD']
           Compress: true
-          ForwardedValues:
-            QueryString: true
-            Headers: ['Authorization', 'Content-Type']
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'  # CachingDisabled (managed policy)
         ViewerCertificate:
           AcmCertificateArn: !Ref AcmCertificateArnParameter
           SslSupportMethod: 'sni-only'
