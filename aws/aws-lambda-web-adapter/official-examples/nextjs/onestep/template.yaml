@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  serverless-nextjs-demo
+  Sample SAM Template for serverless-nextjs-demo
+
+Parameters:
+  AcmCertificateArnParameter:
+    Type: String
+    Description: ARN for the ACM certificate in us-east-1.
+  CustomDomainName:
+    Type: String
+    Description: Custom domain name for CloudFront distribution (e.g., a.com).
+
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  NextjsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: app/
+      MemorySize: 256
+      PackageType: Image
+      Architectures:
+        - arm64
+      Events:
+        RootEvent:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: any
+        ProxyEvent:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: any
+    Metadata:
+      DockerTag: v1
+      DockerContext: ./app
+      Dockerfile: Dockerfile
+  NextjsFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${NextjsFunction}
+      RetentionInDays: 7
+  NextjsCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: 'CloudFront for serverless API'
+        Aliases:
+          - !Ref CustomDomainName
+        Origins:
+          - Id: 'ApiGatewayOrigin'
+            DomainName: !Sub '${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: 'https-only'
+        DefaultCacheBehavior:
+          TargetOriginId: 'ApiGatewayOrigin'
+          ViewerProtocolPolicy: 'redirect-to-https'
+          AllowedMethods: ['GET', 'HEAD', 'OPTIONS']
+          CachedMethods: ['GET', 'HEAD']
+          Compress: true
+          ForwardedValues:
+            QueryString: true
+            Headers: ['Authorization', 'Content-Type']
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArnParameter
+          SslSupportMethod: 'sni-only'
+          MinimumProtocolVersion: 'TLSv1.2_2021'
+
+Outputs:
+  NextjsFunctionURL:
+    Description: API Gateway endpoint URL for Next.js
+    Value: !Sub https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/
+  NextjsCloudFrontDistributionURL:
+    Description: CloudFront distribution URL for Next.js
+    Value: !Sub https://${NextjsCloudFrontDistribution}.cloudfront.net/

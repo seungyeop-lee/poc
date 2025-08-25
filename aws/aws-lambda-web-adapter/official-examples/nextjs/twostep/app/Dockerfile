@@ -1,0 +1,52 @@
+# syntax=docker.io/docker/dockerfile:1
+
+FROM public.ecr.aws/docker/library/node:20.19.4-alpine3.22 AS base
+
+# 1. Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+
+# 2. Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# 상황 별 env 주입 시 아래 명령어 사용
+# COPY .env.production
+RUN npm run build
+
+# 3. Production image, copy all the files and run next
+FROM base AS runner
+
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
+
+ENV NODE_ENV=production
+ENV AWS_LWA_ENABLE_COMPRESSION=true
+
+WORKDIR /app
+
+COPY --from=builder /app/src/public ./public
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/run.sh ./run.sh
+RUN chmod +x /app/run.sh
+RUN ln -s /tmp/cache ./.next/cache
+
+ENV PORT=3000
+EXPOSE 3000
+
+CMD [ "/app/run.sh" ]
