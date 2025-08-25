@@ -75,6 +75,6 @@ Outputs:
   NextjsFunctionURL:
     Description: API Gateway endpoint URL for Next.js
     Value: !Sub https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/
-  NextjsCloudFrontDistributionURL:
-    Description: CloudFront distribution URL for Next.js
-    Value: !Sub https://${NextjsCloudFrontDistribution}.cloudfront.net/
+  NextjsCloudFrontDistributionDomainName:
+    Description: CloudFront distribution DomainName for Next.js
+    Value: !Sub ${NextjsCloudFrontDistribution.DomainName}
