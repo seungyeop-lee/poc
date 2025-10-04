@@ -14,6 +14,9 @@ export async function cropAndTrimVideo(
   file: File,
   croppedAreaPixels: CroppedAreaPixels,
   trimRange: TrimRange,
+  outputWidth?: number,
+  outputHeight?: number,
+  outputFormat?: string,
   onProgress?: (progress: number) => void
 ): Promise<Blob> {
   const {
@@ -23,16 +26,26 @@ export async function cropAndTrimVideo(
     ALL_FORMATS,
     BlobSource,
     WebMOutputFormat,
+    Mp4OutputFormat,
     BufferTarget,
   } = await import('mediabunny');
+
+  const finalWidth = outputWidth ?? Math.round(croppedAreaPixels.width);
+  const finalHeight = outputHeight ?? Math.round(croppedAreaPixels.height);
+  const finalFormat = outputFormat ?? 'video/webm';
 
   const input = new Input({
     formats: ALL_FORMATS,
     source: new BlobSource(file),
   });
 
+  // 포맷에 따라 적절한 OutputFormat 선택
+  const format = finalFormat === 'video/mp4'
+    ? new Mp4OutputFormat()
+    : new WebMOutputFormat();
+
   const output = new Output({
-    format: new WebMOutputFormat(),
+    format,
     target: new BufferTarget(),
   });
 
@@ -46,6 +59,9 @@ export async function cropAndTrimVideo(
         width: Math.round(croppedAreaPixels.width),
         height: Math.round(croppedAreaPixels.height),
       },
+      width: finalWidth,
+      height: finalHeight,
+      fit: 'fill', // width와 height를 정확히 맞춤
     },
     trim: trimRange,
   });
@@ -61,7 +77,7 @@ export async function cropAndTrimVideo(
     throw new Error('No buffer generated');
   }
 
-  return new Blob([buffer], { type: 'video/webm' });
+  return new Blob([buffer], { type: finalFormat });
 }
 
 export function checkWebCodecsSupport(): boolean {

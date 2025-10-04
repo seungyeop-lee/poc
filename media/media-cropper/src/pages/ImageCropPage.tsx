@@ -1,8 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
+import UpscaleControls from '../components/UpscaleControls.tsx';
+import FormatSelector from '../components/FormatSelector.tsx';
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
+import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
 
 interface LocationState {
   file: File;
@@ -27,9 +30,31 @@ function ImageCropPage() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [outputWidth, setOutputWidth] = useState(800);
+  const [outputHeight, setOutputHeight] = useState(600);
+  const [lockAspectRatio, setLockAspectRatio] = useState(false);
+  const [outputFormat, setOutputFormat] = useState('image/jpeg');
+  const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function checkFormats() {
+      const formats = ['image/jpeg', 'image/png', 'image/webp'];
+      const supported = [];
+      for (const format of formats) {
+        const isSupported = await checkImageFormatSupport(format);
+        if (isSupported) {
+          supported.push(format);
+        }
+      }
+      setSupportedFormats(supported);
+    }
+    checkFormats();
+  }, []);
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
+    setOutputWidth(Math.round(croppedAreaPixels.width));
+    setOutputHeight(Math.round(croppedAreaPixels.height));
   }, []);
 
   const handleCrop = async () => {
@@ -37,7 +62,13 @@ function ImageCropPage() {
 
     setIsProcessing(true);
     try {
-      const blob = await cropImage(state.fileUrl, croppedAreaPixels);
+      const blob = await cropImage(
+        state.fileUrl,
+        croppedAreaPixels,
+        outputWidth,
+        outputHeight,
+        outputFormat
+      );
       const url = URL.createObjectURL(blob);
       setCroppedImageUrl(url);
     } catch (error) {
@@ -53,7 +84,8 @@ function ImageCropPage() {
       fetch(croppedImageUrl)
         .then((res) => res.blob())
         .then((blob) => {
-          downloadBlob(blob, `cropped-${Date.now()}.jpg`);
+          const ext = outputFormat.split('/')[1];
+          downloadBlob(blob, `cropped-${Date.now()}.${ext}`);
         });
     }
   };
@@ -109,6 +141,22 @@ function ImageCropPage() {
               onZoomChange={setZoom}
               aspect={aspect}
               onAspectChange={setAspect}
+            />
+
+            <UpscaleControls
+              outputWidth={outputWidth}
+              outputHeight={outputHeight}
+              onWidthChange={setOutputWidth}
+              onHeightChange={setOutputHeight}
+              lockAspectRatio={lockAspectRatio}
+              onLockAspectRatioChange={setLockAspectRatio}
+            />
+
+            <FormatSelector
+              mediaType="image"
+              selectedFormat={outputFormat}
+              onFormatChange={setOutputFormat}
+              supportedFormats={supportedFormats}
             />
 
             <button

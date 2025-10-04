@@ -3,8 +3,11 @@ import { useLocation, useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
 import TrimControls from '../components/TrimControls.tsx';
+import UpscaleControls from '../components/UpscaleControls.tsx';
+import FormatSelector from '../components/FormatSelector.tsx';
 import { cropAndTrimVideo, checkWebCodecsSupport } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
+import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 
 interface LocationState {
   file: File;
@@ -35,6 +38,11 @@ function VideoCropPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
+  const [outputWidth, setOutputWidth] = useState(1280);
+  const [outputHeight, setOutputHeight] = useState(720);
+  const [lockAspectRatio, setLockAspectRatio] = useState(false);
+  const [outputFormat, setOutputFormat] = useState('video/webm');
+  const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -46,8 +54,16 @@ function VideoCropPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const formats = ['video/webm', 'video/mp4'];
+    const supported = formats.filter(checkVideoFormatSupport);
+    setSupportedFormats(supported);
+  }, []);
+
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
+    setOutputWidth(Math.round(croppedAreaPixels.width));
+    setOutputHeight(Math.round(croppedAreaPixels.height));
   }, []);
 
   const handleCropAndTrim = async () => {
@@ -61,6 +77,9 @@ function VideoCropPage() {
         state.file,
         croppedAreaPixels,
         { start: startTime, end: endTime },
+        outputWidth,
+        outputHeight,
+        outputFormat,
         (p) => setProgress(p)
       );
       const url = URL.createObjectURL(blob);
@@ -78,7 +97,8 @@ function VideoCropPage() {
       fetch(croppedVideoUrl)
         .then((res) => res.blob())
         .then((blob) => {
-          downloadBlob(blob, `cropped-video-${Date.now()}.webm`);
+          const ext = outputFormat.split('/')[1];
+          downloadBlob(blob, `cropped-video-${Date.now()}.${ext}`);
         });
     }
   };
@@ -166,6 +186,22 @@ function VideoCropPage() {
                 onEndTimeChange={setEndTime}
               />
             )}
+
+            <UpscaleControls
+              outputWidth={outputWidth}
+              outputHeight={outputHeight}
+              onWidthChange={setOutputWidth}
+              onHeightChange={setOutputHeight}
+              lockAspectRatio={lockAspectRatio}
+              onLockAspectRatioChange={setLockAspectRatio}
+            />
+
+            <FormatSelector
+              mediaType="video"
+              selectedFormat={outputFormat}
+              onFormatChange={setOutputFormat}
+              supportedFormats={supportedFormats}
+            />
 
             <button
               onClick={handleCropAndTrim}

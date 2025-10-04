@@ -7,7 +7,10 @@ interface CroppedAreaPixels {
 
 export async function cropImage(
   imageSrc: string,
-  croppedAreaPixels: CroppedAreaPixels
+  croppedAreaPixels: CroppedAreaPixels,
+  outputWidth?: number,
+  outputHeight?: number,
+  outputFormat?: string
 ): Promise<Blob> {
   const image = await loadImage(imageSrc);
   const canvas = document.createElement('canvas');
@@ -17,8 +20,12 @@ export async function cropImage(
     throw new Error('Canvas context not available');
   }
 
-  canvas.width = croppedAreaPixels.width;
-  canvas.height = croppedAreaPixels.height;
+  const finalWidth = outputWidth ?? croppedAreaPixels.width;
+  const finalHeight = outputHeight ?? croppedAreaPixels.height;
+  const finalFormat = outputFormat ?? 'image/jpeg';
+
+  canvas.width = finalWidth;
+  canvas.height = finalHeight;
 
   ctx.drawImage(
     image,
@@ -28,8 +35,8 @@ export async function cropImage(
     croppedAreaPixels.height,
     0,
     0,
-    croppedAreaPixels.width,
-    croppedAreaPixels.height
+    finalWidth,
+    finalHeight
   );
 
   return new Promise((resolve, reject) => {
@@ -39,7 +46,7 @@ export async function cropImage(
       } else {
         reject(new Error('Canvas toBlob failed'));
       }
-    }, 'image/jpeg', 0.95);
+    }, finalFormat, 0.95);
   });
 }
 
