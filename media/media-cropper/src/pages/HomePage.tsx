@@ -10,6 +10,13 @@ function HomePage() {
     if (file.type.startsWith('image/')) {
       navigate('/image-crop', { state: { file, fileUrl } });
     } else if (file.type.startsWith('video/')) {
+      // Safari 브라우저 체크
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      if (isSafari) {
+        alert('Safari 브라우저에서는 비디오 편집을 지원하지 않습니다. Chrome, Firefox 또는 Edge 브라우저를 사용해주세요.');
+        URL.revokeObjectURL(fileUrl);
+        return;
+      }
       navigate('/video-crop', { state: { file, fileUrl } });
     } else {
       alert('이미지 또는 비디오 파일만 업로드할 수 있습니다.');
