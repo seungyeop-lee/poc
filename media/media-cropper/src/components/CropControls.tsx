@@ -11,6 +11,13 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
   const [isFreeMode, setIsFreeMode] = useState(false);
   const [aspectValue, setAspectValue] = useState(1.0);
 
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (isNaN(value)) return;
+    const clamped = Math.max(1, Math.min(3, value));
+    onZoomChange(clamped);
+  };
+
   const aspectRatios = [
     { label: '1:1', value: 1 },
     { label: '4:3', value: 4 / 3 },
@@ -24,11 +31,29 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
     onAspectChange(value);
   };
 
+  const handleAspectInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    if (isNaN(value)) return;
+    const clamped = Math.max(0.5, Math.min(3.0, value));
+    setAspectValue(clamped);
+    onAspectChange(clamped);
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Zoom: {zoom.toFixed(1)}x
+          Zoom:
+          <input
+            type="number"
+            min={1}
+            max={3}
+            step={0.1}
+            value={zoom}
+            onChange={handleZoomInputChange}
+            className="w-16 mx-2 px-2 py-1 border rounded"
+          />
+          x
         </label>
         <input
           type="range"
@@ -76,7 +101,17 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
         {isFreeMode && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Aspect Ratio: {aspectValue.toFixed(2)}:1
+              Aspect Ratio:
+              <input
+                type="number"
+                min={0.5}
+                max={3.0}
+                step={0.01}
+                value={aspectValue}
+                onChange={handleAspectInputChange}
+                className="w-16 mx-2 px-2 py-1 border rounded"
+              />
+              :1
             </label>
             <input
               type="range"
