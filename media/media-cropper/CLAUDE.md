@@ -34,13 +34,20 @@ npm run preview
 
 ### 프로젝트 구조
 - `src/routes.ts`: 라우터 설정 (`createBrowserRouter` 사용)
-- `src/App.tsx`: 메인 앱 컴포넌트
+  - `/`: 홈페이지 (이미지/비디오 선택)
+  - `/image-crop`: 이미지 크롭 페이지
+  - `/video-crop`: 비디오 크롭/트림 페이지
 - `src/main.tsx`: React 앱 진입점
+- `src/pages/`: 페이지 컴포넌트 (HomePage, ImageCropPage, VideoCropPage)
+- `src/components/`: 재사용 가능 컴포넌트 (FileUploader, CropControls, TrimControls)
+- `src/utils/`: 미디어 처리 유틸리티
+  - `cropImage.ts`: Canvas API 기반 이미지 크롭 (JPEG 출력)
+  - `cropVideo.ts`: mediabunny 기반 비디오 크롭/트림 (WebM 출력)
 
 ### 브라우저 기술 활용
-- **WebCodecs API**: 고성능 비디오 인코딩/디코딩
-- **Canvas API**: 이미지 처리
-- **File API**: 로컬 파일 접근
+- **WebCodecs API**: 고성능 비디오 인코딩/디코딩 (`checkWebCodecsSupport()`로 지원 확인)
+- **Canvas API**: 이미지 처리 및 크롭
+- **File API**: 로컬 파일 접근 및 다운로드
 
 모든 미디어 처리는 클라이언트에서만 수행되며 서버 전송이 없습니다.
 
@@ -48,3 +55,12 @@ npm run preview
 - ESLint + Prettier 설정됨
 - TypeScript strict mode 권장
 - React 19 최신 기능 활용 (Compiler 등)
+
+## 라이브러리 작업 가이드
+핵심 라이브러리(React, react-router, react-easy-crop, mediabunny, TailwindCSS 등)와 관련된 작업을 수행할 경우:
+1. **context7 MCP를 통해 최신 문서 정보를 먼저 확인**
+   - `mcp__context7__resolve-library-id`로 라이브러리 ID 조회
+   - `mcp__context7__get-library-docs`로 공식 문서 및 예제 획득
+2. **획득한 공식 자료를 바탕으로 작업 진행**
+   - 추측하지 말고 문서화된 API 및 베스트 프랙티스 준수
+   - 버전별 차이나 최신 기능 변경사항 반영
