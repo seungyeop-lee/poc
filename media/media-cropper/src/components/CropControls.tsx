@@ -67,9 +67,7 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Aspect Ratio
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Aspect Ratio</label>
         <div className="flex gap-2">
           {aspectRatios.map((ratio) => (
             <button
@@ -89,8 +87,8 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   : !isFreeMode && aspect === ratio.value
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               {ratio.label}
@@ -99,7 +97,7 @@ function CropControls({ zoom, onZoomChange, aspect, onAspectChange }: CropContro
         </div>
 
         {isFreeMode && (
-          <div>
+          <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Aspect Ratio:
               <input
