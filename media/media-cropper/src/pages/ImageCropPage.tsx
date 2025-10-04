@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
-import UpscaleControls from '../components/UpscaleControls.tsx';
+import ResizeScaleSlider from '../components/ResizeScaleSlider.tsx';
 import FormatSelector from '../components/FormatSelector.tsx';
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
@@ -26,9 +26,9 @@ function ImageCropPage() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [scale, setScale] = useState(1.0);
   const [outputWidth, setOutputWidth] = useState(800);
   const [outputHeight, setOutputHeight] = useState(600);
-  const [lockAspectRatio, setLockAspectRatio] = useState(false);
   const [outputFormat, setOutputFormat] = useState('image/jpeg');
   const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
 
@@ -49,9 +49,14 @@ function ImageCropPage() {
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
-    setOutputWidth(Math.round(croppedAreaPixels.width));
-    setOutputHeight(Math.round(croppedAreaPixels.height));
   }, []);
+
+  useEffect(() => {
+    if (croppedAreaPixels) {
+      setOutputWidth(Math.round(croppedAreaPixels.width * scale));
+      setOutputHeight(Math.round(croppedAreaPixels.height * scale));
+    }
+  }, [scale, croppedAreaPixels]);
 
   const handleCrop = async () => {
     if (!fileUrl || !croppedAreaPixels) return;
@@ -139,14 +144,14 @@ function ImageCropPage() {
               onAspectChange={setAspect}
             />
 
-            <UpscaleControls
-              outputWidth={outputWidth}
-              outputHeight={outputHeight}
-              onWidthChange={setOutputWidth}
-              onHeightChange={setOutputHeight}
-              lockAspectRatio={lockAspectRatio}
-              onLockAspectRatioChange={setLockAspectRatio}
-            />
+            {croppedAreaPixels && (
+              <ResizeScaleSlider
+                scale={scale}
+                onScaleChange={setScale}
+                cropAreaWidth={croppedAreaPixels.width}
+                cropAreaHeight={croppedAreaPixels.height}
+              />
+            )}
 
             <FormatSelector
               mediaType="image"

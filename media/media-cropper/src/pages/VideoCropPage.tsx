@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
 import TrimControls from '../components/TrimControls.tsx';
-import UpscaleControls from '../components/UpscaleControls.tsx';
+import ResizeScaleSlider from '../components/ResizeScaleSlider.tsx';
 import FormatSelector from '../components/FormatSelector.tsx';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
@@ -34,9 +34,9 @@ function VideoCropPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
+  const [scale, setScale] = useState(1.0);
   const [outputWidth, setOutputWidth] = useState(1280);
   const [outputHeight, setOutputHeight] = useState(720);
-  const [lockAspectRatio, setLockAspectRatio] = useState(false);
   const [outputFormat, setOutputFormat] = useState('video/webm');
   const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
@@ -61,9 +61,14 @@ function VideoCropPage() {
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
-    setOutputWidth(Math.round(croppedAreaPixels.width));
-    setOutputHeight(Math.round(croppedAreaPixels.height));
   }, []);
+
+  useEffect(() => {
+    if (croppedAreaPixels) {
+      setOutputWidth(Math.round(croppedAreaPixels.width * scale));
+      setOutputHeight(Math.round(croppedAreaPixels.height * scale));
+    }
+  }, [scale, croppedAreaPixels]);
 
   const handleCropAndTrim = async () => {
     if (!file || !croppedAreaPixels) return;
@@ -203,14 +208,14 @@ function VideoCropPage() {
               />
             )}
 
-            <UpscaleControls
-              outputWidth={outputWidth}
-              outputHeight={outputHeight}
-              onWidthChange={setOutputWidth}
-              onHeightChange={setOutputHeight}
-              lockAspectRatio={lockAspectRatio}
-              onLockAspectRatioChange={setLockAspectRatio}
-            />
+            {croppedAreaPixels && (
+              <ResizeScaleSlider
+                scale={scale}
+                onScaleChange={setScale}
+                cropAreaWidth={croppedAreaPixels.width}
+                cropAreaHeight={croppedAreaPixels.height}
+              />
+            )}
 
             <FormatSelector
               mediaType="video"
