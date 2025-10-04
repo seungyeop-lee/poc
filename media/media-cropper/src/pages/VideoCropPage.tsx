@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
 import TrimControls from '../components/TrimControls.tsx';
 import UpscaleControls from '../components/UpscaleControls.tsx';
 import FormatSelector from '../components/FormatSelector.tsx';
-import { cropAndTrimVideo, checkWebCodecsSupport } from '../utils/cropVideo.ts';
+import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 
@@ -43,6 +43,9 @@ function VideoCropPage() {
   const [lockAspectRatio, setLockAspectRatio] = useState(false);
   const [outputFormat, setOutputFormat] = useState('video/webm');
   const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [previewDuration, setPreviewDuration] = useState(0);
+  const [liveCurrentTime, setLiveCurrentTime] = useState(0);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -80,7 +83,7 @@ function VideoCropPage() {
         outputWidth,
         outputHeight,
         outputFormat,
-        (p) => setProgress(p)
+        (p) => setProgress(p),
       );
       const url = URL.createObjectURL(blob);
       setCroppedVideoUrl(url);
@@ -103,6 +106,26 @@ function VideoCropPage() {
     }
   };
 
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    const centisecs = Math.floor((seconds % 1) * 100);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${centisecs.toString().padStart(2, '0')}`;
+  };
+
+  const handleVideoTimeUpdate = useCallback(
+    (e: React.SyntheticEvent<HTMLVideoElement>) => {
+      const video = e.currentTarget;
+      setLiveCurrentTime(video.currentTime);
+
+      // 트림 구간 반복 재생: endTime을 초과하면 startTime으로 되돌림
+      if (endTime > 0 && video.currentTime >= endTime) {
+        video.currentTime = startTime;
+      }
+    },
+    [startTime, endTime],
+  );
+
   if (!webCodecsSupported) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -111,10 +134,7 @@ function VideoCropPage() {
           <p className="text-gray-600 mb-4">
             비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다.
           </p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
+          <button onClick={() => navigate('/')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             홈으로 돌아가기
           </button>
         </div>
@@ -127,10 +147,7 @@ function VideoCropPage() {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">파일이 선택되지 않았습니다.</p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
+          <button onClick={() => navigate('/')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             홈으로 돌아가기
           </button>
         </div>
@@ -145,17 +162,17 @@ function VideoCropPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">비디오 크롭 및 트림</h1>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
+          <button onClick={() => navigate('/')} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             홈으로
           </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
+            <div
+              className="bg-white rounded-lg shadow overflow-hidden"
+              style={{ height: '500px', position: 'relative' }}
+            >
               <Cropper
                 video={state.fileUrl}
                 crop={crop}
@@ -165,17 +182,20 @@ function VideoCropPage() {
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
                 restrictPosition={true}
+                mediaProps={{
+                  onTimeUpdate: handleVideoTimeUpdate,
+                }}
               />
             </div>
+            {duration > 0 && (
+              <div className="mt-2 text-sm text-gray-600 text-center bg-white p-2 rounded shadow">
+                재생 시간: {formatTime(liveCurrentTime)} / {formatTime(duration)}
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
-            <CropControls
-              zoom={zoom}
-              onZoomChange={setZoom}
-              aspect={aspect}
-              onAspectChange={setAspect}
-            />
+            <CropControls zoom={zoom} onZoomChange={setZoom} aspect={aspect} onAspectChange={setAspect} />
 
             {duration > 0 && (
               <TrimControls
@@ -214,7 +234,17 @@ function VideoCropPage() {
             {croppedVideoUrl && (
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="font-medium text-gray-900 mb-2">미리보기</h3>
-                <video src={croppedVideoUrl} controls className="w-full rounded" />
+                <video
+                  src={croppedVideoUrl}
+                  controls
+                  loop
+                  className="w-full rounded"
+                  onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                  onLoadedMetadata={(e) => setPreviewDuration(e.currentTarget.duration)}
+                />
+                <div className="mt-2 text-sm text-gray-600 text-center">
+                  {formatTime(currentTime)} / {formatTime(previewDuration)}
+                </div>
                 <button
                   onClick={handleDownload}
                   className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
