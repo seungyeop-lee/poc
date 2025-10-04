@@ -1,14 +1,17 @@
 import { useNavigate } from 'react-router';
 import FileUploader from '../components/FileUploader.tsx';
+import { useMediaStore } from '../stores/mediaStore.ts';
 
 function HomePage() {
   const navigate = useNavigate();
+  const setMedia = useMediaStore((state) => state.setMedia);
 
   const handleFileSelect = (file: File) => {
     const fileUrl = URL.createObjectURL(file);
 
     if (file.type.startsWith('image/')) {
-      navigate('/image-crop', { state: { file, fileUrl } });
+      setMedia(file, fileUrl);
+      navigate('/image-crop');
     } else if (file.type.startsWith('video/')) {
       // Safari 브라우저 체크
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -17,7 +20,8 @@ function HomePage() {
         URL.revokeObjectURL(fileUrl);
         return;
       }
-      navigate('/video-crop', { state: { file, fileUrl } });
+      setMedia(file, fileUrl);
+      navigate('/video-crop');
     } else {
       alert('이미지 또는 비디오 파일만 업로드할 수 있습니다.');
       URL.revokeObjectURL(fileUrl);

@@ -1,16 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
 import UpscaleControls from '../components/UpscaleControls.tsx';
 import FormatSelector from '../components/FormatSelector.tsx';
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
-
-interface LocationState {
-  file: File;
-  fileUrl: string;
-}
+import { useMediaStore } from '../stores/mediaStore.ts';
 
 interface Area {
   x: number;
@@ -20,9 +16,9 @@ interface Area {
 }
 
 function ImageCropPage() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as LocationState | null;
+  const file = useMediaStore((state) => state.file);
+  const fileUrl = useMediaStore((state) => state.fileUrl);
 
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -58,12 +54,12 @@ function ImageCropPage() {
   }, []);
 
   const handleCrop = async () => {
-    if (!state?.fileUrl || !croppedAreaPixels) return;
+    if (!fileUrl || !croppedAreaPixels) return;
 
     setIsProcessing(true);
     try {
       const blob = await cropImage(
-        state.fileUrl,
+        fileUrl,
         croppedAreaPixels,
         outputWidth,
         outputHeight,
@@ -90,7 +86,7 @@ function ImageCropPage() {
     }
   };
 
-  if (!state) {
+  if (!file || !fileUrl) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
@@ -123,7 +119,7 @@ function ImageCropPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
               <Cropper
-                image={state.fileUrl}
+                image={fileUrl}
                 crop={crop}
                 zoom={zoom}
                 aspect={aspect || undefined}

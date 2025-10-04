@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import CropControls from '../components/CropControls.tsx';
 import TrimControls from '../components/TrimControls.tsx';
@@ -8,11 +8,7 @@ import FormatSelector from '../components/FormatSelector.tsx';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
-
-interface LocationState {
-  file: File;
-  fileUrl: string;
-}
+import { useMediaStore } from '../stores/mediaStore.ts';
 
 interface Area {
   x: number;
@@ -22,9 +18,9 @@ interface Area {
 }
 
 function VideoCropPage() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as LocationState | null;
+  const file = useMediaStore((state) => state.file);
+  const fileUrl = useMediaStore((state) => state.fileUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -70,14 +66,14 @@ function VideoCropPage() {
   }, []);
 
   const handleCropAndTrim = async () => {
-    if (!state?.file || !croppedAreaPixels) return;
+    if (!file || !croppedAreaPixels) return;
 
     setIsProcessing(true);
     setProgress(0);
 
     try {
       const blob = await cropAndTrimVideo(
-        state.file,
+        file,
         croppedAreaPixels,
         { start: startTime, end: endTime },
         outputWidth,
@@ -142,7 +138,7 @@ function VideoCropPage() {
     );
   }
 
-  if (!state) {
+  if (!file || !fileUrl) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
@@ -157,7 +153,7 @@ function VideoCropPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <video ref={videoRef} src={state.fileUrl} className="hidden" />
+      <video ref={videoRef} src={fileUrl} className="hidden" />
 
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
@@ -174,7 +170,7 @@ function VideoCropPage() {
               style={{ height: '500px', position: 'relative' }}
             >
               <Cropper
-                video={state.fileUrl}
+                video={fileUrl}
                 crop={crop}
                 zoom={zoom}
                 aspect={aspect || undefined}
