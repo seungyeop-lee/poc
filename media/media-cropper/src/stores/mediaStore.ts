@@ -7,9 +7,22 @@ interface MediaStore {
   clearMedia: () => void;
 }
 
-export const useMediaStore = create<MediaStore>((set) => ({
+export const useMediaStore = create<MediaStore>((set, get) => ({
   file: null,
   fileUrl: null,
-  setMedia: (file, fileUrl) => set({ file, fileUrl }),
-  clearMedia: () => set({ file: null, fileUrl: null }),
+  setMedia: (file, fileUrl) => {
+    // 기존 fileUrl 정리
+    const prevFileUrl = get().fileUrl;
+    if (prevFileUrl) {
+      URL.revokeObjectURL(prevFileUrl);
+    }
+    set({ file, fileUrl });
+  },
+  clearMedia: () => {
+    const fileUrl = get().fileUrl;
+    if (fileUrl) {
+      URL.revokeObjectURL(fileUrl);
+    }
+    set({ file: null, fileUrl: null });
+  },
 }));
