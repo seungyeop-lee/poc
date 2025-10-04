@@ -6,25 +6,29 @@ interface TrimControlsProps {
   onEndTimeChange: (time: number) => void;
 }
 
-function TrimControls({
-  startTime,
-  endTime,
-  duration,
-  onStartTimeChange,
-  onEndTimeChange,
-}: TrimControlsProps) {
+function TrimControls({ startTime, endTime, duration, onStartTimeChange, onEndTimeChange }: TrimControlsProps) {
   const handleStartTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (isNaN(value)) return;
-    const clamped = Math.max(0, Math.min(duration, value));
-    onStartTimeChange(clamped);
+    const newStartTime = Math.max(0, Math.min(duration, value));
+
+    // 시작 시간이 종료 시간보다 1초 이상 작아야 함
+    if (newStartTime >= endTime - 1) {
+      onEndTimeChange(Math.min(duration, newStartTime + 1));
+    }
+    onStartTimeChange(newStartTime);
   };
 
   const handleEndTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (isNaN(value)) return;
-    const clamped = Math.max(0, Math.min(duration, value));
-    onEndTimeChange(clamped);
+    const newEndTime = Math.max(0, Math.min(duration, value));
+
+    // 종료 시간이 시작 시간보다 1초 이상 커야 함
+    if (newEndTime <= startTime + 1) {
+      onStartTimeChange(Math.max(0, newEndTime - 1));
+    }
+    onEndTimeChange(newEndTime);
   };
 
   return (
@@ -51,7 +55,7 @@ function TrimControls({
           max={duration}
           step={0.1}
           value={startTime}
-          onChange={(e) => onStartTimeChange(Number(e.target.value))}
+          onChange={handleStartTimeInputChange}
           className="w-full"
         />
       </div>
@@ -76,14 +80,12 @@ function TrimControls({
           max={duration}
           step={0.1}
           value={endTime}
-          onChange={(e) => onEndTimeChange(Number(e.target.value))}
+          onChange={handleEndTimeInputChange}
           className="w-full"
         />
       </div>
 
-      <div className="text-sm text-gray-600">
-        선택된 범위: {(endTime - startTime).toFixed(1)}초
-      </div>
+      <div className="text-sm text-gray-600">선택된 범위: {(endTime - startTime).toFixed(1)}초</div>
     </div>
   );
 }
