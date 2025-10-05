@@ -13,6 +13,10 @@ function TrimControls({ startTime, endTime, duration, onStartTimeChange, onEndTi
     const newStartTime = Math.max(0, Math.min(duration, value));
 
     // 시작 시간이 종료 시간보다 1초 이상 작아야 함
+    if (newStartTime + 1 > duration) {
+      return;
+    }
+
     if (newStartTime >= endTime - 1) {
       onEndTimeChange(Math.min(duration, newStartTime + 1));
     }
@@ -25,6 +29,10 @@ function TrimControls({ startTime, endTime, duration, onStartTimeChange, onEndTi
     const newEndTime = Math.max(0, Math.min(duration, value));
 
     // 종료 시간이 시작 시간보다 1초 이상 커야 함
+    if (newEndTime - 1 < 0) {
+      return;
+    }
+
     if (newEndTime <= startTime + 1) {
       onStartTimeChange(Math.max(0, newEndTime - 1));
     }
