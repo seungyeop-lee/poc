@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
@@ -8,3 +9,4 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - LOG_LEVEL=debug
