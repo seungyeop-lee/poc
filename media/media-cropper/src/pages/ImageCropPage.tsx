@@ -1,9 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
-import CropControls from '../components/CropControls.tsx';
-import ResizeScaleSlider from '../components/ResizeScaleSlider.tsx';
-import FormatSelector from '../components/FormatSelector.tsx';
+import {
+  PageLayout,
+  PageHeader,
+  ErrorState,
+  LoadingSpinner,
+  MediaPreview,
+  CropControls,
+  ResizeScaleSlider,
+  FormatSelector
+} from '../components/index.ts';
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
@@ -93,97 +100,84 @@ function ImageCropPage() {
 
   if (!file || !fileUrl) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">파일이 선택되지 않았습니다.</p>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            홈으로 돌아가기
-          </button>
-        </div>
-      </div>
+      <PageLayout>
+        <ErrorState
+          message="파일이 선택되지 않았습니다."
+          action={{
+            label: "홈으로 돌아가기",
+            onClick: () => navigate('/')
+          }}
+        />
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">이미지 크롭</h1>
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            홈으로
-          </button>
+    <PageLayout>
+      <PageHeader title="이미지 크롭" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
+            <Cropper
+              image={fileUrl}
+              crop={crop}
+              zoom={zoom}
+              aspect={aspect || undefined}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+              restrictPosition={true}
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
-              <Cropper
-                image={fileUrl}
-                crop={crop}
-                zoom={zoom}
-                aspect={aspect || undefined}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                restrictPosition={true}
-              />
-            </div>
-          </div>
+        <div className="space-y-4">
+          <CropControls
+            zoom={zoom}
+            onZoomChange={setZoom}
+            aspect={aspect}
+            onAspectChange={setAspect}
+          />
 
-          <div className="space-y-4">
-            <CropControls
-              zoom={zoom}
-              onZoomChange={setZoom}
-              aspect={aspect}
-              onAspectChange={setAspect}
+          {croppedAreaPixels && (
+            <ResizeScaleSlider
+              scale={scale}
+              onScaleChange={setScale}
+              cropAreaWidth={croppedAreaPixels.width}
+              cropAreaHeight={croppedAreaPixels.height}
             />
+          )}
 
-            {croppedAreaPixels && (
-              <ResizeScaleSlider
-                scale={scale}
-                onScaleChange={setScale}
-                cropAreaWidth={croppedAreaPixels.width}
-                cropAreaHeight={croppedAreaPixels.height}
-              />
-            )}
+          <FormatSelector
+            mediaType="image"
+            selectedFormat={outputFormat}
+            onFormatChange={setOutputFormat}
+            supportedFormats={supportedFormats}
+          />
 
-            <FormatSelector
+          <button
+            onClick={handleCrop}
+            disabled={isProcessing}
+            className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
+          >
+            {isProcessing ? (
+                <LoadingSpinner size="small" message="처리 중..." />
+              ) : (
+                '크롭 실행'
+              )}
+          </button>
+
+          {croppedImageUrl && (
+            <MediaPreview
               mediaType="image"
-              selectedFormat={outputFormat}
-              onFormatChange={setOutputFormat}
-              supportedFormats={supportedFormats}
+              src={croppedImageUrl}
+              onDownload={handleDownload}
             />
-
-            <button
-              onClick={handleCrop}
-              disabled={isProcessing}
-              className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
-            >
-              {isProcessing ? '처리 중...' : '크롭 실행'}
-            </button>
-
-            {croppedImageUrl && (
-              <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-900 mb-2">미리보기</h3>
-                <img src={croppedImageUrl} alt="Cropped" className="w-full rounded" />
-                <button
-                  onClick={handleDownload}
-                  className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  다운로드
-                </button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -1,10 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
-import CropControls from '../components/CropControls.tsx';
-import TrimControls from '../components/TrimControls.tsx';
-import ResizeScaleSlider from '../components/ResizeScaleSlider.tsx';
-import FormatSelector from '../components/FormatSelector.tsx';
+import {
+  PageLayout,
+  PageHeader,
+  ErrorState,
+  LoadingSpinner,
+  MediaPreview,
+  CropControls,
+  TrimControls,
+  ResizeScaleSlider,
+  FormatSelector
+} from '../components/index.ts';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
@@ -39,8 +46,6 @@ function VideoCropPage() {
   const [outputHeight, setOutputHeight] = useState(720);
   const [outputFormat, setOutputFormat] = useState('video/webm');
   const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [previewDuration, setPreviewDuration] = useState(0);
   const [liveCurrentTime, setLiveCurrentTime] = useState(0);
 
   useEffect(() => {
@@ -129,135 +134,122 @@ function VideoCropPage() {
 
   if (!webCodecsSupported) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="max-w-md bg-white p-8 rounded-lg shadow text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">지원되지 않는 브라우저</h2>
-          <p className="text-gray-600 mb-4">
-            비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다.
-          </p>
-          <button onClick={() => navigate('/')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            홈으로 돌아가기
-          </button>
-        </div>
-      </div>
+      <PageLayout>
+        <ErrorState
+          title="지원되지 않는 브라우저"
+          message="비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다."
+          variant="card"
+          action={{
+            label: "홈으로 돌아가기",
+            onClick: () => navigate('/')
+          }}
+        />
+      </PageLayout>
     );
   }
 
   if (!file || !fileUrl) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">파일이 선택되지 않았습니다.</p>
-          <button onClick={() => navigate('/')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            홈으로 돌아가기
-          </button>
-        </div>
-      </div>
+      <PageLayout>
+        <ErrorState
+          message="파일이 선택되지 않았습니다."
+          action={{
+            label: "홈으로 돌아가기",
+            onClick: () => navigate('/')
+          }}
+        />
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <PageLayout>
       <video ref={videoRef} src={fileUrl} className="hidden" />
 
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">비디오 크롭 및 트림</h1>
-          <button onClick={() => navigate('/')} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-            홈으로
-          </button>
+      <PageHeader title="비디오 크롭 및 트림" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <div
+            className="bg-white rounded-lg shadow overflow-hidden"
+            style={{ height: '500px', position: 'relative' }}
+          >
+            <Cropper
+              video={fileUrl}
+              crop={crop}
+              zoom={zoom}
+              aspect={aspect || undefined}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+              restrictPosition={true}
+              mediaProps={{
+                onTimeUpdate: handleVideoTimeUpdate,
+              }}
+            />
+          </div>
+          {duration > 0 && (
+            <div className="mt-2 text-sm text-gray-600 text-center bg-white p-2 rounded shadow">
+              재생 시간: {formatTime(liveCurrentTime)} / {formatTime(duration)}
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <div
-              className="bg-white rounded-lg shadow overflow-hidden"
-              style={{ height: '500px', position: 'relative' }}
-            >
-              <Cropper
-                video={fileUrl}
-                crop={crop}
-                zoom={zoom}
-                aspect={aspect || undefined}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                restrictPosition={true}
-                mediaProps={{
-                  onTimeUpdate: handleVideoTimeUpdate,
-                }}
-              />
-            </div>
-            {duration > 0 && (
-              <div className="mt-2 text-sm text-gray-600 text-center bg-white p-2 rounded shadow">
-                재생 시간: {formatTime(liveCurrentTime)} / {formatTime(duration)}
-              </div>
-            )}
-          </div>
+        <div className="space-y-4">
+          <CropControls zoom={zoom} onZoomChange={setZoom} aspect={aspect} onAspectChange={setAspect} />
 
-          <div className="space-y-4">
-            <CropControls zoom={zoom} onZoomChange={setZoom} aspect={aspect} onAspectChange={setAspect} />
-
-            {duration > 0 && (
-              <TrimControls
-                startTime={startTime}
-                endTime={endTime}
-                duration={duration}
-                onStartTimeChange={setStartTime}
-                onEndTimeChange={setEndTime}
-              />
-            )}
-
-            {croppedAreaPixels && (
-              <ResizeScaleSlider
-                scale={scale}
-                onScaleChange={setScale}
-                cropAreaWidth={croppedAreaPixels.width}
-                cropAreaHeight={croppedAreaPixels.height}
-              />
-            )}
-
-            <FormatSelector
-              mediaType="video"
-              selectedFormat={outputFormat}
-              onFormatChange={setOutputFormat}
-              supportedFormats={supportedFormats}
+          {duration > 0 && (
+            <TrimControls
+              startTime={startTime}
+              endTime={endTime}
+              duration={duration}
+              onStartTimeChange={setStartTime}
+              onEndTimeChange={setEndTime}
             />
+          )}
 
-            <button
-              onClick={handleCropAndTrim}
-              disabled={isProcessing}
-              className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
-            >
-              {isProcessing ? `처리 중... ${Math.round(progress * 100)}%` : '크롭 및 트림 실행'}
-            </button>
+          {croppedAreaPixels && (
+            <ResizeScaleSlider
+              scale={scale}
+              onScaleChange={setScale}
+              cropAreaWidth={croppedAreaPixels.width}
+              cropAreaHeight={croppedAreaPixels.height}
+            />
+          )}
 
-            {croppedVideoUrl && (
-              <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-900 mb-2">미리보기</h3>
-                <video
-                  src={croppedVideoUrl}
-                  controls
-                  loop
-                  className="w-full rounded"
-                  onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-                  onLoadedMetadata={(e) => setPreviewDuration(e.currentTarget.duration)}
+          <FormatSelector
+            mediaType="video"
+            selectedFormat={outputFormat}
+            onFormatChange={setOutputFormat}
+            supportedFormats={supportedFormats}
+          />
+
+          <button
+            onClick={handleCropAndTrim}
+            disabled={isProcessing}
+            className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
+          >
+            {isProcessing ? (
+                <LoadingSpinner
+                  size="small"
+                  message="처리 중..."
+                  progress={progress}
                 />
-                <div className="mt-2 text-sm text-gray-600 text-center">
-                  {formatTime(currentTime)} / {formatTime(previewDuration)}
-                </div>
-                <button
-                  onClick={handleDownload}
-                  className="w-full mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  다운로드
-                </button>
-              </div>
-            )}
-          </div>
+              ) : (
+                '크롭 및 트림 실행'
+              )}
+          </button>
+
+          {croppedVideoUrl && (
+            <MediaPreview
+              mediaType="video"
+              src={croppedVideoUrl}
+              onDownload={handleDownload}
+            />
+          )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

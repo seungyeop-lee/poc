@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import FileUploader from '../components/FileUploader.tsx';
+import { FileUploader, PageLayout } from '../components/index.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
 
 function HomePage() {
@@ -29,17 +29,15 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-2xl w-full px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Media Cropper</h1>
-          <p className="text-gray-600">
-            브라우저에서 이미지와 비디오를 크롭하세요
-          </p>
-        </div>
-        <FileUploader onFileSelect={handleFileSelect} />
+    <PageLayout containerWidth="narrow" centered>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Media Cropper</h1>
+        <p className="text-gray-600">
+          브라우저에서 이미지와 비디오를 크롭하세요
+        </p>
       </div>
-    </div>
+      <FileUploader onFileSelect={handleFileSelect} />
+    </PageLayout>
   );
 }
 
