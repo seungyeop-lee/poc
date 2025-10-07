@@ -2,20 +2,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import {
-  PageLayout,
-  PageHeader,
+  CropControls,
   ErrorState,
+  FormatSelector,
   LoadingSpinner,
   MediaPreview,
-  CropControls,
-  TrimControls,
+  PageHeader,
+  PageLayout,
   ResizeScaleSlider,
-  FormatSelector
+  TrimControls,
 } from '../components/index.ts';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
+import { useVideoCropStore } from '../stores/videoCropStore.ts';
 
 interface Area {
   x: number;
@@ -30,23 +31,42 @@ function VideoCropPage() {
   const fileUrl = useMediaStore((state) => state.fileUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(16 / 9);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [duration, setDuration] = useState(0);
-  const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
-  const [croppedVideoUrl, setCroppedVideoUrl] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const crop = useVideoCropStore((state) => state.crop);
+  const zoom = useVideoCropStore((state) => state.zoom);
+  const aspect = useVideoCropStore((state) => state.aspect);
+  const croppedAreaPixels = useVideoCropStore((state) => state.croppedAreaPixels);
+  const duration = useVideoCropStore((state) => state.duration);
+  const startTime = useVideoCropStore((state) => state.startTime);
+  const endTime = useVideoCropStore((state) => state.endTime);
+  const croppedVideoUrl = useVideoCropStore((state) => state.croppedVideoUrl);
+  const isProcessing = useVideoCropStore((state) => state.isProcessing);
+  const progress = useVideoCropStore((state) => state.progress);
+  const scale = useVideoCropStore((state) => state.scale);
+  const outputWidth = useVideoCropStore((state) => state.outputWidth);
+  const outputHeight = useVideoCropStore((state) => state.outputHeight);
+  const outputFormat = useVideoCropStore((state) => state.outputFormat);
+  const supportedFormats = useVideoCropStore((state) => state.supportedFormats);
+  const liveCurrentTime = useVideoCropStore((state) => state.liveCurrentTime);
+
+  const setCrop = useVideoCropStore((state) => state.setCrop);
+  const setZoom = useVideoCropStore((state) => state.setZoom);
+  const setAspect = useVideoCropStore((state) => state.setAspect);
+  const setCroppedAreaPixels = useVideoCropStore((state) => state.setCroppedAreaPixels);
+  const setDuration = useVideoCropStore((state) => state.setDuration);
+  const setStartTime = useVideoCropStore((state) => state.setStartTime);
+  const setEndTime = useVideoCropStore((state) => state.setEndTime);
+  const setCroppedVideoUrl = useVideoCropStore((state) => state.setCroppedVideoUrl);
+  const setIsProcessing = useVideoCropStore((state) => state.setIsProcessing);
+  const setProgress = useVideoCropStore((state) => state.setProgress);
+  const setScale = useVideoCropStore((state) => state.setScale);
+  const setOutputWidth = useVideoCropStore((state) => state.setOutputWidth);
+  const setOutputHeight = useVideoCropStore((state) => state.setOutputHeight);
+  const setOutputFormat = useVideoCropStore((state) => state.setOutputFormat);
+  const setSupportedFormats = useVideoCropStore((state) => state.setSupportedFormats);
+  const setLiveCurrentTime = useVideoCropStore((state) => state.setLiveCurrentTime);
+  const cleanup = useVideoCropStore((state) => state.cleanup);
+
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
-  const [scale, setScale] = useState(1.0);
-  const [outputWidth, setOutputWidth] = useState(1280);
-  const [outputHeight, setOutputHeight] = useState(720);
-  const [outputFormat, setOutputFormat] = useState('video/webm');
-  const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
-  const [liveCurrentTime, setLiveCurrentTime] = useState(0);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -56,13 +76,19 @@ function VideoCropPage() {
         setEndTime(video.duration);
       });
     }
-  }, []);
+  }, [setDuration, setEndTime]);
 
   useEffect(() => {
     const formats = ['video/webm', 'video/mp4'];
     const supported = formats.filter(checkVideoFormatSupport);
     setSupportedFormats(supported);
-  }, []);
+  }, [setSupportedFormats]);
+
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, [cleanup]);
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -140,8 +166,8 @@ function VideoCropPage() {
           message="비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다."
           variant="card"
           action={{
-            label: "홈으로 돌아가기",
-            onClick: () => navigate('/')
+            label: '홈으로 돌아가기',
+            onClick: () => navigate('/'),
           }}
         />
       </PageLayout>
@@ -154,8 +180,8 @@ function VideoCropPage() {
         <ErrorState
           message="파일이 선택되지 않았습니다."
           action={{
-            label: "홈으로 돌아가기",
-            onClick: () => navigate('/')
+            label: '홈으로 돌아가기',
+            onClick: () => navigate('/'),
           }}
         />
       </PageLayout>
@@ -170,10 +196,7 @@ function VideoCropPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <div
-            className="bg-white rounded-lg shadow overflow-hidden"
-            style={{ height: '500px', position: 'relative' }}
-          >
+          <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
             <Cropper
               video={fileUrl}
               crop={crop}
@@ -230,23 +253,13 @@ function VideoCropPage() {
             className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
           >
             {isProcessing ? (
-                <LoadingSpinner
-                  size="small"
-                  message="처리 중..."
-                  progress={progress}
-                />
-              ) : (
-                '크롭 및 트림 실행'
-              )}
+              <LoadingSpinner size="small" message="처리 중..." progress={progress} />
+            ) : (
+              '크롭 및 트림 실행'
+            )}
           </button>
 
-          {croppedVideoUrl && (
-            <MediaPreview
-              mediaType="video"
-              src={croppedVideoUrl}
-              onDownload={handleDownload}
-            />
-          )}
+          {croppedVideoUrl && <MediaPreview mediaType="video" src={croppedVideoUrl} onDownload={handleDownload} />}
         </div>
       </div>
     </PageLayout>

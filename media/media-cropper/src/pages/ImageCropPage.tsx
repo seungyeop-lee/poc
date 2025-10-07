@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
 import {
@@ -14,6 +14,7 @@ import {
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
+import { useImageCropStore } from '../stores/imageCropStore.ts';
 
 interface Area {
   x: number;
@@ -27,17 +28,30 @@ function ImageCropPage() {
   const file = useMediaStore((state) => state.file);
   const fileUrl = useMediaStore((state) => state.fileUrl);
 
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(4 / 3);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [croppedImageUrl, setCroppedImageUrl] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [scale, setScale] = useState(1.0);
-  const [outputWidth, setOutputWidth] = useState(800);
-  const [outputHeight, setOutputHeight] = useState(600);
-  const [outputFormat, setOutputFormat] = useState('image/jpeg');
-  const [supportedFormats, setSupportedFormats] = useState<string[]>([]);
+  const crop = useImageCropStore((state) => state.crop);
+  const zoom = useImageCropStore((state) => state.zoom);
+  const aspect = useImageCropStore((state) => state.aspect);
+  const croppedAreaPixels = useImageCropStore((state) => state.croppedAreaPixels);
+  const croppedImageUrl = useImageCropStore((state) => state.croppedImageUrl);
+  const isProcessing = useImageCropStore((state) => state.isProcessing);
+  const scale = useImageCropStore((state) => state.scale);
+  const outputWidth = useImageCropStore((state) => state.outputWidth);
+  const outputHeight = useImageCropStore((state) => state.outputHeight);
+  const outputFormat = useImageCropStore((state) => state.outputFormat);
+  const supportedFormats = useImageCropStore((state) => state.supportedFormats);
+
+  const setCrop = useImageCropStore((state) => state.setCrop);
+  const setZoom = useImageCropStore((state) => state.setZoom);
+  const setAspect = useImageCropStore((state) => state.setAspect);
+  const setCroppedAreaPixels = useImageCropStore((state) => state.setCroppedAreaPixels);
+  const setCroppedImageUrl = useImageCropStore((state) => state.setCroppedImageUrl);
+  const setIsProcessing = useImageCropStore((state) => state.setIsProcessing);
+  const setScale = useImageCropStore((state) => state.setScale);
+  const setOutputWidth = useImageCropStore((state) => state.setOutputWidth);
+  const setOutputHeight = useImageCropStore((state) => state.setOutputHeight);
+  const setOutputFormat = useImageCropStore((state) => state.setOutputFormat);
+  const setSupportedFormats = useImageCropStore((state) => state.setSupportedFormats);
+  const cleanup = useImageCropStore((state) => state.cleanup);
 
   useEffect(() => {
     async function checkFormats() {
@@ -52,7 +66,13 @@ function ImageCropPage() {
       setSupportedFormats(supported);
     }
     checkFormats();
-  }, []);
+  }, [setSupportedFormats]);
+
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, [cleanup]);
 
   const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
