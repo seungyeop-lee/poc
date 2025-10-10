@@ -24,7 +24,7 @@
 
 "@esbuild/darwin-arm64@0.25.10":
   version "0.25.10"
-  resolved "https://registry.yarnpkg.com/@esbuild/darwin-arm64/-/darwin-arm64-0.25.10.tgz#6af6bb1d05887dac515de1b162b59dc71212ed76"
+  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.10.tgz"
   integrity sha512-JC74bdXcQEpW9KkV326WpZZjLguSZ3DfS8wrrvPMHgQOIEIG/sPXEN/V8IssoJhbefLRcRqw6RQH2NnpdprtMA==
 
 "@esbuild/darwin-x64@0.25.10":
@@ -134,14 +134,14 @@
 
 "@types/node@^20.11.17":
   version "20.19.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.19.20.tgz#116f5432a1e6383415a57cf5e00b5ac9b2a2ad03"
+  resolved "https://registry.npmjs.org/@types/node/-/node-20.19.20.tgz"
   integrity sha512-2Q7WS25j4pS1cS8yw3d6buNCVJukOTeQ39bAnwR6sOJbaxvyCGebzTMypDFN82CxBLnl+lSWVdCCWbRY6y9yZQ==
   dependencies:
     undici-types "~6.21.0"
 
 esbuild@~0.25.0:
   version "0.25.10"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.10.tgz#37f5aa5cd14500f141be121c01b096ca83ac34a9"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.25.10.tgz"
   integrity sha512-9RiGKvCwaqxO2owP61uQ4BgNborAQskMR6QusfWzQqv7AZOg5oGehdY2pRJMTKuwxd1IDBP4rSbI5lHzU7SMsQ==
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.25.10"
@@ -173,29 +173,29 @@ esbuild@~0.25.0:
 
 fsevents@~2.3.3:
   version "2.3.3"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 get-tsconfig@^4.7.5:
   version "4.12.0"
-  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.12.0.tgz#cfb3a4446a2abd324a205469e8bda4e7e44cbd35"
+  resolved "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-4.12.0.tgz"
   integrity sha512-LScr2aNr2FbjAjZh2C6X6BxRx1/x+aTDExct/xyq2XKbYOiG5c0aK7pMsSuyc0brz3ibr/lbQiHD9jzt4lccJw==
   dependencies:
     resolve-pkg-maps "^1.0.0"
 
 hono@^4.9.10:
   version "4.9.10"
-  resolved "https://registry.yarnpkg.com/hono/-/hono-4.9.10.tgz#27ac828dd5ddaf3947e1a207dad9f079d3cf1b12"
+  resolved "https://registry.npmjs.org/hono/-/hono-4.9.10.tgz"
   integrity sha512-AlI15ijFyKTXR7eHo7QK7OR4RoKIedZvBuRjO8iy4zrxvlY5oFCdiRG/V/lFJHCNXJ0k72ATgnyzx8Yqa5arug==
 
 resolve-pkg-maps@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
+  resolved "https://registry.npmjs.org/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz"
   integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
 
 tsx@^4.7.1:
   version "4.20.6"
-  resolved "https://registry.yarnpkg.com/tsx/-/tsx-4.20.6.tgz#8fb803fd9c1f70e8ccc93b5d7c5e03c3979ccb2e"
+  resolved "https://registry.npmjs.org/tsx/-/tsx-4.20.6.tgz"
   integrity sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==
   dependencies:
     esbuild "~0.25.0"
@@ -205,10 +205,10 @@ tsx@^4.7.1:
 
 typescript@^5.8.3:
   version "5.9.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.3.tgz#5b4f59e15310ab17a216f5d6cf53ee476ede670f"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
 
 undici-types@~6.21.0:
   version "6.21.0"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz"
   integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
