@@ -9,10 +9,18 @@ export { MediaPreview } from './media/index';
 
 // Form components
 export {
-  CropControls,
+  CropResizePanel,
   FileUploader,
-  FormatSelector,
-  ResizeScaleSlider,
+  OutputSettingsPanel,
   TrimControls,
   UpscaleControls
 } from './form/index';
+
+// Video components
+export {
+  AdvancedVideoProcessor,
+  VideoControlsPanel,
+  VideoMetadataDisplay,
+  VideoPlayerSection,
+  VideoProcessingButton
+} from './video/index';
