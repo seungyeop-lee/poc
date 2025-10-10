@@ -1,16 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Cropper from 'react-easy-crop';
-import {
-  PageLayout,
-  PageHeader,
-  ErrorState,
-  LoadingSpinner,
-  MediaPreview,
-  CropControls,
-  ResizeScaleSlider,
-  FormatSelector
-} from '../components/index.ts';
+import { CropResizePanel, LoadingSpinner, MediaPreview, PageHeader, PageLayout } from '../components/index.ts';
 import { cropImage, downloadBlob } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
@@ -38,7 +29,6 @@ function ImageCropPage() {
   const outputWidth = useImageCropStore((state) => state.outputWidth);
   const outputHeight = useImageCropStore((state) => state.outputHeight);
   const outputFormat = useImageCropStore((state) => state.outputFormat);
-  const supportedFormats = useImageCropStore((state) => state.supportedFormats);
 
   const setCrop = useImageCropStore((state) => state.setCrop);
   const setZoom = useImageCropStore((state) => state.setZoom);
@@ -49,7 +39,6 @@ function ImageCropPage() {
   const setScale = useImageCropStore((state) => state.setScale);
   const setOutputWidth = useImageCropStore((state) => state.setOutputWidth);
   const setOutputHeight = useImageCropStore((state) => state.setOutputHeight);
-  const setOutputFormat = useImageCropStore((state) => state.setOutputFormat);
   const setSupportedFormats = useImageCropStore((state) => state.setSupportedFormats);
   const cleanup = useImageCropStore((state) => state.cleanup);
 
@@ -69,6 +58,12 @@ function ImageCropPage() {
   }, [setSupportedFormats]);
 
   useEffect(() => {
+    if (!file || !fileUrl) {
+      navigate('/');
+    }
+  }, [file, fileUrl, navigate]);
+
+  useEffect(() => {
     return () => {
       cleanup();
     };
@@ -83,20 +78,14 @@ function ImageCropPage() {
       setOutputWidth(Math.round(croppedAreaPixels.width * scale));
       setOutputHeight(Math.round(croppedAreaPixels.height * scale));
     }
-  }, [scale, croppedAreaPixels]);
+  }, [scale, croppedAreaPixels, setOutputWidth, setOutputHeight]);
 
   const handleCrop = async () => {
     if (!fileUrl || !croppedAreaPixels) return;
 
     setIsProcessing(true);
     try {
-      const blob = await cropImage(
-        fileUrl,
-        croppedAreaPixels,
-        outputWidth,
-        outputHeight,
-        outputFormat
-      );
+      const blob = await cropImage(fileUrl, croppedAreaPixels, outputWidth, outputHeight, outputFormat);
       const url = URL.createObjectURL(blob);
       setCroppedImageUrl(url);
     } catch (error) {
@@ -119,24 +108,14 @@ function ImageCropPage() {
   };
 
   if (!file || !fileUrl) {
-    return (
-      <PageLayout>
-        <ErrorState
-          message="파일이 선택되지 않았습니다."
-          action={{
-            label: "홈으로 돌아가기",
-            onClick: () => navigate('/')
-          }}
-        />
-      </PageLayout>
-    );
+    return null;
   }
 
   return (
     <PageLayout>
       <PageHeader title="이미지 크롭" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-y-8">
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
             <Cropper
@@ -152,28 +131,16 @@ function ImageCropPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <CropControls
+        <div className="space-y-4 flex flex-col items-center">
+          <CropResizePanel
             zoom={zoom}
             onZoomChange={setZoom}
             aspect={aspect}
             onAspectChange={setAspect}
-          />
-
-          {croppedAreaPixels && (
-            <ResizeScaleSlider
-              scale={scale}
-              onScaleChange={setScale}
-              cropAreaWidth={croppedAreaPixels.width}
-              cropAreaHeight={croppedAreaPixels.height}
-            />
-          )}
-
-          <FormatSelector
-            mediaType="image"
-            selectedFormat={outputFormat}
-            onFormatChange={setOutputFormat}
-            supportedFormats={supportedFormats}
+            scale={scale}
+            onScaleChange={setScale}
+            cropAreaWidth={croppedAreaPixels?.width || 0}
+            cropAreaHeight={croppedAreaPixels?.height || 0}
           />
 
           <button
@@ -181,19 +148,11 @@ function ImageCropPage() {
             disabled={isProcessing}
             className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
           >
-            {isProcessing ? (
-                <LoadingSpinner size="small" message="처리 중..." />
-              ) : (
-                '크롭 실행'
-              )}
+            {isProcessing ? <LoadingSpinner size="small" message="처리 중..." /> : '크롭 실행'}
           </button>
 
           {croppedImageUrl && (
-            <MediaPreview
-              mediaType="image"
-              src={croppedImageUrl}
-              onDownload={handleDownload}
-            />
+            <MediaPreview mediaType="image" src={croppedImageUrl} onDownload={handleDownload} className={'w-full'} />
           )}
         </div>
       </div>

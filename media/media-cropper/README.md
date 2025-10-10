@@ -74,9 +74,18 @@ npm run preview
 media-cropper/
 ├── src/
 │   ├── components/     # React 컴포넌트
-│   ├── hooks/          # 커스텀 훅
+│   ├── pages/          # 페이지 컴포넌트
+│   ├── stores/         # Zustand 상태 관리
 │   ├── utils/          # 유틸리티 함수
-│   └── App.tsx         # 메인 앱
+│   └── main.tsx        # 메인 앱
+├── docs/               # 프로젝트 문서
 ├── public/             # 정적 파일
 └── index.html          # HTML 엔트리
 ```
+
+## 문서
+
+프로젝트의 상세한 기술 문서는 `docs/` 폴더에서 확인할 수 있습니다:
+
+- **[Media Bunny 기능 문서](docs/mediabunny-features.md)** - Media Bunny 라이브러리의 주요 특징과 기능
+- **[구현 기능 소개](docs/implementation-overview.md)** - 이 프로젝트에 적용된 Media Bunny 기능과 아키텍처 개선사항

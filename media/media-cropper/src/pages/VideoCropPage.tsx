@@ -1,22 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import Cropper from 'react-easy-crop';
-import {
-  CropControls,
-  ErrorState,
-  FormatSelector,
-  LoadingSpinner,
-  MediaPreview,
-  PageHeader,
-  PageLayout,
-  ResizeScaleSlider,
-  TrimControls,
-} from '../components/index.ts';
+import { ErrorState, PageHeader, PageLayout, VideoControlsPanel, VideoPlayerSection } from '../components/index.ts';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
 import { useVideoCropStore } from '../stores/videoCropStore.ts';
+
+interface Point {
+  x: number;
+  y: number;
+}
 
 interface Area {
   x: number;
@@ -29,8 +23,8 @@ function VideoCropPage() {
   const navigate = useNavigate();
   const file = useMediaStore((state) => state.file);
   const fileUrl = useMediaStore((state) => state.fileUrl);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
+  // VideoPlayerSection에서 사용하는 상태만 구독
   const crop = useVideoCropStore((state) => state.crop);
   const zoom = useVideoCropStore((state) => state.zoom);
   const aspect = useVideoCropStore((state) => state.aspect);
@@ -38,45 +32,32 @@ function VideoCropPage() {
   const duration = useVideoCropStore((state) => state.duration);
   const startTime = useVideoCropStore((state) => state.startTime);
   const endTime = useVideoCropStore((state) => state.endTime);
+  const liveCurrentTime = useVideoCropStore((state) => state.liveCurrentTime);
+
+  // VideoCropPage에서 직접 사용하는 상태와 setter
   const croppedVideoUrl = useVideoCropStore((state) => state.croppedVideoUrl);
-  const isProcessing = useVideoCropStore((state) => state.isProcessing);
-  const progress = useVideoCropStore((state) => state.progress);
   const scale = useVideoCropStore((state) => state.scale);
   const outputWidth = useVideoCropStore((state) => state.outputWidth);
   const outputHeight = useVideoCropStore((state) => state.outputHeight);
   const outputFormat = useVideoCropStore((state) => state.outputFormat);
-  const supportedFormats = useVideoCropStore((state) => state.supportedFormats);
-  const liveCurrentTime = useVideoCropStore((state) => state.liveCurrentTime);
+  const codecOptions = useVideoCropStore((state) => state.codecOptions);
+  const selectedCodec = useVideoCropStore((state) => state.selectedCodec);
 
   const setCrop = useVideoCropStore((state) => state.setCrop);
   const setZoom = useVideoCropStore((state) => state.setZoom);
-  const setAspect = useVideoCropStore((state) => state.setAspect);
   const setCroppedAreaPixels = useVideoCropStore((state) => state.setCroppedAreaPixels);
   const setDuration = useVideoCropStore((state) => state.setDuration);
-  const setStartTime = useVideoCropStore((state) => state.setStartTime);
   const setEndTime = useVideoCropStore((state) => state.setEndTime);
   const setCroppedVideoUrl = useVideoCropStore((state) => state.setCroppedVideoUrl);
   const setIsProcessing = useVideoCropStore((state) => state.setIsProcessing);
   const setProgress = useVideoCropStore((state) => state.setProgress);
-  const setScale = useVideoCropStore((state) => state.setScale);
   const setOutputWidth = useVideoCropStore((state) => state.setOutputWidth);
   const setOutputHeight = useVideoCropStore((state) => state.setOutputHeight);
-  const setOutputFormat = useVideoCropStore((state) => state.setOutputFormat);
   const setSupportedFormats = useVideoCropStore((state) => state.setSupportedFormats);
   const setLiveCurrentTime = useVideoCropStore((state) => state.setLiveCurrentTime);
   const cleanup = useVideoCropStore((state) => state.cleanup);
 
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
-
-  useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      video.addEventListener('loadedmetadata', () => {
-        setDuration(video.duration);
-        setEndTime(video.duration);
-      });
-    }
-  }, [setDuration, setEndTime]);
 
   useEffect(() => {
     const formats = ['video/webm', 'video/mp4'];
@@ -90,7 +71,7 @@ function VideoCropPage() {
     };
   }, [cleanup]);
 
-  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
+  const onCropComplete = useCallback((_: Point, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -116,6 +97,9 @@ function VideoCropPage() {
         outputHeight,
         outputFormat,
         (p) => setProgress(p),
+        codecOptions && Object.keys(codecOptions).length > 0
+          ? { ...codecOptions, codec: selectedCodec }
+          : { codec: selectedCodec },
       );
       const url = URL.createObjectURL(blob);
       setCroppedVideoUrl(url);
@@ -138,29 +122,9 @@ function VideoCropPage() {
     }
   };
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    const centisecs = Math.floor((seconds % 1) * 100);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${centisecs.toString().padStart(2, '0')}`;
-  };
-
-  const handleVideoTimeUpdate = useCallback(
-    (e: React.SyntheticEvent<HTMLVideoElement>) => {
-      const video = e.currentTarget;
-      setLiveCurrentTime(video.currentTime);
-
-      // 트림 구간 반복 재생: endTime을 초과하면 startTime으로 되돌림
-      if (endTime > 0 && video.currentTime >= endTime) {
-        video.currentTime = startTime;
-      }
-    },
-    [startTime, endTime],
-  );
-
   if (!webCodecsSupported) {
     return (
-      <PageLayout>
+      <PageLayout centered={true}>
         <ErrorState
           title="지원되지 않는 브라우저"
           message="비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다."
@@ -175,91 +139,56 @@ function VideoCropPage() {
   }
 
   if (!file || !fileUrl) {
-    return (
-      <PageLayout>
-        <ErrorState
-          message="파일이 선택되지 않았습니다."
-          action={{
-            label: '홈으로 돌아가기',
-            onClick: () => navigate('/'),
-          }}
-        />
-      </PageLayout>
-    );
+    navigate('/');
+    return null;
   }
 
   return (
     <PageLayout>
-      <video ref={videoRef} src={fileUrl} className="hidden" />
-
       <PageHeader title="비디오 크롭 및 트림" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
-            <Cropper
-              video={fileUrl}
-              crop={crop}
-              zoom={zoom}
-              aspect={aspect || undefined}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-              restrictPosition={true}
-              mediaProps={{
-                onTimeUpdate: handleVideoTimeUpdate,
-              }}
-            />
-          </div>
-          {duration > 0 && (
-            <div className="mt-2 text-sm text-gray-600 text-center bg-white p-2 rounded shadow">
-              재생 시간: {formatTime(liveCurrentTime)} / {formatTime(duration)}
-            </div>
-          )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 비디오 플레이어 섹션 - 1100px 이상에서 2열 차지 */}
+        <div className="lg:col-span-2 xl:col-span-2 space-y-4">
+          <VideoPlayerSection
+            fileUrl={fileUrl}
+            crop={crop}
+            zoom={zoom}
+            aspect={aspect}
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onCropComplete={onCropComplete}
+            duration={duration}
+            liveCurrentTime={liveCurrentTime}
+            startTime={startTime}
+            endTime={endTime}
+            onDurationChange={setDuration}
+            onEndTimeChange={setEndTime}
+            onLiveCurrentTimeChange={setLiveCurrentTime}
+          />
         </div>
 
-        <div className="space-y-4">
-          <CropControls zoom={zoom} onZoomChange={setZoom} aspect={aspect} onAspectChange={setAspect} />
-
-          {duration > 0 && (
-            <TrimControls
-              startTime={startTime}
-              endTime={endTime}
-              duration={duration}
-              onStartTimeChange={setStartTime}
-              onEndTimeChange={setEndTime}
-            />
-          )}
-
-          {croppedAreaPixels && (
-            <ResizeScaleSlider
-              scale={scale}
-              onScaleChange={setScale}
-              cropAreaWidth={croppedAreaPixels.width}
-              cropAreaHeight={croppedAreaPixels.height}
-            />
-          )}
-
-          <FormatSelector
-            mediaType="video"
-            selectedFormat={outputFormat}
-            onFormatChange={setOutputFormat}
-            supportedFormats={supportedFormats}
+        {/* 컨트롤 패널 및 미리보기 섹션 - 1100px 이상에서 2열 차지 */}
+        <div className="lg:col-span-2 space-y-4">
+          <VideoControlsPanel
+            file={file}
+            croppedAreaPixels={croppedAreaPixels}
+            onCropAndTrim={handleCropAndTrim}
           />
 
-          <button
-            onClick={handleCropAndTrim}
-            disabled={isProcessing}
-            className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
-          >
-            {isProcessing ? (
-              <LoadingSpinner size="small" message="처리 중..." progress={progress} />
-            ) : (
-              '크롭 및 트림 실행'
-            )}
-          </button>
-
-          {croppedVideoUrl && <MediaPreview mediaType="video" src={croppedVideoUrl} onDownload={handleDownload} />}
+          {/* 미리보기 섹션 */}
+          {croppedVideoUrl && (
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="font-medium text-gray-900 mb-3">처리 결과 미리보기</h3>
+              <video src={croppedVideoUrl} controls className="w-full rounded border" style={{ maxHeight: '300px' }} />
+              <button
+                onClick={handleDownload}
+                className="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                다운로드
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </PageLayout>
