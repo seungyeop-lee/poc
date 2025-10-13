@@ -1,50 +1,18 @@
 import {Hono} from 'hono'
-import https from 'https'
+import {errorHandler} from './middlewares/errorHandler.js'
+import indexRouter from './routes/index.js'
+import testRouter from './routes/test.js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app = new Hono()
 
-const welcomeStrings = [
-  'Hello Hono!',
-  'To learn more about Hono on Vercel, visit https://vercel.com/docs/frameworks/backend/hono',
-  `Current runtime: ${process.release?.name || 'unknown'}`,
-]
+// 전역 에러 핸들러
+app.onError(errorHandler)
 
-app.get('/', (c) => {
-  return c.text(welcomeStrings.join('\n\n'))
-})
-
-app.get('/test/https', async (c) => {
-  try {
-    const response = await new Promise<{statusCode: number, contentType: string, data: string}>((resolve, reject) => {
-      https.get('https://httpbin.org/get', (res) => {
-        const statusCode = res.statusCode || 0
-        const contentType = res.headers['content-type'] || ''
-
-        let responseData = ''
-        res.on('data', (chunk) => {
-          responseData += chunk.toString()
-        })
-
-        res.on('end', () => {
-          resolve({ statusCode, contentType, data: responseData })
-        })
-      }).on('error', (err) => {
-        reject(err)
-      })
-    })
-
-    return c.json({
-      success: true,
-      statusCode: response.statusCode,
-      contentType: response.contentType,
-      data: JSON.parse(response.data)
-    })
-  } catch (error) {
-    return c.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, 500)
-  }
-})
+// 라우터 등록
+app.route('/', indexRouter)
+app.route('/test', testRouter)
 
 export default app
