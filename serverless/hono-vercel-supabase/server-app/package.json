@@ -1,13 +1,20 @@
 {
   "name": "hono",
   "type": "module",
+  "scripts": {
+    "db:generate": "npx drizzle-kit generate",
+    "db:migrate": "npx drizzle-kit migrate"
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
-    "hono": "^4.9.10"
+    "drizzle-orm": "^0.44.6",
+    "hono": "^4.9.10",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
+    "drizzle-kit": "^0.31.5",
+    "tsx": "^4.20.6",
     "typescript": "^5.8.3"
   }
 }

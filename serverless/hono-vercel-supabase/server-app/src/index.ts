@@ -2,9 +2,7 @@ import {Hono} from 'hono'
 import {errorHandler} from './middlewares/errorHandler.js'
 import indexRouter from './routes/index.js'
 import testRouter from './routes/test.js'
-import dotenv from 'dotenv'
-
-dotenv.config()
+import 'dotenv/config'
 
 const app = new Hono()
 
