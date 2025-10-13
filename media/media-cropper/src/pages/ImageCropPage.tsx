@@ -1,49 +1,51 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import Cropper from 'react-easy-crop';
+import Cropper, { type Area } from 'react-easy-crop';
+import { useShallow } from 'zustand/shallow';
 import { CropResizePanel, LoadingSpinner, MediaPreview, PageHeader, PageLayout } from '../components/index.ts';
-import { cropImage, downloadBlob } from '../utils/cropImage.ts';
+import { cropImage } from '../utils/cropImage.ts';
 import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
 import { useImageCropStore } from '../stores/imageCropStore.ts';
+import { downloadBlob } from '../utils/blob.ts';
 
-interface Area {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-function ImageCropPage() {
+export default function ImageCropPage() {
   const navigate = useNavigate();
-  const file = useMediaStore((state) => state.file);
   const fileUrl = useMediaStore((state) => state.fileUrl);
-
-  const crop = useImageCropStore((state) => state.crop);
-  const zoom = useImageCropStore((state) => state.zoom);
-  const aspect = useImageCropStore((state) => state.aspect);
-  const croppedAreaPixels = useImageCropStore((state) => state.croppedAreaPixels);
-  const croppedImageUrl = useImageCropStore((state) => state.croppedImageUrl);
-  const isProcessing = useImageCropStore((state) => state.isProcessing);
-  const scale = useImageCropStore((state) => state.scale);
-  const outputWidth = useImageCropStore((state) => state.outputWidth);
-  const outputHeight = useImageCropStore((state) => state.outputHeight);
-  const outputFormat = useImageCropStore((state) => state.outputFormat);
-
-  const setCrop = useImageCropStore((state) => state.setCrop);
-  const setZoom = useImageCropStore((state) => state.setZoom);
-  const setAspect = useImageCropStore((state) => state.setAspect);
-  const setCroppedAreaPixels = useImageCropStore((state) => state.setCroppedAreaPixels);
-  const setCroppedImageUrl = useImageCropStore((state) => state.setCroppedImageUrl);
-  const setIsProcessing = useImageCropStore((state) => state.setIsProcessing);
-  const setScale = useImageCropStore((state) => state.setScale);
-  const setOutputWidth = useImageCropStore((state) => state.setOutputWidth);
-  const setOutputHeight = useImageCropStore((state) => state.setOutputHeight);
-  const setSupportedFormats = useImageCropStore((state) => state.setSupportedFormats);
-  const cleanup = useImageCropStore((state) => state.cleanup);
+  const {
+    crop,
+    zoom,
+    aspect,
+    croppedAreaPixels,
+    croppedImageUrl,
+    isProcessing,
+    scale,
+    outputWidth,
+    outputHeight,
+    outputFormat,
+  } = useImageCropStore(
+    useShallow((state) => ({
+      crop: state.crop,
+      zoom: state.zoom,
+      aspect: state.aspect,
+      croppedAreaPixels: state.croppedAreaPixels,
+      croppedImageUrl: state.croppedImageUrl,
+      isProcessing: state.isProcessing,
+      scale: state.scale,
+      outputWidth: state.outputWidth,
+      outputHeight: state.outputHeight,
+      outputFormat: state.outputFormat,
+    })),
+  );
 
   useEffect(() => {
-    async function checkFormats() {
+    if (!fileUrl) {
+      navigate('/');
+    }
+  }, [fileUrl, navigate]);
+
+  useEffect(() => {
+    (async function checkFormats() {
       const formats = ['image/jpeg', 'image/png', 'image/webp'];
       const supported = [];
       for (const format of formats) {
@@ -52,64 +54,56 @@ function ImageCropPage() {
           supported.push(format);
         }
       }
-      setSupportedFormats(supported);
-    }
-    checkFormats();
-  }, [setSupportedFormats]);
+      useImageCropStore.setState({ supportedFormats: supported });
+    })();
 
-  useEffect(() => {
-    if (!file || !fileUrl) {
-      navigate('/');
-    }
-  }, [file, fileUrl, navigate]);
-
-  useEffect(() => {
     return () => {
-      cleanup();
+      useImageCropStore.getState().cleanUp();
     };
-  }, [cleanup]);
-
-  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  useEffect(() => {
-    if (croppedAreaPixels) {
-      setOutputWidth(Math.round(croppedAreaPixels.width * scale));
-      setOutputHeight(Math.round(croppedAreaPixels.height * scale));
-    }
-  }, [scale, croppedAreaPixels, setOutputWidth, setOutputHeight]);
+  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
+    useImageCropStore.getState().changeCropArea(croppedAreaPixels);
+  }, []);
 
   const handleCrop = async () => {
-    if (!fileUrl || !croppedAreaPixels) return;
-
-    setIsProcessing(true);
+    if (!fileUrl || !croppedAreaPixels) {
+      return;
+    }
+    useImageCropStore.setState({ isProcessing: true });
     try {
-      const blob = await cropImage(fileUrl, croppedAreaPixels, outputWidth, outputHeight, outputFormat);
+      const blob = await cropImage({
+        imageSrc: fileUrl,
+        croppedAreaPixels,
+        outputWidth,
+        outputHeight,
+        outputFormat,
+      });
       const url = URL.createObjectURL(blob);
-      setCroppedImageUrl(url);
+      useImageCropStore.setState({ croppedImageUrl: url });
     } catch (error) {
       console.error('Crop failed:', error);
       alert('크롭 처리 중 오류가 발생했습니다.');
     } finally {
-      setIsProcessing(false);
+      useImageCropStore.setState({ isProcessing: false });
     }
   };
 
-  const handleDownload = () => {
-    if (croppedImageUrl) {
-      fetch(croppedImageUrl)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const ext = outputFormat.split('/')[1];
-          downloadBlob(blob, `cropped-${Date.now()}.${ext}`);
-        });
+  const handleDownload = async () => {
+    if (!croppedImageUrl) {
+      return;
     }
-  };
 
-  if (!file || !fileUrl) {
-    return null;
-  }
+    const res = await fetch(croppedImageUrl);
+    if (!res.ok) {
+      alert('다운로드를 위한 파일을 불러오는 중 오류가 발생했습니다.');
+      return;
+    }
+
+    const blob = await res.blob();
+    const ext = outputFormat.split('/')[1];
+    downloadBlob(blob, `cropped-${Date.now()}.${ext}`);
+  };
 
   return (
     <PageLayout>
@@ -117,14 +111,18 @@ function ImageCropPage() {
 
       <div className="grid grid-cols-1 gap-y-8">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
+          <div className="bg-white rounded-lg shadow overflow-hidden relative h-[500px]">
             <Cropper
-              image={fileUrl}
+              image={fileUrl || ''}
               crop={crop}
               zoom={zoom}
               aspect={aspect || undefined}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
+              onCropChange={(location) => {
+                useImageCropStore.setState({ crop: location });
+              }}
+              onZoomChange={(zoom) => {
+                useImageCropStore.setState({ zoom: zoom });
+              }}
               onCropComplete={onCropComplete}
               restrictPosition={true}
             />
@@ -134,11 +132,17 @@ function ImageCropPage() {
         <div className="space-y-4 flex flex-col items-center">
           <CropResizePanel
             zoom={zoom}
-            onZoomChange={setZoom}
+            onZoomChange={(zoom) => {
+              useImageCropStore.setState({ zoom: zoom });
+            }}
             aspect={aspect}
-            onAspectChange={setAspect}
+            onAspectChange={(aspect) => {
+              useImageCropStore.setState({ aspect: aspect });
+            }}
             scale={scale}
-            onScaleChange={setScale}
+            onScaleChange={(scale) => {
+              useImageCropStore.getState().changeScale(scale);
+            }}
             cropAreaWidth={croppedAreaPixels?.width || 0}
             cropAreaHeight={croppedAreaPixels?.height || 0}
           />
@@ -159,5 +163,3 @@ function ImageCropPage() {
     </PageLayout>
   );
 }
-
-export default ImageCropPage;

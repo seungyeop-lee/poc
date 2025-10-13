@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { ErrorState, PageHeader, PageLayout, VideoControlsPanel, VideoPlayerSection } from '../components/index.ts';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
-import { downloadBlob } from '../utils/cropImage.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
 import { useVideoCropStore } from '../stores/videoCropStore.ts';
+import { downloadBlob } from '../utils/blob.ts';
 
 interface Point {
   x: number;
@@ -170,11 +170,7 @@ function VideoCropPage() {
 
         {/* 컨트롤 패널 및 미리보기 섹션 - 1100px 이상에서 2열 차지 */}
         <div className="lg:col-span-2 space-y-4">
-          <VideoControlsPanel
-            file={file}
-            croppedAreaPixels={croppedAreaPixels}
-            onCropAndTrim={handleCropAndTrim}
-          />
+          <VideoControlsPanel file={file} croppedAreaPixels={croppedAreaPixels} onCropAndTrim={handleCropAndTrim} />
 
           {/* 미리보기 섹션 */}
           {croppedVideoUrl && (

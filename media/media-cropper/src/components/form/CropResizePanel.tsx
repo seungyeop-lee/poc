@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface CropResizePanelProps {
   // 크롭 관련

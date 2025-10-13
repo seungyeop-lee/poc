@@ -28,22 +28,13 @@ interface ImageCropStore {
   supportedFormats: string[];
 
   // 액션
-  setCrop: (crop: { x: number; y: number }) => void;
-  setZoom: (zoom: number) => void;
-  setAspect: (aspect: number) => void;
-  setCroppedAreaPixels: (area: Area | null) => void;
-  setScale: (scale: number) => void;
-  setOutputWidth: (width: number) => void;
-  setOutputHeight: (height: number) => void;
-  setOutputFormat: (format: string) => void;
-  setIsProcessing: (isProcessing: boolean) => void;
-  setCroppedImageUrl: (url: string | null) => void;
-  setSupportedFormats: (formats: string[]) => void;
-  clearState: () => void;
-  cleanup: () => void;
+  changeCropArea: (area: Area) => void;
+  changeScale: (scale: number) => void;
+  applyOutputWH: () => void;
+  cleanUp: () => void;
 }
 
-export const useImageCropStore = create<ImageCropStore>((set, get) => ({
+export const useImageCropStore = create<ImageCropStore>((set, get, store) => ({
   // 초기값
   crop: { x: 0, y: 0 },
   zoom: 1,
@@ -52,45 +43,35 @@ export const useImageCropStore = create<ImageCropStore>((set, get) => ({
   scale: 1.0,
   outputWidth: 800,
   outputHeight: 600,
-  outputFormat: 'image/jpeg',
+  outputFormat: 'image/png',
   isProcessing: false,
   croppedImageUrl: null,
   supportedFormats: [],
 
   // 액션 구현
-  setCrop: (crop) => set({ crop }),
-  setZoom: (zoom) => set({ zoom }),
-  setAspect: (aspect) => set({ aspect }),
-  setCroppedAreaPixels: (area) => set({ croppedAreaPixels: area }),
-  setScale: (scale) => set({ scale }),
-  setOutputWidth: (width) => set({ outputWidth: width }),
-  setOutputHeight: (height) => set({ outputHeight: height }),
-  setOutputFormat: (format) => set({ outputFormat: format }),
-  setIsProcessing: (isProcessing) => set({ isProcessing }),
-  setCroppedImageUrl: (url) => set({ croppedImageUrl: url }),
-  setSupportedFormats: (formats) => set({ supportedFormats: formats }),
-
-  clearState: () => {
+  changeCropArea: (area: Area) => {
+    set({ croppedAreaPixels: area });
+    get().applyOutputWH();
+  },
+  changeScale: (scale: number) => {
+    set({ scale: scale });
+    get().applyOutputWH();
+  },
+  applyOutputWH: () => {
+    const { croppedAreaPixels, scale } = get();
+    if (!croppedAreaPixels) {
+      return;
+    }
     set({
-      crop: { x: 0, y: 0 },
-      zoom: 1,
-      aspect: 4 / 3,
-      croppedAreaPixels: null,
-      scale: 1.0,
-      outputWidth: 800,
-      outputHeight: 600,
-      outputFormat: 'image/jpeg',
-      isProcessing: false,
-      croppedImageUrl: null,
-      supportedFormats: [],
+      outputWidth: Math.round(croppedAreaPixels.width * scale),
+      outputHeight: Math.round(croppedAreaPixels.height * scale),
     });
   },
-
-  cleanup: () => {
+  cleanUp: () => {
     const { croppedImageUrl } = get();
     if (croppedImageUrl) {
       URL.revokeObjectURL(croppedImageUrl);
     }
-    set({ croppedImageUrl: null });
+    set(store.getInitialState());
   },
 }));

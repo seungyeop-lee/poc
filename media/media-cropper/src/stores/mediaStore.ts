@@ -3,19 +3,21 @@ import { create } from 'zustand';
 interface MediaStore {
   file: File | null;
   fileUrl: string | null;
-  setMedia: (file: File, fileUrl: string) => void;
+  setMedia: (file: File) => void;
   clearMedia: () => void;
 }
 
-export const useMediaStore = create<MediaStore>((set, get) => ({
+export const useMediaStore = create<MediaStore>((set, get, store) => ({
   file: null,
   fileUrl: null,
-  setMedia: (file, fileUrl) => {
+  setMedia: (file) => {
     // 기존 fileUrl 정리
     const prevFileUrl = get().fileUrl;
     if (prevFileUrl) {
       URL.revokeObjectURL(prevFileUrl);
     }
+
+    const fileUrl = URL.createObjectURL(file);
     set({ file, fileUrl });
   },
   clearMedia: () => {
@@ -23,6 +25,7 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
     if (fileUrl) {
       URL.revokeObjectURL(fileUrl);
     }
-    set({ file: null, fileUrl: null });
+
+    set(store.getInitialState());
   },
 }));

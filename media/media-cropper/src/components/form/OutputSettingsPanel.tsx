@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getSupportedCodecs, getSupportedCodecsForFormat, type CodecInfo } from '../../utils/codecSupport';
+import { useEffect, useState } from 'react';
+import { type CodecInfo, getSupportedCodecs, getSupportedCodecsForFormat } from '../../utils/codecSupport';
 
 const FORMAT_LABELS: Record<string, string> = {
   'video/webm': 'WebM',
@@ -48,7 +48,7 @@ export default function OutputSettingsPanel({
       setError(null);
 
       const codecInfos = await getSupportedCodecs();
-      const supportedVideoCodecs = codecInfos.filter(codec => codec.type === 'video');
+      const supportedVideoCodecs = codecInfos.filter((codec) => codec.type === 'video');
 
       setVideoCodecs(supportedVideoCodecs);
     } catch (err) {
@@ -65,14 +65,12 @@ export default function OutputSettingsPanel({
       const supportedCodecs = await getSupportedCodecsForFormat(outputFormat);
 
       // 전체 코덱 목록에서 호환되는 코덱만 필터링
-      const compatibleCodecs = videoCodecs.filter(codec =>
-        supportedCodecs.video.includes(codec.name)
-      );
+      const compatibleCodecs = videoCodecs.filter((codec) => supportedCodecs.video.includes(codec.name));
 
       setFilteredCodecs(compatibleCodecs);
 
       // 현재 선택된 코덱이 호환되지 않거나 선택된 코덱이 없으면 첫 번째 호환 코덱 자동 선택
-      if (!selectedCodec || !compatibleCodecs.some(codec => codec.name === selectedCodec)) {
+      if (!selectedCodec || !compatibleCodecs.some((codec) => codec.name === selectedCodec)) {
         if (compatibleCodecs.length > 0) {
           const firstCompatibleCodec = compatibleCodecs[0].name;
           onCodecChange(firstCompatibleCodec);
@@ -84,7 +82,7 @@ export default function OutputSettingsPanel({
       // 에러 시 기본 코덱으로 설정
       const fallbackCodecs: Record<string, string> = {
         'video/mp4': 'avc1',
-        'video/webm': 'vp8'
+        'video/webm': 'vp8',
       };
       const fallbackCodec = fallbackCodecs[outputFormat] || 'vp8';
       onCodecChange(fallbackCodec);
@@ -129,9 +127,7 @@ export default function OutputSettingsPanel({
       <div className="space-y-4">
         {/* 포맷 선택 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            출력 포맷
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">출력 포맷</label>
           <select
             value={outputFormat}
             onChange={(e) => handleFormatChange(e.target.value)}
@@ -139,11 +135,7 @@ export default function OutputSettingsPanel({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             {VIDEO_FORMATS.map((format) => (
-              <option
-                key={format}
-                value={format}
-                disabled={!supportedFormats.includes(format)}
-              >
+              <option key={format} value={format} disabled={!supportedFormats.includes(format)}>
                 {FORMAT_LABELS[format] || format}
                 {!supportedFormats.includes(format) && ' (미지원)'}
               </option>
@@ -153,15 +145,11 @@ export default function OutputSettingsPanel({
 
         {/* 코덱 선택 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            비디오 코덱
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">비디오 코덱</label>
 
           {filteredCodecs.length === 0 ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-              <p className="text-yellow-800 text-sm">
-                이 포맷에 지원되는 코덱이 없습니다. 다른 포맷을 선택해주세요.
-              </p>
+              <p className="text-yellow-800 text-sm">이 포맷에 지원되는 코덱이 없습니다. 다른 포맷을 선택해주세요.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -170,9 +158,10 @@ export default function OutputSettingsPanel({
                   key={codec.name}
                   className={`
                     flex items-start p-3 border rounded-lg cursor-pointer transition-colors
-                    ${selectedCodec === codec.name
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    ${
+                      selectedCodec === codec.name
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }
                     ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
@@ -190,14 +179,10 @@ export default function OutputSettingsPanel({
                     <div className="flex items-center">
                       <span className="font-medium text-gray-900">{codec.name}</span>
                       {selectedCodec === codec.name && (
-                        <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
-                          선택됨
-                        </span>
+                        <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded">선택됨</span>
                       )}
                     </div>
-                    {codec.description && (
-                      <p className="text-sm text-gray-600 mt-1">{codec.description}</p>
-                    )}
+                    {codec.description && <p className="text-sm text-gray-600 mt-1">{codec.description}</p>}
                   </div>
                 </label>
               ))}
@@ -206,22 +191,22 @@ export default function OutputSettingsPanel({
         </div>
 
         {/* 호환성 정보 */}
-        {selectedCodec && filteredCodecs.some(codec => codec.name === selectedCodec) && (
+        {selectedCodec && filteredCodecs.some((codec) => codec.name === selectedCodec) && (
           <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded">
             <p className="text-sm text-green-800">
-              ✅ <span className="font-medium">
+              ✅{' '}
+              <span className="font-medium">
                 {FORMAT_LABELS[outputFormat]} + {selectedCodec}
-              </span> 조합은 호환됩니다.
+              </span>{' '}
+              조합은 호환됩니다.
             </p>
           </div>
         )}
 
-        {selectedCodec && !filteredCodecs.some(codec => codec.name === selectedCodec) && (
+        {selectedCodec && !filteredCodecs.some((codec) => codec.name === selectedCodec) && (
           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <p className="text-sm text-yellow-800">
-              ⚠️ <span className="font-medium">
-                {selectedCodec}
-              </span> 코덱은 현재 포맷과 호환되지 않을 수 있습니다.
+              ⚠️ <span className="font-medium">{selectedCodec}</span> 코덱은 현재 포맷과 호환되지 않을 수 있습니다.
             </p>
           </div>
         )}
