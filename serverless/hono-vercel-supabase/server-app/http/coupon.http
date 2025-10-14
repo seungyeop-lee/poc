@@ -1,0 +1,17 @@
+### 쿠폰 생성 (mTLS 서버에서 코드 생성)
+POST http://localhost:3000/integration/coupon
+
+### 쿠폰 생성 2 (여러 개 생성 테스트)
+POST http://localhost:3000/integration/coupon
+
+### 쿠폰 생성 3
+POST http://localhost:3000/integration/coupon
+
+### 쿠폰 코드로 조회 (생성 후 받은 실제 코드로 교체 필요)
+GET http://localhost:3000/integration/coupon/69f6d4
+
+### 에러 테스트: 존재하지 않는 쿠폰 코드 조회
+GET http://localhost:3000/integration/coupon/nonexistent
+
+### 에러 테스트: 존재하지 않는 쿠폰 코드 조회 2
+GET http://localhost:3000/integration/coupon/999999

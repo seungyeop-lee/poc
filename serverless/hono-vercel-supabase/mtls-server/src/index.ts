@@ -11,6 +11,12 @@ app.get('/', (c) => {
   return c.text('Hello Hono!!!')
 })
 
+app.get('/coupon-code', (c) => {
+  const code = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  console.log(`Generated coupon code: ${code}`);
+  return c.text(code)
+})
+
 serve({
   fetch: app.fetch,
   createServer: createServer,

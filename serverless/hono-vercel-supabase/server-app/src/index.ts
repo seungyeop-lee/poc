@@ -3,6 +3,7 @@ import {errorHandler} from './middlewares/errorHandler.js'
 import indexRouter from './routes/index.js'
 import testRouter from './routes/test.js'
 import crudRouter from './routes/crud.js'
+import integrationRouter from './routes/integration.js'
 import 'dotenv/config'
 
 const app = new Hono()
@@ -14,5 +15,6 @@ app.onError(errorHandler)
 app.route('/', indexRouter)
 app.route('/test', testRouter)
 app.route('/crud', crudRouter)
+app.route('/integration', integrationRouter)
 
 export default app
