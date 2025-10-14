@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface TooltipProps {
   content: string;
@@ -7,12 +7,7 @@ interface TooltipProps {
   children: React.ReactNode;
 }
 
-export default function Tooltip({
-  content,
-  position = 'top',
-  delay = 300,
-  children
-}: TooltipProps) {
+export default function Tooltip({ content, position = 'top', delay = 300, children }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -111,12 +106,7 @@ export default function Tooltip({
 
   return (
     <>
-      <div
-        ref={triggerRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="inline-block"
-      >
+      <div ref={triggerRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="inline-block">
         {children}
       </div>
 
@@ -130,10 +120,13 @@ export default function Tooltip({
             {content}
             <div
               className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
-                position === 'top' ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1' :
-                position === 'bottom' ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-1' :
-                position === 'left' ? 'right-0 top-1/2 -translate-y-1/2 translate-x-1' :
-                'left-0 top-1/2 -translate-y-1/2 -translate-x-1'
+                position === 'top'
+                  ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1'
+                  : position === 'bottom'
+                    ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-1'
+                    : position === 'left'
+                      ? 'right-0 top-1/2 -translate-y-1/2 translate-x-1'
+                      : 'left-0 top-1/2 -translate-y-1/2 -translate-x-1'
               }`}
             />
           </div>

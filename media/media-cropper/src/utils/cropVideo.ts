@@ -1,3 +1,15 @@
+import {
+  ALL_FORMATS,
+  BlobSource,
+  BufferTarget,
+  Conversion,
+  getFirstEncodableVideoCodec,
+  Input,
+  Mp4OutputFormat,
+  Output,
+  WebMOutputFormat,
+} from 'mediabunny';
+
 interface CroppedAreaPixels {
   x: number;
   y: number;
@@ -26,20 +38,8 @@ export async function cropAndTrimVideo(
   outputHeight?: number,
   outputFormat?: string,
   onProgress?: (progress: number) => void,
-  processingOptions?: VideoProcessingOptions
+  processingOptions?: VideoProcessingOptions,
 ): Promise<Blob> {
-  const {
-    Input,
-    Output,
-    Conversion,
-    ALL_FORMATS,
-    BlobSource,
-    WebMOutputFormat,
-    Mp4OutputFormat,
-    BufferTarget,
-    getFirstEncodableVideoCodec,
-  } = await import('mediabunny');
-
   const finalWidth = outputWidth ?? Math.round(croppedAreaPixels.width);
   const finalHeight = outputHeight ?? Math.round(croppedAreaPixels.height);
   const finalFormat = outputFormat ?? 'video/webm';
@@ -50,9 +50,7 @@ export async function cropAndTrimVideo(
   });
 
   // 포맷에 따라 적절한 OutputFormat 선택
-  const format = finalFormat === 'video/mp4'
-    ? new Mp4OutputFormat()
-    : new WebMOutputFormat();
+  const format = finalFormat === 'video/mp4' ? new Mp4OutputFormat() : new WebMOutputFormat();
 
   const output = new Output({
     format,
@@ -73,7 +71,7 @@ export async function cropAndTrimVideo(
 
     const isSupported = await getFirstEncodableVideoCodec(
       [selectedCodec as 'avc' | 'hevc' | 'vp9' | 'av1' | 'vp8'],
-      encodableConfig
+      encodableConfig,
     );
 
     if (!isSupported) {
@@ -90,15 +88,12 @@ export async function cropAndTrimVideo(
       bitrate: processingOptions?.bitrate ?? 1e6,
     };
 
-    selectedCodec = await getFirstEncodableVideoCodec(
-      supportedCodecs,
-      encodableConfig
-    ) as string;
+    selectedCodec = (await getFirstEncodableVideoCodec(supportedCodecs, encodableConfig)) as string;
 
     if (!selectedCodec) {
       throw new Error(
         `브라우저가 ${finalFormat} 형식의 비디오 인코딩을 지원하지 않습니다. ` +
-        `다른 브라우저(Chrome, Edge, Firefox 최신 버전)를 사용해 주세요.`
+          `다른 브라우저(Chrome, Edge, Firefox 최신 버전)를 사용해 주세요.`,
       );
     }
 

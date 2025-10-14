@@ -11,9 +11,10 @@ export { MediaPreview } from './media/index';
 export {
   CropResizePanel,
   FileUploader,
-  OutputSettingsPanel,
+  ImageOutputSettingsPanel,
+  VideoOutputSettingsPanel,
   TrimControls,
-  UpscaleControls
+  UpscaleControls,
 } from './form/index';
 
 // Video components
@@ -22,5 +23,5 @@ export {
   VideoControlsPanel,
   VideoMetadataDisplay,
   VideoPlayerSection,
-  VideoProcessingButton
+  VideoProcessingButton,
 } from './video/index';

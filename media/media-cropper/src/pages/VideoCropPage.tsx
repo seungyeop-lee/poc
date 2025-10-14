@@ -1,23 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useShallow } from 'zustand/shallow';
 import { ErrorState, PageHeader, PageLayout, VideoControlsPanel, VideoPlayerSection } from '../components/index.ts';
 import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
 import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
-import { useVideoCropStore } from '../stores/videoCropStore.ts';
+import { useVideoCropStore } from './videoCropStore.ts';
 import { downloadBlob } from '../utils/blob.ts';
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Area {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import type { Area } from 'react-easy-crop';
 
 function VideoCropPage() {
   const navigate = useNavigate();
@@ -25,62 +15,60 @@ function VideoCropPage() {
   const fileUrl = useMediaStore((state) => state.fileUrl);
 
   // VideoPlayerSection에서 사용하는 상태만 구독
-  const crop = useVideoCropStore((state) => state.crop);
-  const zoom = useVideoCropStore((state) => state.zoom);
-  const aspect = useVideoCropStore((state) => state.aspect);
-  const croppedAreaPixels = useVideoCropStore((state) => state.croppedAreaPixels);
-  const duration = useVideoCropStore((state) => state.duration);
-  const startTime = useVideoCropStore((state) => state.startTime);
-  const endTime = useVideoCropStore((state) => state.endTime);
-  const liveCurrentTime = useVideoCropStore((state) => state.liveCurrentTime);
+  const { crop, zoom, aspect, croppedAreaPixels, duration, startTime, endTime, liveCurrentTime } = useVideoCropStore(
+    useShallow((state) => ({
+      crop: state.crop,
+      zoom: state.zoom,
+      aspect: state.aspect,
+      croppedAreaPixels: state.croppedAreaPixels,
+      duration: state.duration,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      liveCurrentTime: state.liveCurrentTime,
+    })),
+  );
 
-  // VideoCropPage에서 직접 사용하는 상태와 setter
-  const croppedVideoUrl = useVideoCropStore((state) => state.croppedVideoUrl);
-  const scale = useVideoCropStore((state) => state.scale);
-  const outputWidth = useVideoCropStore((state) => state.outputWidth);
-  const outputHeight = useVideoCropStore((state) => state.outputHeight);
-  const outputFormat = useVideoCropStore((state) => state.outputFormat);
-  const codecOptions = useVideoCropStore((state) => state.codecOptions);
-  const selectedCodec = useVideoCropStore((state) => state.selectedCodec);
+  // VideoCropPage에서 직접 사용하는 상태
+  const { croppedVideoUrl, outputWidth, outputHeight, outputFormat, codecOptions, selectedCodec } = useVideoCropStore(
+    useShallow((state) => ({
+      croppedVideoUrl: state.croppedVideoUrl,
+      outputWidth: state.outputWidth,
+      outputHeight: state.outputHeight,
+      outputFormat: state.outputFormat,
+      codecOptions: state.codecOptions,
+      selectedCodec: state.selectedCodec,
+    })),
+  );
 
-  const setCrop = useVideoCropStore((state) => state.setCrop);
-  const setZoom = useVideoCropStore((state) => state.setZoom);
-  const setCroppedAreaPixels = useVideoCropStore((state) => state.setCroppedAreaPixels);
-  const setDuration = useVideoCropStore((state) => state.setDuration);
-  const setEndTime = useVideoCropStore((state) => state.setEndTime);
-  const setCroppedVideoUrl = useVideoCropStore((state) => state.setCroppedVideoUrl);
-  const setIsProcessing = useVideoCropStore((state) => state.setIsProcessing);
-  const setProgress = useVideoCropStore((state) => state.setProgress);
-  const setOutputWidth = useVideoCropStore((state) => state.setOutputWidth);
-  const setOutputHeight = useVideoCropStore((state) => state.setOutputHeight);
-  const setSupportedFormats = useVideoCropStore((state) => state.setSupportedFormats);
-  const setLiveCurrentTime = useVideoCropStore((state) => state.setLiveCurrentTime);
-  const cleanup = useVideoCropStore((state) => state.cleanup);
+  // Setter 함수들
+  const { setIsProcessing, setProgress } = useVideoCropStore(
+    useShallow((state) => ({
+      setIsProcessing: state.setIsProcessing,
+      setProgress: state.setProgress,
+    })),
+  );
 
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
 
   useEffect(() => {
+    if (!fileUrl) {
+      navigate('/');
+    }
+  }, [fileUrl, navigate]);
+
+  useEffect(() => {
     const formats = ['video/webm', 'video/mp4'];
     const supported = formats.filter(checkVideoFormatSupport);
-    setSupportedFormats(supported);
-  }, [setSupportedFormats]);
+    useVideoCropStore.setState({ supportedFormats: supported });
 
-  useEffect(() => {
     return () => {
-      cleanup();
+      useVideoCropStore.getState().cleanUp();
     };
-  }, [cleanup]);
-
-  const onCropComplete = useCallback((_: Point, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  useEffect(() => {
-    if (croppedAreaPixels) {
-      setOutputWidth(Math.round(croppedAreaPixels.width * scale));
-      setOutputHeight(Math.round(croppedAreaPixels.height * scale));
-    }
-  }, [scale, croppedAreaPixels]);
+  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
+    useVideoCropStore.getState().changeCropArea(croppedAreaPixels);
+  }, []);
 
   const handleCropAndTrim = async () => {
     if (!file || !croppedAreaPixels) return;
@@ -102,7 +90,7 @@ function VideoCropPage() {
           : { codec: selectedCodec },
       );
       const url = URL.createObjectURL(blob);
-      setCroppedVideoUrl(url);
+      useVideoCropStore.setState({ croppedVideoUrl: url });
     } catch (error) {
       console.error('Video processing failed:', error);
       alert('비디오 처리 중 오류가 발생했습니다.');
@@ -111,15 +99,20 @@ function VideoCropPage() {
     }
   };
 
-  const handleDownload = () => {
-    if (croppedVideoUrl) {
-      fetch(croppedVideoUrl)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const ext = outputFormat.split('/')[1];
-          downloadBlob(blob, `cropped-video-${Date.now()}.${ext}`);
-        });
+  const handleDownload = async () => {
+    if (!croppedVideoUrl) {
+      return;
     }
+
+    const res = await fetch(croppedVideoUrl);
+    if (!res.ok) {
+      alert('다운로드를 위한 파일을 불러오는 중 오류가 발생했습니다.');
+      return;
+    }
+
+    const blob = await res.blob();
+    const ext = outputFormat.split('/')[1];
+    downloadBlob(blob, `${file?.name}-${outputWidth}x${outputHeight}.${ext}`);
   };
 
   if (!webCodecsSupported) {
@@ -138,11 +131,6 @@ function VideoCropPage() {
     );
   }
 
-  if (!file || !fileUrl) {
-    navigate('/');
-    return null;
-  }
-
   return (
     <PageLayout>
       <PageHeader title="비디오 크롭 및 트림" />
@@ -155,16 +143,26 @@ function VideoCropPage() {
             crop={crop}
             zoom={zoom}
             aspect={aspect}
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
+            onCropChange={(crop) => {
+              useVideoCropStore.setState({ crop });
+            }}
+            onZoomChange={(zoom) => {
+              useVideoCropStore.setState({ zoom });
+            }}
             onCropComplete={onCropComplete}
             duration={duration}
             liveCurrentTime={liveCurrentTime}
             startTime={startTime}
             endTime={endTime}
-            onDurationChange={setDuration}
-            onEndTimeChange={setEndTime}
-            onLiveCurrentTimeChange={setLiveCurrentTime}
+            onDurationChange={(duration) => {
+              useVideoCropStore.setState({ duration });
+            }}
+            onEndTimeChange={(endTime) => {
+              useVideoCropStore.setState({ endTime });
+            }}
+            onLiveCurrentTimeChange={(time) => {
+              useVideoCropStore.setState({ liveCurrentTime: time });
+            }}
           />
         </div>
 

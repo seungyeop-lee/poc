@@ -2,17 +2,14 @@ import { useEffect, useState } from 'react';
 import {
   AdvancedVideoProcessor,
   CropResizePanel,
-  OutputSettingsPanel,
   TrimControls,
   VideoMetadataDisplay,
+  VideoOutputSettingsPanel,
   VideoProcessingButton,
 } from '../index';
 import { extractVideoMetadata, type VideoMetadata } from '../../utils/videoMetadata';
-import { useVideoCropControls } from '../../hooks/useVideoCropControls';
-import { useVideoTrimControls } from '../../hooks/useVideoTrimControls';
-import { useVideoOutputSettings } from '../../hooks/useVideoOutputSettings';
-import { useVideoProcessingState } from '../../hooks/useVideoProcessingState';
-import { useVideoCropStore } from '../../stores/videoCropStore';
+import { useVideoCropStore } from '../../pages/videoCropStore.ts';
+import { useShallow } from 'zustand/shallow';
 
 interface Area {
   x: number;
@@ -27,17 +24,42 @@ interface VideoControlsPanelProps {
   onCropAndTrim: () => void;
 }
 
-export default function VideoControlsPanel({
-  file,
-  croppedAreaPixels,
-  onCropAndTrim,
-}: VideoControlsPanelProps) {
-  // 커스텀 훅을 통해 Zustand 스토어에서 직접 상태 구독
-  const { zoom, aspect, scale, setZoom, setAspect, setScale } = useVideoCropControls();
-  const { startTime, endTime, duration, setStartTime, setEndTime } = useVideoTrimControls();
-  const { outputFormat, selectedCodec, supportedFormats, setOutputFormat, setSelectedCodec } = useVideoOutputSettings();
-  const { isProcessing, progress } = useVideoProcessingState();
-  const setCodecOptions = useVideoCropStore((state) => state.setCodecOptions);
+export default function VideoControlsPanel({ file, croppedAreaPixels, onCropAndTrim }: VideoControlsPanelProps) {
+  // CropResizePanel 에서 사용하는 상태만 구독
+  const { zoom, aspect, scale } = useVideoCropStore(
+    useShallow((state) => ({
+      zoom: state.zoom,
+      aspect: state.aspect,
+      scale: state.scale,
+    })),
+  );
+
+  // TrimControls 에서 사용하는 상태만 구독
+  const { startTime, endTime, duration } = useVideoCropStore(
+    useShallow((state) => ({
+      startTime: state.startTime,
+      endTime: state.endTime,
+      duration: state.duration,
+    })),
+  );
+
+  // VideoOutputSettingsPanel 에서 사용하는 상태만 구독
+  const { outputFormat, selectedCodec, supportedFormats } = useVideoCropStore(
+    useShallow((state) => ({
+      outputFormat: state.outputFormat,
+      selectedCodec: state.selectedCodec,
+      supportedFormats: state.supportedFormats,
+    })),
+  );
+
+  // VideoProcessingButton 에서 사용하는 상태만 구독
+  const { isProcessing, progress } = useVideoCropStore(
+    useShallow((state) => ({
+      isProcessing: state.isProcessing,
+      progress: state.progress,
+    })),
+  );
+
   const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null);
 
   useEffect(() => {
@@ -55,11 +77,17 @@ export default function VideoControlsPanel({
 
       <CropResizePanel
         zoom={zoom}
-        onZoomChange={setZoom}
+        onZoomChange={(zoom) => {
+          useVideoCropStore.setState({ zoom: zoom });
+        }}
         aspect={aspect}
-        onAspectChange={setAspect}
+        onAspectChange={(aspect) => {
+          useVideoCropStore.setState({ aspect: aspect });
+        }}
         scale={scale || 1}
-        onScaleChange={setScale}
+        onScaleChange={(scale) => {
+          useVideoCropStore.getState().changeScale(scale);
+        }}
         cropAreaWidth={croppedAreaPixels?.width || 0}
         cropAreaHeight={croppedAreaPixels?.height || 0}
       />
@@ -69,17 +97,25 @@ export default function VideoControlsPanel({
           startTime={startTime}
           endTime={endTime}
           duration={duration}
-          onStartTimeChange={setStartTime}
-          onEndTimeChange={setEndTime}
+          onStartTimeChange={(time) => {
+            useVideoCropStore.setState({ startTime: time });
+          }}
+          onEndTimeChange={(time) => {
+            useVideoCropStore.setState({ endTime: time });
+          }}
         />
       )}
 
-      <OutputSettingsPanel
+      <VideoOutputSettingsPanel
         outputFormat={outputFormat}
         selectedCodec={selectedCodec}
         supportedFormats={supportedFormats}
-        onFormatChange={setOutputFormat}
-        onCodecChange={setSelectedCodec}
+        onFormatChange={(format) => {
+          useVideoCropStore.getState().setOutputFormat(format);
+        }}
+        onCodecChange={(selectedCodec) => {
+          useVideoCropStore.setState({ selectedCodec });
+        }}
         disabled={isProcessing}
       />
 
@@ -87,7 +123,9 @@ export default function VideoControlsPanel({
       <AdvancedVideoProcessor
         metadata={videoMetadata}
         selectedCodec={selectedCodec}
-        onOptionsChange={setCodecOptions}
+        onOptionsChange={(options) => {
+          useVideoCropStore.setState({ codecOptions: options });
+        }}
       />
 
       {/* 비디오 처리 버튼 */}

@@ -6,8 +6,6 @@ const FORMAT_LABELS: Record<string, string> = {
   'video/mp4': 'MP4',
 };
 
-const VIDEO_FORMATS = ['video/webm', 'video/mp4'];
-
 interface OutputSettingsPanelProps {
   outputFormat: string;
   selectedCodec: string;
@@ -17,7 +15,7 @@ interface OutputSettingsPanelProps {
   disabled?: boolean;
 }
 
-export default function OutputSettingsPanel({
+export default function VideoOutputSettingsPanel({
   outputFormat,
   selectedCodec,
   supportedFormats,
@@ -32,62 +30,60 @@ export default function OutputSettingsPanel({
 
   // 모든 지원 코덱 로드
   useEffect(() => {
-    loadSupportedCodecs();
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const codecInfos = await getSupportedCodecs();
+        const supportedVideoCodecs = codecInfos.filter((codec) => codec.type === 'video');
+
+        setVideoCodecs(supportedVideoCodecs);
+      } catch (err) {
+        setError('코덱 정보를 불러오는 중 오류가 발생했습니다.');
+        console.error('OutputSettingsPanel 오류:', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   // 포맷 변경 시 호환 코덱 필터링 및 자동 선택
   useEffect(() => {
-    if (outputFormat && videoCodecs.length > 0) {
-      filterAndSelectCodec();
+    if (!outputFormat || videoCodecs.length <= 0) {
+      return;
     }
-  }, [outputFormat, videoCodecs]);
 
-  const loadSupportedCodecs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    (async () => {
+      try {
+        // 해당 포맷에 맞는 코덱 목록 가져오기
+        const supportedCodecs = await getSupportedCodecsForFormat(outputFormat);
 
-      const codecInfos = await getSupportedCodecs();
-      const supportedVideoCodecs = codecInfos.filter((codec) => codec.type === 'video');
+        // 전체 코덱 목록에서 호환되는 코덱만 필터링
+        const compatibleCodecs = videoCodecs.filter((codec) => supportedCodecs.video.includes(codec.name));
 
-      setVideoCodecs(supportedVideoCodecs);
-    } catch (err) {
-      setError('코덱 정보를 불러오는 중 오류가 발생했습니다.');
-      console.error('OutputSettingsPanel 오류:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setFilteredCodecs(compatibleCodecs);
 
-  const filterAndSelectCodec = async () => {
-    try {
-      // 해당 포맷에 맞는 코덱 목록 가져오기
-      const supportedCodecs = await getSupportedCodecsForFormat(outputFormat);
-
-      // 전체 코덱 목록에서 호환되는 코덱만 필터링
-      const compatibleCodecs = videoCodecs.filter((codec) => supportedCodecs.video.includes(codec.name));
-
-      setFilteredCodecs(compatibleCodecs);
-
-      // 현재 선택된 코덱이 호환되지 않거나 선택된 코덱이 없으면 첫 번째 호환 코덱 자동 선택
-      if (!selectedCodec || !compatibleCodecs.some((codec) => codec.name === selectedCodec)) {
-        if (compatibleCodecs.length > 0) {
-          const firstCompatibleCodec = compatibleCodecs[0].name;
-          onCodecChange(firstCompatibleCodec);
-          console.log(`🎯 포맷 ${outputFormat}에 맞는 코덱 자동 선택: ${firstCompatibleCodec}`);
+        // 현재 선택된 코덱이 호환되지 않거나 선택된 코덱이 없으면 첫 번째 호환 코덱 자동 선택
+        if (!selectedCodec || !compatibleCodecs.some((codec) => codec.name === selectedCodec)) {
+          if (compatibleCodecs.length > 0) {
+            const firstCompatibleCodec = compatibleCodecs[0].name;
+            onCodecChange(firstCompatibleCodec);
+            console.log(`🎯 포맷 ${outputFormat}에 맞는 코덱 자동 선택: ${firstCompatibleCodec}`);
+          }
         }
+      } catch (error) {
+        console.error('❌ 코덱 필터링 실패:', error);
+        // 에러 시 기본 코덱으로 설정
+        const fallbackCodecs: Record<string, string> = {
+          'video/mp4': 'avc1',
+          'video/webm': 'vp8',
+        };
+        const fallbackCodec = fallbackCodecs[outputFormat] || 'vp8';
+        onCodecChange(fallbackCodec);
       }
-    } catch (error) {
-      console.error('❌ 코덱 필터링 실패:', error);
-      // 에러 시 기본 코덱으로 설정
-      const fallbackCodecs: Record<string, string> = {
-        'video/mp4': 'avc1',
-        'video/webm': 'vp8',
-      };
-      const fallbackCodec = fallbackCodecs[outputFormat] || 'vp8';
-      onCodecChange(fallbackCodec);
-    }
-  };
+    })();
+  }, [onCodecChange, outputFormat, selectedCodec, videoCodecs]);
 
   const handleFormatChange = (format: string) => {
     onFormatChange(format);
@@ -134,7 +130,7 @@ export default function OutputSettingsPanel({
             disabled={disabled}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            {VIDEO_FORMATS.map((format) => (
+            {Object.keys(FORMAT_LABELS).map((format) => (
               <option key={format} value={format} disabled={!supportedFormats.includes(format)}>
                 {FORMAT_LABELS[format] || format}
                 {!supportedFormats.includes(format) && ' (미지원)'}
@@ -189,27 +185,6 @@ export default function OutputSettingsPanel({
             </div>
           )}
         </div>
-
-        {/* 호환성 정보 */}
-        {selectedCodec && filteredCodecs.some((codec) => codec.name === selectedCodec) && (
-          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded">
-            <p className="text-sm text-green-800">
-              ✅{' '}
-              <span className="font-medium">
-                {FORMAT_LABELS[outputFormat]} + {selectedCodec}
-              </span>{' '}
-              조합은 호환됩니다.
-            </p>
-          </div>
-        )}
-
-        {selectedCodec && !filteredCodecs.some((codec) => codec.name === selectedCodec) && (
-          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
-            <p className="text-sm text-yellow-800">
-              ⚠️ <span className="font-medium">{selectedCodec}</span> 코덱은 현재 포맷과 호환되지 않을 수 있습니다.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

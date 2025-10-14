@@ -1,16 +1,18 @@
-import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import Cropper, { type Area } from 'react-easy-crop';
+import Cropper from 'react-easy-crop';
 import { useShallow } from 'zustand/shallow';
-import { CropResizePanel, LoadingSpinner, MediaPreview, PageHeader, PageLayout } from '../components/index.ts';
-import { cropImage } from '../utils/cropImage.ts';
-import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
+import {
+  CropResizePanel,
+  ImageOutputSettingsPanel,
+  LoadingSpinner,
+  MediaPreview,
+  PageHeader,
+  PageLayout,
+} from '../components/index.ts';
 import { useMediaStore } from '../stores/mediaStore.ts';
-import { useImageCropStore } from '../stores/imageCropStore.ts';
-import { downloadBlob } from '../utils/blob.ts';
+import { useImageCropStore } from './imageCropStore.ts';
+import useImageCropPage from './useImageCropPage.ts';
 
 export default function ImageCropPage() {
-  const navigate = useNavigate();
   const fileUrl = useMediaStore((state) => state.fileUrl);
   const {
     crop,
@@ -20,9 +22,8 @@ export default function ImageCropPage() {
     croppedImageUrl,
     isProcessing,
     scale,
-    outputWidth,
-    outputHeight,
     outputFormat,
+    supportedFormats,
   } = useImageCropStore(
     useShallow((state) => ({
       crop: state.crop,
@@ -32,78 +33,11 @@ export default function ImageCropPage() {
       croppedImageUrl: state.croppedImageUrl,
       isProcessing: state.isProcessing,
       scale: state.scale,
-      outputWidth: state.outputWidth,
-      outputHeight: state.outputHeight,
       outputFormat: state.outputFormat,
+      supportedFormats: state.supportedFormats,
     })),
   );
-
-  useEffect(() => {
-    if (!fileUrl) {
-      navigate('/');
-    }
-  }, [fileUrl, navigate]);
-
-  useEffect(() => {
-    (async function checkFormats() {
-      const formats = ['image/jpeg', 'image/png', 'image/webp'];
-      const supported = [];
-      for (const format of formats) {
-        const isSupported = await checkImageFormatSupport(format);
-        if (isSupported) {
-          supported.push(format);
-        }
-      }
-      useImageCropStore.setState({ supportedFormats: supported });
-    })();
-
-    return () => {
-      useImageCropStore.getState().cleanUp();
-    };
-  }, []);
-
-  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
-    useImageCropStore.getState().changeCropArea(croppedAreaPixels);
-  }, []);
-
-  const handleCrop = async () => {
-    if (!fileUrl || !croppedAreaPixels) {
-      return;
-    }
-    useImageCropStore.setState({ isProcessing: true });
-    try {
-      const blob = await cropImage({
-        imageSrc: fileUrl,
-        croppedAreaPixels,
-        outputWidth,
-        outputHeight,
-        outputFormat,
-      });
-      const url = URL.createObjectURL(blob);
-      useImageCropStore.setState({ croppedImageUrl: url });
-    } catch (error) {
-      console.error('Crop failed:', error);
-      alert('크롭 처리 중 오류가 발생했습니다.');
-    } finally {
-      useImageCropStore.setState({ isProcessing: false });
-    }
-  };
-
-  const handleDownload = async () => {
-    if (!croppedImageUrl) {
-      return;
-    }
-
-    const res = await fetch(croppedImageUrl);
-    if (!res.ok) {
-      alert('다운로드를 위한 파일을 불러오는 중 오류가 발생했습니다.');
-      return;
-    }
-
-    const blob = await res.blob();
-    const ext = outputFormat.split('/')[1];
-    downloadBlob(blob, `cropped-${Date.now()}.${ext}`);
-  };
+  const { onCropComplete, handleCrop, handleDownload } = useImageCropPage();
 
   return (
     <PageLayout>
@@ -145,6 +79,14 @@ export default function ImageCropPage() {
             }}
             cropAreaWidth={croppedAreaPixels?.width || 0}
             cropAreaHeight={croppedAreaPixels?.height || 0}
+          />
+
+          <ImageOutputSettingsPanel
+            outputFormat={outputFormat}
+            supportedFormats={supportedFormats}
+            onFormatChange={(format) => {
+              useImageCropStore.setState({ outputFormat: format });
+            }}
           />
 
           <button

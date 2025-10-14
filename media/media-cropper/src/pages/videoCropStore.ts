@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { CodecSpecificOptions } from '../utils/videoMetadata';
-import { getSupportedCodecsForFormat } from '../utils/codecSupport';
+import type { CodecSpecificOptions } from '../utils/videoMetadata.ts';
+import { getSupportedCodecsForFormat } from '../utils/codecSupport.ts';
 
 interface Area {
   x: number;
@@ -43,17 +43,8 @@ interface VideoCropStore {
   selectedCodec: string;
 
   // 액션
-  setCrop: (crop: { x: number; y: number }) => void;
-  setZoom: (zoom: number) => void;
-  setAspect: (aspect: number) => void;
   setCroppedAreaPixels: (area: Area | null) => void;
-  setDuration: (duration: number) => void;
-  setStartTime: (startTime: number) => void;
-  setEndTime: (endTime: number) => void;
   setLiveCurrentTime: (currentTime: number) => void;
-  setScale: (scale: number) => void;
-  setOutputWidth: (width: number) => void;
-  setOutputHeight: (height: number) => void;
   setOutputFormat: (format: string) => void;
   setIsProcessing: (isProcessing: boolean) => void;
   setProgress: (progress: number) => void;
@@ -61,11 +52,13 @@ interface VideoCropStore {
   setSupportedFormats: (formats: string[]) => void;
   setCodecOptions: (options: CodecSpecificOptions | null) => void;
   setSelectedCodec: (codec: string) => void;
-  clearState: () => void;
-  cleanup: () => void;
+  changeCropArea: (area: Area) => void;
+  changeScale: (scale: number) => void;
+  applyOutputWH: () => void;
+  cleanUp: () => void;
 }
 
-export const useVideoCropStore = create<VideoCropStore>((set, get) => ({
+export const useVideoCropStore = create<VideoCropStore>((set, get, store) => ({
   // 초기값
   crop: { x: 0, y: 0 },
   zoom: 1,
@@ -87,17 +80,8 @@ export const useVideoCropStore = create<VideoCropStore>((set, get) => ({
   selectedCodec: 'vp8', // 기본값
 
   // 액션 구현
-  setCrop: (crop) => set({ crop }),
-  setZoom: (zoom) => set({ zoom }),
-  setAspect: (aspect) => set({ aspect }),
   setCroppedAreaPixels: (area) => set({ croppedAreaPixels: area }),
-  setDuration: (duration) => set({ duration }),
-  setStartTime: (startTime) => set({ startTime }),
-  setEndTime: (endTime) => set({ endTime }),
   setLiveCurrentTime: (currentTime) => set({ liveCurrentTime: currentTime }),
-  setScale: (scale) => set({ scale }),
-  setOutputWidth: (width) => set({ outputWidth: width }),
-  setOutputHeight: (height) => set({ outputHeight: height }),
   setOutputFormat: async (format: string) => {
     // 포맷 설정
     set({ outputFormat: format });
@@ -116,7 +100,7 @@ export const useVideoCropStore = create<VideoCropStore>((set, get) => ({
         // fallback 코덱 설정
         const fallbackCodecs: Record<string, string> = {
           'video/mp4': 'avc1',
-          'video/webm': 'vp8'
+          'video/webm': 'vp8',
         };
         const fallbackCodec = fallbackCodecs[format] || 'vp8';
         set({ selectedCodec: fallbackCodec });
@@ -127,7 +111,7 @@ export const useVideoCropStore = create<VideoCropStore>((set, get) => ({
       // 실패 시 기본 코덱으로 fallback
       const fallbackCodecs: Record<string, string> = {
         'video/mp4': 'avc1',
-        'video/webm': 'vp8'
+        'video/webm': 'vp8',
       };
       const fallbackCodec = fallbackCodecs[format] || 'vp8';
       set({ selectedCodec: fallbackCodec });
@@ -140,35 +124,30 @@ export const useVideoCropStore = create<VideoCropStore>((set, get) => ({
   setSupportedFormats: (formats) => set({ supportedFormats: formats }),
   setCodecOptions: (options) => set({ codecOptions: options }),
   setSelectedCodec: (codec) => set({ selectedCodec: codec }),
-
-  clearState: () => {
+  changeCropArea: (area: Area) => {
+    set({ croppedAreaPixels: area });
+    get().applyOutputWH();
+  },
+  changeScale: (scale: number) => {
+    set({ scale: scale });
+    get().applyOutputWH();
+  },
+  applyOutputWH: () => {
+    const { croppedAreaPixels, scale } = get();
+    if (!croppedAreaPixels) {
+      return;
+    }
     set({
-      crop: { x: 0, y: 0 },
-      zoom: 1,
-      aspect: 16 / 9,
-      croppedAreaPixels: null,
-      duration: 0,
-      startTime: 0,
-      endTime: 0,
-      liveCurrentTime: 0,
-      scale: 1.0,
-      outputWidth: 1280,
-      outputHeight: 720,
-      outputFormat: 'video/webm',
-      isProcessing: false,
-      progress: 0,
-      croppedVideoUrl: null,
-      supportedFormats: [],
-      codecOptions: null,
-      selectedCodec: 'vp8',
+      outputWidth: Math.round(croppedAreaPixels.width * scale),
+      outputHeight: Math.round(croppedAreaPixels.height * scale),
     });
   },
 
-  cleanup: () => {
+  cleanUp: () => {
     const { croppedVideoUrl } = get();
     if (croppedVideoUrl) {
       URL.revokeObjectURL(croppedVideoUrl);
     }
-    set({ croppedVideoUrl: null });
+    set(store.getInitialState());
   },
 }));

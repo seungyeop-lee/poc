@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
 import { formatTime } from '../../utils/videoMetadata';
 
@@ -45,7 +45,7 @@ export default function VideoPlayerSection({
   endTime,
   onDurationChange,
   onEndTimeChange,
-  onLiveCurrentTimeChange
+  onLiveCurrentTimeChange,
 }: VideoPlayerSectionProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
