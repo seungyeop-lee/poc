@@ -2,6 +2,8 @@
   "name": "hono",
   "type": "module",
   "scripts": {
+    "vc:dev": "vercel dev",
+    "vc:deploy": "vercel deploy",
     "db:generate": "NODE_OPTIONS='--import tsx' npx drizzle-kit generate",
     "db:migrate": "NODE_OPTIONS='--import tsx' npx drizzle-kit migrate"
   },
@@ -18,6 +20,10 @@
     "@types/node": "^20.11.17",
     "drizzle-kit": "^0.31.5",
     "tsx": "^4.20.6",
+    "typescript": "^5.8.3",
+    "vercel": "^48.2.9"
+  },
+  "resolutions": {
     "typescript": "^5.8.3"
   }
 }
