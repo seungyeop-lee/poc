@@ -1,8 +1,6 @@
 import {Hono} from "hono";
-import {createUser, createPost} from '../db/queries/insert.js';
-import {getUserById, getUsersWithPostsCount, getPostsForLast24Hours} from '../db/queries/select.js';
-import {updatePost} from '../db/queries/update.js';
-import {deleteUser} from '../db/queries/delete.js';
+import {createUser, deleteUser, getUserById, getUsersWithPostsCount} from "../db/user-queries.js";
+import {createPost, getPostsForLast24Hours, updatePost} from "../db/posts-queries.js";
 
 const router = new Hono()
 

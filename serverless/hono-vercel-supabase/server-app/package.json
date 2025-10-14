@@ -2,8 +2,8 @@
   "name": "hono",
   "type": "module",
   "scripts": {
-    "db:generate": "npx drizzle-kit generate",
-    "db:migrate": "npx drizzle-kit migrate"
+    "db:generate": "NODE_OPTIONS='--import tsx' npx drizzle-kit generate",
+    "db:migrate": "NODE_OPTIONS='--import tsx' npx drizzle-kit migrate"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
