@@ -1,20 +1,18 @@
 import {Hono} from "hono";
 import {createUser, deleteUser, getUserById, getUsersWithPostsCount} from "../db/user-queries.js";
 import {createPost, getPostsForLast24Hours, updatePost} from "../db/posts-queries.js";
+import {zValidator} from "@hono/zod-validator";
+import {userInsertSchema} from "../db/user.js";
+import {z} from "zod";
 
 const router = new Hono()
 
 // User endpoints
-router.post('/users', async (c) => {
+router.post('/users', zValidator('json', userInsertSchema), async (c) => {
   try {
-    const body = await c.req.json();
-    const {name, age, email} = body;
+    const inserterUser = c.req.valid('json')
 
-    if (!name || !age || !email) {
-      return c.json({error: 'Missing required fields: name, age, email'}, 400);
-    }
-
-    await createUser({name, age, email});
+    await createUser(inserterUser);
     return c.json({message: 'User created successfully'}, 201);
   } catch (error) {
     console.error('Error creating user:', error);
@@ -22,24 +20,32 @@ router.post('/users', async (c) => {
   }
 });
 
-router.get('/users/:id', async (c) => {
-  try {
-    const id = parseInt(c.req.param('id'));
-    if (isNaN(id)) {
+router.get(
+  '/users/:id',
+  zValidator(
+    'param',
+    z.object({
+      id: z.coerce.number()
+    }),
+  ),
+  async (c) => {
+    const {id} = c.req.valid('param')
+    if (!id) {
       return c.json({error: 'Invalid user ID'}, 400);
     }
 
-    const users = await getUserById(id);
-    if (users.length === 0) {
-      return c.json({error: 'User not found'}, 404);
-    }
+    try {
+      const users = await getUserById(id);
+      if (users.length === 0) {
+        return c.json({error: 'User not found'}, 404);
+      }
 
-    return c.json(users[0]);
-  } catch (error) {
-    console.error('Error getting user:', error);
-    return c.json({error: 'Failed to get user'}, 500);
-  }
-});
+      return c.json(users[0]);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      return c.json({error: 'Failed to get user'}, 500);
+    }
+  });
 
 router.get('/users', async (c) => {
   try {
@@ -122,7 +128,7 @@ router.patch('/posts/:id', async (c) => {
       return c.json({error: 'At least one field (title or content) must be provided'}, 400);
     }
 
-    const updateData: {title?: string; content?: string} = {};
+    const updateData: { title?: string; content?: string } = {};
     if (title) updateData.title = title;
     if (content) updateData.content = content;
 

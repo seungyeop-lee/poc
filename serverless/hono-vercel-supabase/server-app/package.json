@@ -6,10 +6,13 @@
     "db:migrate": "NODE_OPTIONS='--import tsx' npx drizzle-kit migrate"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.4",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
+    "drizzle-zod": "^0.8.3",
     "hono": "^4.9.10",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
