@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { type NavigateFunction, useNavigate } from 'react-router';
 import { useShallow } from 'zustand/shallow';
-import { ErrorState, PageHeader, PageLayout, VideoControlsPanel, VideoPlayerSection } from '../components/index.ts';
-import { checkWebCodecsSupport, cropAndTrimVideo } from '../utils/cropVideo.ts';
-import { checkVideoFormatSupport } from '../utils/checkFormatSupport.ts';
-import { useMediaStore } from '../stores/mediaStore.ts';
+import { checkWebCodecsSupport, cropAndTrimVideo } from '../../shared/utils/cropVideo.ts';
+import { checkVideoFormatSupport } from '../../shared/utils/checkFormatSupport.ts';
+import { useMediaStore } from '../../shared/stores/mediaStore.ts';
 import { useVideoCropStore } from './videoCropStore.ts';
-import { downloadBlob } from '../utils/blob.ts';
+import { downloadBlob } from '../../shared/utils/blob.ts';
 import type { Area } from 'react-easy-crop';
+import PageLayout from '../../shared/components/layout/PageLayout.tsx';
+import PageHeader from '../../shared/components/layout/PageHeader.tsx';
+import ErrorState from '../../shared/components/ui/ErrorState.tsx';
+import VideoPlayerSection from '../../shared/components/video/VideoPlayerSection.tsx';
+import VideoControlsPanel from '../../shared/components/video/VideoControlsPanel.tsx';
 
-function VideoCropPage() {
+function VideoEditPage() {
   const navigate = useNavigate();
   const file = useMediaStore((state) => state.file);
   const fileUrl = useMediaStore((state) => state.fileUrl);
@@ -40,14 +44,6 @@ function VideoCropPage() {
     })),
   );
 
-  // Setter 함수들
-  const { setIsProcessing, setProgress } = useVideoCropStore(
-    useShallow((state) => ({
-      setIsProcessing: state.setIsProcessing,
-      setProgress: state.setProgress,
-    })),
-  );
-
   const [webCodecsSupported] = useState(checkWebCodecsSupport());
 
   useEffect(() => {
@@ -73,29 +69,29 @@ function VideoCropPage() {
   const handleCropAndTrim = async () => {
     if (!file || !croppedAreaPixels) return;
 
-    setIsProcessing(true);
-    setProgress(0);
+    useVideoCropStore.setState({ isProcessing: true, progress: 0 });
 
     try {
-      const blob = await cropAndTrimVideo(
+      const blob = await cropAndTrimVideo({
         file,
         croppedAreaPixels,
-        { start: startTime, end: endTime },
+        trimRange: { start: startTime, end: endTime },
         outputWidth,
         outputHeight,
         outputFormat,
-        (p) => setProgress(p),
-        codecOptions && Object.keys(codecOptions).length > 0
-          ? { ...codecOptions, codec: selectedCodec }
-          : { codec: selectedCodec },
-      );
+        onProgress: (p) => useVideoCropStore.setState({ progress: p }),
+        processingOptions:
+          codecOptions && Object.keys(codecOptions).length > 0
+            ? { ...codecOptions, codec: selectedCodec }
+            : { codec: selectedCodec },
+      });
       const url = URL.createObjectURL(blob);
       useVideoCropStore.setState({ croppedVideoUrl: url });
     } catch (error) {
       console.error('Video processing failed:', error);
       alert('비디오 처리 중 오류가 발생했습니다.');
     } finally {
-      setIsProcessing(false);
+      useVideoCropStore.setState({ isProcessing: false });
     }
   };
 
@@ -116,19 +112,7 @@ function VideoCropPage() {
   };
 
   if (!webCodecsSupported) {
-    return (
-      <PageLayout centered={true}>
-        <ErrorState
-          title="지원되지 않는 브라우저"
-          message="비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다."
-          variant="card"
-          action={{
-            label: '홈으로 돌아가기',
-            onClick: () => navigate('/'),
-          }}
-        />
-      </PageLayout>
-    );
+    return NotSupportBrowser(navigate);
   }
 
   return (
@@ -189,4 +173,20 @@ function VideoCropPage() {
   );
 }
 
-export default VideoCropPage;
+function NotSupportBrowser(navigate: NavigateFunction) {
+  return (
+    <PageLayout centered={true}>
+      <ErrorState
+        title="지원되지 않는 브라우저"
+        message="비디오 크롭 기능은 Chrome 94+, Edge 94+, Firefox 133+에서만 사용 가능합니다."
+        variant="card"
+        action={{
+          label: '홈으로 돌아가기',
+          onClick: () => navigate('/'),
+        }}
+      />
+    </PageLayout>
+  );
+}
+
+export default VideoEditPage;

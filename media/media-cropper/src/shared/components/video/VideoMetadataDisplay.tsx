@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   extractVideoMetadata,
+  formatBitrate,
   formatDuration,
   formatFileSize,
   getResolutionName,
-  formatBitrate,
-  type VideoMetadata
-} from '../../utils/videoMetadata';
-import Tooltip from '../ui/Tooltip';
+  type VideoMetadata,
+} from '../../utils/videoMetadata.ts';
+import Tooltip from '../ui/Tooltip.tsx';
 
 interface VideoMetadataDisplayProps {
   file: File;
@@ -18,11 +18,7 @@ export default function VideoMetadataDisplay({ file }: VideoMetadataDisplayProps
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadMetadata();
-  }, [file]);
-
-  const loadMetadata = async () => {
+  const loadMetadata = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -34,52 +30,22 @@ export default function VideoMetadataDisplay({ file }: VideoMetadataDisplayProps
     } finally {
       setLoading(false);
     }
-  };
+  }, [file]);
+
+  useEffect(() => {
+    loadMetadata().then();
+  }, [loadMetadata]);
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
-        <div className="flex items-center justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-          <span className="ml-2 text-sm text-gray-600">비디오 정보 분석 중...</span>
-        </div>
-        <div className="text-center text-xs text-gray-500 mt-2">
-          정확한 프레임률 계산을 위해 메타데이터를 추출하고 있습니다
-        </div>
-      </div>
-    );
+    return Loading();
   }
 
   if (error) {
-    return (
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
-        <div className="bg-red-50 border border-red-200 rounded p-3">
-          <p className="text-red-600 text-sm">{error}</p>
-          <p className="text-red-500 text-xs mt-1">
-            프레임률 정보를 정확하게 표시할 수 없습니다.
-          </p>
-          <button
-            onClick={loadMetadata}
-            className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200 transition-colors"
-          >
-            다시 시도
-          </button>
-        </div>
-      </div>
-    );
+    return LoadMetadataErrorOccurred(error, loadMetadata);
   }
 
   if (!metadata) {
-    return (
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
-        <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-          <p className="text-yellow-600 text-sm">비디오 정보를 가져올 수 없습니다.</p>
-        </div>
-      </div>
-    );
+    return FailLoadMetadata();
   }
 
   return (
@@ -102,11 +68,7 @@ export default function VideoMetadataDisplay({ file }: VideoMetadataDisplayProps
             </span>
           </Tooltip>
         </div>
-        <button
-          onClick={loadMetadata}
-          className="text-blue-500 hover:text-blue-700 text-sm"
-          title="새로고침"
-        >
+        <button onClick={loadMetadata} className="text-blue-500 hover:text-blue-700 text-sm" title="새로고침">
           ↻
         </button>
       </div>
@@ -150,7 +112,50 @@ export default function VideoMetadataDisplay({ file }: VideoMetadataDisplayProps
           <span className="text-sm text-gray-900">{formatDuration(metadata.duration)}</span>
         </div>
       </div>
+    </div>
+  );
+}
 
+function LoadMetadataErrorOccurred(error: string, onClick: () => Promise<void>) {
+  return (
+    <div className="bg-white rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
+      <div className="bg-red-50 border border-red-200 rounded p-3">
+        <p className="text-red-600 text-sm">{error}</p>
+        <p className="text-red-500 text-xs mt-1">프레임률 정보를 정확하게 표시할 수 없습니다.</p>
+        <button
+          onClick={onClick}
+          className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200 transition-colors"
+        >
+          다시 시도
+        </button>
       </div>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="bg-white rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
+      <div className="flex items-center justify-center py-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-sm text-gray-600">비디오 정보 분석 중...</span>
+      </div>
+      <div className="text-center text-xs text-gray-500 mt-2">
+        정확한 프레임률 계산을 위해 메타데이터를 추출하고 있습니다
+      </div>
+    </div>
+  );
+}
+
+function FailLoadMetadata() {
+  return (
+    <div className="bg-white rounded-lg shadow p-4">
+      <h3 className="text-lg font-semibold mb-3">비디오 정보</h3>
+      <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+        <p className="text-yellow-600 text-sm">비디오 정보를 가져올 수 없습니다.</p>
+      </div>
+    </div>
   );
 }

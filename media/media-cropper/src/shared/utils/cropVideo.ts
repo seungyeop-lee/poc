@@ -30,16 +30,28 @@ interface VideoProcessingOptions {
   quality?: 'low' | 'medium' | 'high' | 'ultra';
 }
 
-export async function cropAndTrimVideo(
-  file: File,
-  croppedAreaPixels: CroppedAreaPixels,
-  trimRange: TrimRange,
-  outputWidth?: number,
-  outputHeight?: number,
-  outputFormat?: string,
-  onProgress?: (progress: number) => void,
-  processingOptions?: VideoProcessingOptions,
-): Promise<Blob> {
+export interface CropAndTrimVideoOptions {
+  file: File;
+  croppedAreaPixels: CroppedAreaPixels;
+  trimRange: TrimRange;
+  outputWidth?: number;
+  outputHeight?: number;
+  outputFormat?: string;
+  onProgress?: (progress: number) => void;
+  processingOptions?: VideoProcessingOptions;
+}
+
+export async function cropAndTrimVideo(options: CropAndTrimVideoOptions): Promise<Blob> {
+  const {
+    file,
+    croppedAreaPixels,
+    trimRange,
+    outputWidth,
+    outputHeight,
+    outputFormat,
+    onProgress,
+    processingOptions,
+  } = options;
   const finalWidth = outputWidth ?? Math.round(croppedAreaPixels.width);
   const finalHeight = outputHeight ?? Math.round(croppedAreaPixels.height);
   const finalFormat = outputFormat ?? 'video/webm';

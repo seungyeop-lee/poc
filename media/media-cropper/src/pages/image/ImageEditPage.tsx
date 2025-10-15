@@ -1,18 +1,16 @@
 import Cropper from 'react-easy-crop';
 import { useShallow } from 'zustand/shallow';
-import {
-  CropResizePanel,
-  ImageOutputSettingsPanel,
-  LoadingSpinner,
-  MediaPreview,
-  PageHeader,
-  PageLayout,
-} from '../components/index.ts';
-import { useMediaStore } from '../stores/mediaStore.ts';
+import { useMediaStore } from '../../shared/stores/mediaStore.ts';
 import { useImageCropStore } from './imageCropStore.ts';
 import useImageCropPage from './useImageCropPage.ts';
+import PageLayout from '../../shared/components/layout/PageLayout.tsx';
+import PageHeader from '../../shared/components/layout/PageHeader.tsx';
+import CropResizePanel from '../../shared/components/form/CropResizePanel.tsx';
+import ImageOutputSettingsPanel from '../../shared/components/form/ImageOutputSettingsPanel.tsx';
+import LoadingSpinner from '../../shared/components/ui/LoadingSpinner.tsx';
+import MediaPreview from '../../shared/components/media/MediaPreview.tsx';
 
-export default function ImageCropPage() {
+export default function ImageEditPage() {
   const fileUrl = useMediaStore((state) => state.fileUrl);
   const {
     crop,

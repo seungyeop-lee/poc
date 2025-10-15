@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
-import { formatTime } from '../../utils/videoMetadata';
+import { formatTime } from '../../utils/videoMetadata.ts';
 
 interface Point {
   x: number;
@@ -50,13 +50,15 @@ export default function VideoPlayerSection({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      video.addEventListener('loadedmetadata', () => {
-        onDurationChange(video.duration);
-        onEndTimeChange(video.duration);
-      });
+    if (!videoRef.current) {
+      return;
     }
+
+    const video = videoRef.current;
+    video.addEventListener('loadedmetadata', () => {
+      onDurationChange(video.duration);
+      onEndTimeChange(video.duration);
+    });
   }, [onDurationChange, onEndTimeChange]);
 
   const handleVideoTimeUpdate = useCallback(
@@ -79,25 +81,19 @@ export default function VideoPlayerSection({
 
       {/* 비디오 크롭 영역 */}
       <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '500px', position: 'relative' }}>
-        {fileUrl ? (
-          <Cropper
-            video={fileUrl}
-            crop={crop}
-            zoom={zoom}
-            aspect={aspect || undefined}
-            onCropChange={onCropChange}
-            onZoomChange={onZoomChange}
-            onCropComplete={onCropComplete}
-            restrictPosition={true}
-            mediaProps={{
-              onTimeUpdate: handleVideoTimeUpdate,
-            }}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">비디오 파일을 선택해주세요</p>
-          </div>
-        )}
+        <Cropper
+          video={fileUrl || ''}
+          crop={crop}
+          zoom={zoom}
+          aspect={aspect || undefined}
+          onCropChange={onCropChange}
+          onZoomChange={onZoomChange}
+          onCropComplete={onCropComplete}
+          restrictPosition={true}
+          mediaProps={{
+            onTimeUpdate: handleVideoTimeUpdate,
+          }}
+        />
       </div>
 
       {/* 재생 시간 표시 */}

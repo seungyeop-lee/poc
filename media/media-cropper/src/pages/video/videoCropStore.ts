@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { CodecSpecificOptions } from '../utils/videoMetadata.ts';
-import { getSupportedCodecsForFormat } from '../utils/codecSupport.ts';
+import type { CodecSpecificOptions } from '../../shared/utils/videoMetadata.ts';
+import { getSupportedCodecsForFormat } from '../../shared/utils/codecSupport.ts';
 
 interface Area {
   x: number;
@@ -46,8 +46,6 @@ interface VideoCropStore {
   setCroppedAreaPixels: (area: Area | null) => void;
   setLiveCurrentTime: (currentTime: number) => void;
   setOutputFormat: (format: string) => void;
-  setIsProcessing: (isProcessing: boolean) => void;
-  setProgress: (progress: number) => void;
   setCroppedVideoUrl: (url: string | null) => void;
   setSupportedFormats: (formats: string[]) => void;
   setCodecOptions: (options: CodecSpecificOptions | null) => void;
@@ -118,8 +116,6 @@ export const useVideoCropStore = create<VideoCropStore>((set, get, store) => ({
       console.log(`🔄 에러 발생으로 Fallback 코덱 선택: ${fallbackCodec}`);
     }
   },
-  setIsProcessing: (isProcessing) => set({ isProcessing }),
-  setProgress: (progress) => set({ progress }),
   setCroppedVideoUrl: (url) => set({ croppedVideoUrl: url }),
   setSupportedFormats: (formats) => set({ supportedFormats: formats }),
   setCodecOptions: (options) => set({ codecOptions: options }),

@@ -60,9 +60,6 @@ npm run lint
    - 추측하지 말고 문서화된 API 및 베스트 프랙티스 준수
    - 버전별 차이나 최신 기능 변경사항 반영
 
-## 코드 검색 가이드
-파일에 대한 정보가 필요하면 **ck-search MCP의 hybrid_search**를 적극 이용하세요. 이 검색 도구는 시맨틱 검색과 정규식 검색을 결합하여 코드베이스 내의 관련 코드를 효과적으로 찾아줍니다.
-
 ## 빌드 및 타입 설정
 - Vite 설정: `vite.config.ts` (React + TailwindCSS 플러그인)
 - TypeScript 설정: `tsconfig.app.json` (ES2022, strict mode, DOM types)

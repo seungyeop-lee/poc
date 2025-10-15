@@ -1,9 +1,5 @@
-import { useState, useEffect } from 'react';
-import {
-  getOptimalCodecOptions,
-  type VideoMetadata,
-  type CodecSpecificOptions
-} from '../../utils/videoMetadata';
+import { useEffect, useState } from 'react';
+import { type CodecSpecificOptions, getOptimalCodecOptions, type VideoMetadata } from '../../utils/videoMetadata.ts';
 
 interface AdvancedVideoProcessorProps {
   metadata: VideoMetadata | null;
@@ -14,7 +10,7 @@ interface AdvancedVideoProcessorProps {
 export default function AdvancedVideoProcessor({
   metadata,
   selectedCodec = 'avc',
-  onOptionsChange
+  onOptionsChange,
 }: AdvancedVideoProcessorProps) {
   const [options, setOptions] = useState<CodecSpecificOptions | null>(null);
   const [autoOptimize, setAutoOptimize] = useState(false); // 기본값 변경: 사용자가 직접 설정할 수 있도록
@@ -158,7 +154,8 @@ export default function AdvancedVideoProcessor({
       {autoOptimize && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p className="text-sm text-blue-900">
-            <strong>자동 최적화 활성화:</strong> 비트레이트 {Math.round(options.bitrate! / 1000)} kbps, 프레임률 {options.frameRate} fps, 키프레임 간격 {options.keyFrameInterval} 프레임
+            <strong>자동 최적화 활성화:</strong> 비트레이트 {Math.round(options.bitrate! / 1000)} kbps, 프레임률{' '}
+            {options.frameRate} fps, 키프레임 간격 {options.keyFrameInterval} 프레임
           </p>
         </div>
       )}
@@ -186,9 +183,7 @@ export default function AdvancedVideoProcessor({
 
       {/* 프레임레이트 설정 */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          프레임률 (fps)
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">프레임률 (fps)</label>
         <select
           value={options.frameRate}
           onChange={(e) => handleFrameRateChange(Number(e.target.value))}
@@ -196,16 +191,14 @@ export default function AdvancedVideoProcessor({
           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
         >
           {[24, 25, 30, 50, 60]
-            .filter(fps => fps <= metadata.frameRate)
-            .map(fps => (
+            .filter((fps) => fps <= metadata.frameRate)
+            .map((fps) => (
               <option key={fps} value={fps}>
                 {fps} fps
               </option>
             ))}
         </select>
-        <div className="mt-1 text-xs text-gray-500">
-          원본: {metadata.frameRate} fps
-        </div>
+        <div className="mt-1 text-xs text-gray-500">원본: {metadata.frameRate} fps</div>
       </div>
 
       {/* 키프레임 간격 설정 */}
@@ -228,18 +221,17 @@ export default function AdvancedVideoProcessor({
           <span>30 (작은 파일)</span>
         </div>
         <div className="mt-1 text-xs text-blue-600">
-          {options.frameRate && options.keyFrameInterval ?
-            `약 ${(options.keyFrameInterval / options.frameRate).toFixed(1)}초 간격` :
-            '프레임률 설정 필요'
-          }
+          {options.frameRate && options.keyFrameInterval
+            ? `약 ${(options.keyFrameInterval / options.frameRate).toFixed(1)}초 간격`
+            : '프레임률 설정 필요'}
         </div>
       </div>
 
       {/* 설정 정보 */}
       <div className="p-3 bg-green-50 border border-green-200 rounded">
         <p className="text-xs text-green-800">
-          <strong>추천 설정:</strong> {options.codec} 코덱에 최적화된 설정입니다.
-          예상 파일 크기는 원본의 약 {Math.round((options.bitrate! / metadata.bitrate) * 100)}% 수준입니다.
+          <strong>추천 설정:</strong> {options.codec} 코덱에 최적화된 설정입니다. 예상 파일 크기는 원본의 약{' '}
+          {Math.round((options.bitrate! / metadata.bitrate) * 100)}% 수준입니다.
         </p>
       </div>
     </div>

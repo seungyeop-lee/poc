@@ -1,15 +1,16 @@
 import { useNavigate } from 'react-router';
-import { FileUploader, PageLayout } from '../components/index.ts';
-import { useMediaStore } from '../stores/mediaStore.ts';
+import { useMediaStore } from '../../shared/stores/mediaStore.ts';
+import PageLayout from '../../shared/components/layout/PageLayout.tsx';
+import FileUploader from '../../shared/components/form/FileUploader.tsx';
 
-export default function HomePage() {
+export default function RootPage() {
   const navigate = useNavigate();
 
   const handleFileSelect = (file: File) => {
     useMediaStore.getState().setMedia(file);
 
     if (file.type.startsWith('image/')) {
-      navigate('/image-crop');
+      navigate('/image');
       return;
     }
 
@@ -21,7 +22,7 @@ export default function HomePage() {
           'Safari 브라우저에서는 비디오 편집을 지원하지 않습니다. Chrome, Firefox 또는 Edge 브라우저를 사용해주세요.',
         );
       } else {
-        navigate('/video-crop');
+        navigate('/video');
       }
       return;
     }

@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { checkImageFormatSupport } from '../utils/checkFormatSupport.ts';
+import { checkImageFormatSupport } from '../../shared/utils/checkFormatSupport.ts';
 import { useImageCropStore } from './imageCropStore.ts';
 import type { Area } from 'react-easy-crop';
-import { cropImage } from '../utils/cropImage.ts';
-import { downloadBlob } from '../utils/blob.ts';
+import { cropImage } from '../../shared/utils/cropImage.ts';
+import { downloadBlob } from '../../shared/utils/blob.ts';
 import { useNavigate } from 'react-router';
-import { useMediaStore } from '../stores/mediaStore.ts';
+import { useMediaStore } from '../../shared/stores/mediaStore.ts';
 import { useShallow } from 'zustand/shallow';
 
 export default function useImageCropPage() {

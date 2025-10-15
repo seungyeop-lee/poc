@@ -1,19 +1,19 @@
 import { createBrowserRouter } from 'react-router';
-import HomePage from './pages/HomePage.tsx';
-import ImageCropPage from './pages/ImageCropPage.tsx';
-import VideoCropPage from './pages/VideoCropPage.tsx';
+import RootPage from './pages/root/RootPage.tsx';
+import ImageEditPage from './pages/image/ImageEditPage.tsx';
+import VideoEditPage from './pages/video/VideoEditPage.tsx';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    Component: HomePage,
+    Component: RootPage,
   },
   {
-    path: '/image-crop',
-    Component: ImageCropPage,
+    path: '/image',
+    Component: ImageEditPage,
   },
   {
-    path: '/video-crop',
-    Component: VideoCropPage,
+    path: '/video',
+    Component: VideoEditPage,
   },
 ]);

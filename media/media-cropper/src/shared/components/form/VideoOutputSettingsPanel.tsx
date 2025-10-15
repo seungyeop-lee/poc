@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { type CodecInfo, getSupportedCodecs, getSupportedCodecsForFormat } from '../../utils/codecSupport';
+import { type CodecInfo, getSupportedCodecs, getSupportedCodecsForFormat } from '../../utils/codecSupport.ts';
 
 const FORMAT_LABELS: Record<string, string> = {
   'video/webm': 'WebM',
