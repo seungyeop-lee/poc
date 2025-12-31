@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { extractVideoMetadata, type VideoMetadata } from '../../utils/videoMetadata.ts';
-import { useVideoCropStore } from '../../../pages/video/videoCropStore.ts';
+import { extractVideoMetadata, type VideoMetadata } from '../../../utils/videoMetadata.ts';
+import { useVideoCropStore } from '../../../../pages/video/videoCropStore.ts';
 import { useShallow } from 'zustand/shallow';
-import VideoMetadataDisplay from './VideoMetadataDisplay.tsx';
-import CropResizePanel from '../form/CropResizePanel.tsx';
-import TrimControls from '../form/TrimControls.tsx';
-import VideoOutputSettingsPanel from '../form/VideoOutputSettingsPanel.tsx';
-import AdvancedVideoProcessor from './AdvancedVideoProcessor.tsx';
-import VideoProcessingButton from './VideoProcessingButton.tsx';
+import VideoMetadataDisplay from '../../presentational/video/VideoMetadataDisplay.tsx';
+import CropResizePanel from '../../presentational/form/CropResizePanel.tsx';
+import TrimControls from '../../presentational/form/TrimControls.tsx';
+import VideoOutputSettingsPanel from '../../presentational/form/VideoOutputSettingsPanel.tsx';
+import AdvancedVideoProcessor from '../../presentational/video/AdvancedVideoProcessor.tsx';
+import VideoProcessingButton from '../../presentational/video/VideoProcessingButton.tsx';
 
 interface Area {
   x: number;

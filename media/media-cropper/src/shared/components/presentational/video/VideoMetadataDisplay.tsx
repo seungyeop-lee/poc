@@ -6,7 +6,7 @@ import {
   formatFileSize,
   getResolutionName,
   type VideoMetadata,
-} from '../../utils/videoMetadata.ts';
+} from '../../../utils/videoMetadata.ts';
 import Tooltip from '../ui/Tooltip.tsx';
 
 interface VideoMetadataDisplayProps {

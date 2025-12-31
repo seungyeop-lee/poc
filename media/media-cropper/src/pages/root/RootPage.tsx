@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import { useMediaStore } from '../../shared/stores/mediaStore.ts';
-import PageLayout from '../../shared/components/layout/PageLayout.tsx';
-import FileUploader from '../../shared/components/form/FileUploader.tsx';
+import PageLayout from '../../shared/components/presentational/layout/PageLayout.tsx';
+import FileUploader from '../../shared/components/presentational/form/FileUploader.tsx';
 
 export default function RootPage() {
   const navigate = useNavigate();

@@ -3,12 +3,12 @@ import { useShallow } from 'zustand/shallow';
 import { useMediaStore } from '../../shared/stores/mediaStore.ts';
 import { useImageCropStore } from './imageCropStore.ts';
 import useImageCropPage from './useImageCropPage.ts';
-import PageLayout from '../../shared/components/layout/PageLayout.tsx';
-import PageHeader from '../../shared/components/layout/PageHeader.tsx';
-import CropResizePanel from '../../shared/components/form/CropResizePanel.tsx';
-import ImageOutputSettingsPanel from '../../shared/components/form/ImageOutputSettingsPanel.tsx';
-import LoadingSpinner from '../../shared/components/ui/LoadingSpinner.tsx';
-import MediaPreview from '../../shared/components/media/MediaPreview.tsx';
+import PageLayout from '../../shared/components/presentational/layout/PageLayout.tsx';
+import PageHeader from '../../shared/components/presentational/layout/PageHeader.tsx';
+import CropResizePanel from '../../shared/components/presentational/form/CropResizePanel.tsx';
+import ImageOutputSettingsPanel from '../../shared/components/presentational/form/ImageOutputSettingsPanel.tsx';
+import LoadingSpinner from '../../shared/components/presentational/ui/LoadingSpinner.tsx';
+import MediaPreview from '../../shared/components/presentational/media/MediaPreview.tsx';
 
 export default function ImageEditPage() {
   const fileUrl = useMediaStore((state) => state.fileUrl);

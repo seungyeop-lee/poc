@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import Cropper from 'react-easy-crop';
-import { formatTime } from '../../utils/videoMetadata.ts';
+import { formatTime } from '../../../utils/videoMetadata.ts';
 
 interface Point {
   x: number;

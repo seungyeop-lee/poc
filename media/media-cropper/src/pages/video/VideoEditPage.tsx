@@ -7,11 +7,11 @@ import { useMediaStore } from '../../shared/stores/mediaStore.ts';
 import { useVideoCropStore } from './videoCropStore.ts';
 import { downloadBlob } from '../../shared/utils/blob.ts';
 import type { Area } from 'react-easy-crop';
-import PageLayout from '../../shared/components/layout/PageLayout.tsx';
-import PageHeader from '../../shared/components/layout/PageHeader.tsx';
-import ErrorState from '../../shared/components/ui/ErrorState.tsx';
-import VideoPlayerSection from '../../shared/components/video/VideoPlayerSection.tsx';
-import VideoControlsPanel from '../../shared/components/video/VideoControlsPanel.tsx';
+import PageLayout from '../../shared/components/presentational/layout/PageLayout.tsx';
+import PageHeader from '../../shared/components/presentational/layout/PageHeader.tsx';
+import ErrorState from '../../shared/components/presentational/ui/ErrorState.tsx';
+import VideoPlayerSection from '../../shared/components/presentational/video/VideoPlayerSection.tsx';
+import VideoControlsPanel from '../../shared/components/connected/video/VideoControlsPanel.tsx';
 
 function VideoEditPage() {
   const navigate = useNavigate();

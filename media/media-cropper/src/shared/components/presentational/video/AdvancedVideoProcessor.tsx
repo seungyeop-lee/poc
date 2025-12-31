@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { type CodecSpecificOptions, getOptimalCodecOptions, type VideoMetadata } from '../../utils/videoMetadata.ts';
+import { type CodecSpecificOptions, getOptimalCodecOptions, type VideoMetadata } from '../../../utils/videoMetadata.ts';
 
 interface AdvancedVideoProcessorProps {
   metadata: VideoMetadata | null;
