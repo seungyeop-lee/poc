@@ -1,0 +1,20 @@
+# PostgreSQL Backup & Restore Environment Variables
+# Copy this file to .envrc and fill in your values: cp .envrc.example .envrc
+
+# PostgreSQL Password (required)
+export PGPASSWORD=
+
+# Source Database (backup source)
+export SOURCE_DB_HOST=127.0.0.1
+export SOURCE_DB_PORT=5432
+export SOURCE_DB_USER=postgres
+export SOURCE_DB_NAME=postgres
+
+# Target Database (restore target)
+export TARGET_DB_HOST=127.0.0.1
+export TARGET_DB_PORT=5433
+export TARGET_DB_USER=postgres
+export TARGET_DB_NAME=postgres
+
+# Backup Directory
+export BACKUP_DIR=./backups

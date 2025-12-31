@@ -1,0 +1,41 @@
+services:
+  source:
+    image: postgres:18.1
+    volumes:
+      - ./source-initdb.d:/docker-entrypoint-initdb.d
+      - ../dump:/dump
+      - sourcedb-data:/var/lib/postgresql
+    environment:
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  target:
+    image: postgres:18.1
+    volumes:
+      - ../dump:/dump
+      - targetdb-data:/var/lib/postgresql
+    environment:
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  sourcedb-data: {}
+  targetdb-data: {}
